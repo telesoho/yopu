@@ -1,0 +1,389 @@
+hexi-sheet {
+    background-color: #fff;
+    display: block;
+    font-family: arial, Microsoft Yahei, Hiragino Sans GB, sans-serif;
+    font-size: 1em;
+    overflow-x: hidden;
+    padding: 30px 60px;
+    position: relative;
+    visibility: hidden
+}
+
+hexi-sheet[ready] {
+    visibility: visible
+}
+
+hexi-sheet[printable] {
+    padding: 20px
+}
+
+hexi-sheet[instrument=guitar] hexi-rhythm[string-num="4"],
+hexi-sheet[instrument=guitar] hexi-tab[string-num="4"],
+hexi-sheet[instrument=ukulele] hexi-rhythm[string-num="6"],
+hexi-sheet[instrument=ukulele] hexi-tab[string-num="6"] {
+    display: none
+}
+
+hexi-sheet[finger-style][instrument] hexi-tab[string-num] {
+    display: initial
+}
+
+hexi-chord {
+    display: inline-flex
+}
+
+.hexi-header {
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    max-width: 70%
+}
+
+.hexi-header .hexi-title {
+    font-size: 1.5em;
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    padding-top: 10px;
+    position: relative
+}
+
+.hexi-header .hexi-subtitle {
+    color: #666;
+    font-size: 1em;
+    font-weight: 400;
+    max-width: 70%
+}
+
+.hexi-header .hexi-subtitle span {
+    display: inline-block;
+    margin-right: 5px
+}
+
+.hexi-header .hexi-subtitle span em {
+    color: #cd5c5c;
+    font-size: .8em;
+    font-style: normal
+}
+
+.hexi-comment {
+    border-left: 3px solid #bbb;
+    color: #777;
+    font-size: .9em;
+    line-height: 1;
+    margin: 20px 0 10px;
+    padding: .3em 0 .3em 17px
+}
+
+.hexi-chorus {
+    border-left: 3px solid #ccc;
+    margin: 1em 0
+}
+
+.hexi-chordline {
+    margin-left: 20px
+}
+
+.hexi-chordline span.hexi-chord {
+    color: #cd5c5c;
+    font-size: .9em;
+    margin-right: 20px;
+    position: static
+}
+
+.hexi-chordline hexi-chord {
+    position: static !important
+}
+
+.hexi-textline {
+    color: #333;
+    font-family: inherit;
+    letter-spacing: 1px;
+    padding-left: 20px;
+    white-space: pre-wrap
+}
+
+.hexi-chord {
+    color: #cd5c5c;
+    font-family: Arial, sans-serif;
+    font-size: .9em;
+    letter-spacing: 0;
+    position: absolute;
+    top: -1.1em;
+    white-space: nowrap
+}
+
+.hexi-chord .hexi-chord-sharp {
+    position: relative;
+    top: -3px
+}
+
+.hexi-chord .hexi-chord-sharp.roboto {
+    font-family: Roboto, sans-serif;
+    font-size: .8em;
+    left: -3px;
+    margin-right: -5px
+}
+
+.hexi-chord .hexi-chord-sharp.arial {
+    font-family: Arial Unicode MS, sans-serif;
+    font-size: .9em;
+    left: -1px;
+    margin-right: -1px
+}
+
+.hexi-chord .hexi-chord-flat {
+    position: relative;
+    top: 1px
+}
+
+.hexi-chord .hexi-chord-flat.roboto {
+    font-family: Roboto, sans-serif;
+    font-size: .8em;
+    left: -3px;
+    margin-right: -5px
+}
+
+.hexi-chord .hexi-chord-flat.arial {
+    font-family: Arial Unicode MS, sans-serif;
+    font-size: .9em;
+    left: -1px;
+    margin-right: -1px
+}
+
+.hexi-chord-anchor {
+    border-bottom: 1px solid;
+    display: inline-block;
+    line-height: 1em;
+    padding: 1px 0;
+    position: relative
+}
+
+.hexi-meta {
+    list-style: none;
+    margin: 15px 0;
+    max-width: 30%;
+    position: absolute;
+    right: 60px;
+    top: 35px
+}
+
+.hexi-meta li:first-child {
+    border-top-width: 1px
+}
+
+.hexi-meta li {
+    border: 1px solid #aaa;
+    border-top: 0 solid #aaa;
+    font-size: .8em;
+    line-height: 1.2em;
+    overflow: hidden;
+    padding: 0 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.hexi-line {
+    color: #333;
+    font-family: inherit;
+    letter-spacing: 1px;
+    line-height: 4;
+    margin: 0;
+    padding-left: 20px;
+    white-space: pre-wrap
+}
+
+.hexi-chorus .hexi-line {
+    padding-left: 17px
+}
+
+hexi-rhythm,
+hexi-tab {
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+    display: flex;
+    flex-direction: column;
+    overflow-x: scroll
+}
+
+hexi-rhythm::-webkit-scrollbar,
+hexi-tab::-webkit-scrollbar {
+    display: none
+}
+
+@supports (-ms-ime-align:auto) {
+
+    hexi-rhythm,
+    hexi-tab {
+        overflow-x: hidden
+    }
+}
+
+hexi-sheet[chord-style=inline] .hexi-comment+.hexi-chorus,
+hexi-sheet[chord-style=inline] hexi-rhythm+.hexi-chorus,
+hexi-sheet[chord-style=inline] hexi-tab+.hexi-chorus {
+    padding-top: 20px
+}
+
+hexi-sheet[chord-style=inline] hexi-chord {
+    left: -.66em;
+    position: absolute;
+    top: -3em
+}
+
+hexi-sheet[chord-style=inline] .hexi-line {
+    line-height: 4.5;
+    padding-top: 1.8em
+}
+
+hexi-sheet:not([chord-style=inline]) .hexi-chord-anchor+.hexi-chord-anchor {
+    margin-left: 20px
+}
+
+hexi-sheet[instrument=ukulele][chord-style=inline] .hexi-chord-anchor+.hexi-chord-anchor {
+    margin-left: 10px
+}
+
+hexi-sheet[instrument=guitar][chord-style=inline] .hexi-chord-anchor+.hexi-chord-anchor {
+    margin-left: 20px
+}
+
+hexi-sheet[instrument=guitar][chord-style=inline] hexi-chord {
+    left: -1.1em;
+    position: absolute;
+    top: -3.2em
+}
+
+hexi-sheet[instrument=guitar][chord-style=inline] .hexi-line {
+    letter-spacing: 2px
+}
+
+[line-num].focal {
+    background-color: #f5f5f5
+}
+
+.hexi-chordline,
+.hexi-comment,
+.hexi-line,
+.hexi-textline,
+hexi-chord,
+hexi-rhythm,
+hexi-tab svg {
+    -webkit-column-break-inside: avoid;
+    break-inside: avoid;
+    page-break-inside: avoid
+}
+
+.hexi-comment {
+    -webkit-column-break-after: avoid;
+    break-after: avoid;
+    page-break-after: avoid
+}
+
+@media screen and (max-width: 768px) {
+    hexi-sheet:not([printable]) {
+        padding: 10px
+    }
+
+    hexi-sheet:not([printable]) .hexi-meta {
+        right: 10px;
+        top: 10px
+    }
+}
+
+hexi-sheet.mobi {
+    padding: 10px 10px 20px
+}
+
+hexi-sheet.mobi .hexi-meta {
+    right: 10px;
+    top: 10px
+}
+
+hexi-sheet[columns] .hexi-header {
+    display: inline-block;
+    margin-bottom: 0
+}
+
+hexi-sheet[columns] .hexi-header .hexi-subtitle {
+    max-width: none
+}
+
+hexi-sheet[columns] .hexi-meta {
+    display: flex;
+    max-width: none;
+    padding-left: 0;
+    position: static
+}
+
+hexi-sheet[columns] .hexi-meta li {
+    border: none;
+    border-right: 2.5px solid #999;
+    font-size: .9em;
+    padding: 0 10px
+}
+
+hexi-sheet[columns] .hexi-meta li:first-of-type {
+    padding-left: 0
+}
+
+hexi-sheet[columns] .hexi-meta li:last-of-type {
+    border-right: none
+}
+
+hexi-sheet[columns="2"] {
+    column-count: 2;
+    -moz-column-count: 2;
+    -webkit-column-count: 2;
+    column-fill: auto;
+    -moz-column-fill: auto;
+    column-gap: 40px;
+    -moz-column-gap: 40px;
+    -webkit-column-gap: 40px;
+    column-rule: 1px dashed #eee;
+    -moz-column-rule: 1px dashed #eee;
+    -webkit-column-rule: 1px dashed #eee
+}
+
+hexi-sheet[columns="3"] {
+    display: flex;
+    flex-direction: column
+}
+
+hexi-sheet[columns="3"] .hexi-header {
+    width: 33%
+}
+
+hexi-sheet[columns="3"] .hexi-chords {
+    background: #f8f8f8;
+    overflow-x: scroll;
+    position: absolute;
+    right: 40px;
+    top: 40px;
+    white-space: nowrap;
+    width: calc(66% - 60px)
+}
+
+hexi-sheet[columns="3"] .hexi-body {
+    column-count: 3;
+    -moz-column-count: 3;
+    -webkit-column-count: 3;
+    column-fill: auto;
+    -moz-column-fill: auto;
+    column-gap: 40px;
+    -moz-column-gap: 40px;
+    -webkit-column-gap: 40px;
+    column-rule: 1px dashed #eee;
+    -moz-column-rule: 1px dashed #eee;
+    -webkit-column-rule: 1px dashed #eee;
+    overflow-x: scroll
+}
+
+hexi-sheet[columns][chord-style=inline] .hexi-meta {
+    border-left: 2.5px solid #bbb;
+    display: inline-flex;
+    margin: 0 0 0 5px;
+    padding: 0 10px
+}
+
+hexi-sheet[columns][chord-style=inline] .hexi-meta li {
+    font-size: 1em
+}
