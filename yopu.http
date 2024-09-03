@@ -1,0 +1,9 @@
+GET https://yopu.co/api/search/sheets?q=%E5%BC%A0%E4%BF%A1%E5%93%B2&page=0&instrument=guitar HTTP/1.1
+content-type: application/json
+host: yopu.co
+Accept: */*
+Referer: https://yopu.co/explore
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-origin
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36
