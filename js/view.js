@@ -406,6 +406,18 @@
         }
         i && (s = setTimeout(( () => o(Ct.TIMEOUT)), i));
         let c = !1;
+        // Mocking fetch function
+        const mockFetch = (url, options) => {
+            return new Promise((resolve, reject) => {
+                // reject({});
+                // Simulate a successful response
+                resolve({
+                    ok: false,
+                    json: () => Promise.resolve({ message: "Success" }), // Mock JSON response
+                    text: () => Promise.resolve("Mocked text response") // Mock text response
+                });
+            });
+        };
         const a = fetch(t, Object.assign({
             credentials: "include"
         }, n)).then((i => (u(),
@@ -7018,11 +7030,12 @@
     }
     async function Za(t, n=!1) {
         try {
-            const e = await Mt(t, null, {
-                allowNonLogin: !0,
-                silent: n
-            });
-            return await e.json()
+            // const e = await Mt(t, null, {
+            //     allowNonLogin: !0,
+            //     silent: n
+            // });
+            // return await e.json()
+            return await {}
         } catch (t) {
             if (t instanceof Ot && t.statusCode === Y.INVALID_CREDENTIAL)
                 return Ja(),
