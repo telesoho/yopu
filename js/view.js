@@ -519,7 +519,7 @@
     }
       , Ht = zt("Storage")
       , {localStorage: Vt} = window;
-    class Wt {
+    class LocalStorage {
         static setItem(t, n) {
             if (Ht("setItem", t),
             Vt)
@@ -654,8 +654,19 @@
     function hn(t, n) {
         pn(t, "hide", !n)
     }
-    function dn(t, n="") {
-        null == n ? un.removeAttribute(t) : un.setAttribute(t, n)
+    /**
+     * Sets or removes an attribute on the global `document` element.
+     * @param {string} attributeName - The name of the attribute to set or remove.
+     * @param {string|null} attributeValue - The value of the attribute to set. If null, the attribute is removed.
+     */
+    function setOrRemoveGlobalAttribute(attributeName, attributeValue = "") {
+        if (attributeValue == null) {
+            // Remove the attribute if the value is null
+            document.documentElement.removeAttribute(attributeName);
+        } else {
+            // Set the attribute with the given value
+            document.documentElement.setAttribute(attributeName, attributeValue);
+        }
     }
     function vn(t, n) {
         pn(un, t, n)
@@ -770,7 +781,7 @@
       , te = "drafts"
       , ne = "editor-choice"
       , ee = "favorite"
-      , ie = "filled-queries"
+      , filled_queries = "filled-queries"
       , re = "finance"
       , oe = "history"
       , se = "i"
@@ -890,7 +901,7 @@
     gi([_n, Te, je]),
     gi([_n, Ne, Vn]),
     gi([_n, Ne, He]);
-    const mi = gi([_n, Ne, ie]);
+    const getInstrument = gi([_n, Ne, filled_queries]);
     gi([_n, we, Hn]),
     gi([_n, we, si, Gn]),
     gi([_n, we, si, xe]),
@@ -910,7 +921,7 @@
     function gi(t) {
         return "/" + t.join("/")
     }
-    function bi(t=location.search) {
+    function getInstrumentFromBi(t=location.search) {
         const n = {}
           , e = t.substr(1).split("&");
         for (const t in e)
@@ -921,7 +932,7 @@
             }
         return n
     }
-    function wi() {
+    function getInstrumentFromWi() {
         const t = self.location.hash.substr(1).split("&")
           , n = {};
         return t.forEach((t => {
@@ -938,16 +949,21 @@
     function xi(t) {
         0 === document.referrer.indexOf(location.origin) ? t ? location = document.referrer : history.back() : location = "/main"
     }
-    function ki(t) {
-        return Ei(t) ? (Wt.setItem(Ut.MINE_SELECTED_INSTRUMENT, t),
-        t) : null
+    /**
+     * Sets the selected instrument in local storage if it is valid.
+     * @param {string} instrument - The instrument to set.
+     * @returns {string|null} The instrument if it is valid, otherwise null.
+     */    
+    function setSelectedInstrument(instrument) {
+        return isValidInstrument(instrument) ? (LocalStorage.setItem(Ut.MINE_SELECTED_INSTRUMENT, instrument),
+        instrument) : null
     }
-    function Si() {
-        let t = bi().instrument || wi().instrument;
-        return Ei(t) || (t = Wt.getItem(Ut.MINE_SELECTED_INSTRUMENT)),
-        Ei(t) ? t : null
+    function getSelectedInstrument() {
+        let instrument = getInstrumentFromBi().instrument || getInstrumentFromWi().instrument;
+        return isValidInstrument(instrument) || (instrument = LocalStorage.getItem(Ut.MINE_SELECTED_INSTRUMENT)),
+        isValidInstrument(instrument) ? instrument : null
     }
-    function Ei(t) {
+    function isValidInstrument(t) {
         return [Z.GUITAR, Z.UKULELE, Z.JIAN, Z.PIANO].includes(t)
     }
     function Ti(t) {
@@ -6710,7 +6726,7 @@
     function na(t, n={}) {
         if (window.gtag) {
             const e = {}
-              , i = bi();
+              , i = getInstrumentFromBi();
             return i.iVersion && (e.iVersion = i.iVersion),
             i.aVersion && (e.aVersion = i.aVersion),
             n.label && (e.event_label = n.label),
@@ -6747,12 +6763,12 @@
     }
     function ia(t) {
         const n = {}
-          , e = Wt.getItem(Ut.MINE_SELECTED_INSTRUMENT);
+          , e = LocalStorage.getItem(Ut.MINE_SELECTED_INSTRUMENT);
         n.instrument = e || "unselected";
         let i = "web_app";
         t.isAndroid() ? i = t.getSourceAppStore() || "unknown_android_store" : t.isIos() ? i = "apple" : O(navigator.userAgent) ? i = "wechat_mini_program" : C(navigator.userAgent) && (i = "douyin_mini_program"),
         n.app_store = i;
-        const r = Wt.getJson(Ut.USER_DATA_USER_INFO);
+        const r = LocalStorage.getJson(Ut.USER_DATA_USER_INFO);
         let o = r ? r.userCode : null;
         return r && (n.is_member = r.isMember ? "yes" : "no"),
         [o, n]
@@ -6939,13 +6955,13 @@
     async function qa(t) {
         return await qt(wt(di, {
             code: t,
-            instrument: Si()
+            instrument: getSelectedInstrument()
         }))
     }
     async function $a(t) {
         const n = wt(di, {
             code: t,
-            instrument: Si()
+            instrument: getSelectedInstrument()
         });
         return await jt(n, {
             method: "DELETE"
@@ -6988,14 +7004,14 @@
         return Ka(Ut.USER_DATA_USER_INFO)
     }
     async function Ha(t=!1) {
-        if (!t && !Wt.getBoolean(Ut.USER_DATA_PORTFOLIO_STALE)) {
+        if (!t && !LocalStorage.getBoolean(Ut.USER_DATA_PORTFOLIO_STALE)) {
             const t = Va();
             if (t)
                 return t
         }
         const n = await Ga("/api/user/portfolio");
         return Qa(n),
-        Wt.setBoolean(Ut.USER_DATA_PORTFOLIO_STALE, !1),
+        LocalStorage.setBoolean(Ut.USER_DATA_PORTFOLIO_STALE, !1),
         n
     }
     function Va() {
@@ -7019,14 +7035,14 @@
         Qa(null)
     }
     function Ka(t) {
-        const n = Wt.getJson(t);
+        const n = LocalStorage.getJson(t);
         return n && 0 !== Object.keys(n).length ? n : null
     }
     function Ya(t) {
-        void 0 !== t && Wt.setJson(Ut.USER_DATA_USER_INFO, t)
+        void 0 !== t && LocalStorage.setJson(Ut.USER_DATA_USER_INFO, t)
     }
     function Qa(t) {
-        void 0 !== t && Wt.setJson(Ut.USER_DATA_USER_PORTFOLIO, t)
+        void 0 !== t && LocalStorage.setJson(Ut.USER_DATA_USER_PORTFOLIO, t)
     }
     async function Za(t, n=!1) {
         try {
@@ -7044,14 +7060,14 @@
         }
     }
     function tl(t) {
-        return !!t && (Si() === Z.PIANO && t.isPianoMember || t.isMember)
+        return !!t && (getSelectedInstrument() === Z.PIANO && t.isPianoMember || t.isMember)
     }
     async function nl() {
         const {success: t} = await Dt("/auth/logout");
         return t && Ja(),
         t
     }
-    function el() {}
+    function defaultStart() {}
     const il = t => t;
     function rl(t, n) {
         for (const e in n)
@@ -7070,7 +7086,7 @@
     function cl(t) {
         return "function" == typeof t
     }
-    function al(t, n) {
+    function areValuesDifferent(t, n) {
         return t != t ? n == n : t !== n || t && "object" == typeof t || "function" == typeof t
     }
     function ll(t) {
@@ -7078,11 +7094,11 @@
     }
     function fl(t, ...n) {
         if (null == t)
-            return el;
+            return defaultStart;
         const e = t.subscribe(...n);
         return e.unsubscribe ? () => e.unsubscribe() : e
     }
-    function hl(t, n, e) {
+    function addEventListener(t, n, e) {
         t.$$.on_destroy.push(fl(n, e))
     }
     function dl(t, n, e, i) {
@@ -7121,11 +7137,11 @@
         return null == t ? "" : t
     }
     function gl(t) {
-        return t && cl(t.destroy) ? t.destroy : el
+        return t && cl(t.destroy) ? t.destroy : defaultStart
     }
     const bl = "undefined" != typeof window;
     let wl = bl ? () => window.performance.now() : () => Date.now()
-      , xl = bl ? t => requestAnimationFrame(t) : el;
+      , xl = bl ? t => requestAnimationFrame(t) : defaultStart;
     const kl = new Set;
     function Sl(t) {
         kl.forEach((n => {
@@ -7449,7 +7465,7 @@
             i && Yl(t, i)
         }
         function a() {
-            const {delay: n=0, duration: e=300, easing: a=il, tick: l=el, css: f} = o || If;
+            const {delay: n=0, duration: e=300, easing: a=il, tick: l=defaultStart, css: f} = o || If;
             f && (i = Kl(t, 0, 1, e, n, a, f, u++)),
             l(0, 1);
             const h = wl() + n
@@ -7556,7 +7572,7 @@
             fragment: null,
             ctx: null,
             props: o,
-            update: el,
+            update: defaultStart,
             not_equal: r,
             bound: sl(),
             on_mount: [],
@@ -7597,7 +7613,7 @@
     class Ff {
         $destroy() {
             Pf(this, 1),
-            this.$destroy = el
+            this.$destroy = defaultStart
         }
         $on(t, n) {
             const e = this.$$.callbacks[t] || (this.$$.callbacks[t] = []);
@@ -7613,61 +7629,110 @@
             this.$$.skip_bound = !1)
         }
     }
-    const Nf = [];
+    const subscriberQueue = [];
     function zf(t, n) {
         return {
-            subscribe: Lf(t, n).subscribe
+            subscribe: createState(t, n).subscribe
         }
     }
-    function Lf(t, n=el) {
-        let e;
-        const i = [];
-        function r(n) {
-            if (al(t, n) && (t = n,
-            e)) {
-                const n = !Nf.length;
-                for (let n = 0; n < i.length; n += 1) {
-                    const e = i[n];
-                    e[1](),
-                    Nf.push(e, t)
-                }
-                if (n) {
-                    for (let t = 0; t < Nf.length; t += 2)
-                        Nf[t][0](Nf[t + 1]);
-                    Nf.length = 0
+
+    /**
+     * Creates a state management object with subscribe, set, and update methods.
+     * @param {any} initialValue - The initial value of the state.
+     * @param {Function} start - A function to start the subscription.
+     * @returns {Object} An object with subscribe, set, and update methods.
+     */    
+    function createState(initialValue, start=defaultStart) {
+        let stop;
+        const subscribers = [];
+    
+        /**
+         * Sets the state to a new value and notifies subscribers.
+         * @param {any} newValue - The new value to set.
+         */
+        function set(newValue) {
+            if (areValuesDifferent(initialValue, newValue)) {
+                initialValue = newValue;
+                if (stop) {
+                    const runQueue = !subscriberQueue.length;
+                    for (let i = 0; i < subscribers.length; i += 1) {
+                        const subscriber = subscribers[i];
+                        subscriber[1]();
+                        subscriberQueue.push(subscriber, initialValue);
+                    }
+                    if (runQueue) {
+                        for (let i = 0; i < subscriberQueue.length; i += 2) {
+                            subscriberQueue[i][0](subscriberQueue[i + 1]);
+                        }
+                        subscriberQueue.length = 0;
+                    }
                 }
             }
         }
+    
+        /**
+         * Updates the state using a callback function and notifies subscribers.
+         * @param {Function} callback - A function that receives the current state and returns the new state.
+         */
+        function update(callback) {
+            set(callback(initialValue));
+        }
+    
+        /**
+         * Subscribes to state changes.
+         * @param {Function} run - A function to run when the state changes.
+         * @param {Function} invalidate - A function to run when the subscription is invalidated.
+         * @returns {Function} A function to unsubscribe.
+         */
+        function subscribe(run, invalidate = defaultStart) {
+            const subscriber = [run, invalidate];
+            subscribers.push(subscriber);
+            if (subscribers.length === 1) {
+                stop = start(set) || defaultStart;
+            }
+            run(initialValue);
+            return () => {
+                const index = subscribers.indexOf(subscriber);
+                if (index !== -1) {
+                    subscribers.splice(index, 1);
+                }
+                if (subscribers.length === 0 && stop) {
+                    stop();
+                    stop = null;
+                }
+            };
+        }
+    
         return {
-            set: r,
-            update: function(n) {
-                r(n(t))
-            },
-            subscribe: function(o, s=el) {
-                const u = [o, s];
-                return i.push(u),
-                1 === i.length && (e = n(r) || el),
-                o(t),
-                () => {
-                    const t = i.indexOf(u);
-                    -1 !== t && i.splice(t, 1),
-                    0 === i.length && (e(),
-                    e = null)
+            set,
+            update,
+            subscribe
+        };        
+    }
+    // Create a state manager for the selected instrument
+    const instrumentStateManager = createStateManager();
+    function createStateManager() {
+        // Initialize state with undefined
+        const { subscribe, set } = createState(void 0);
+
+        // Get initial state from Si function
+        const initialState = getSelectedInstrument();
+
+        // If initial state exists, update the state
+        if (initialState) {
+            set(initialState);
+        }
+
+        // Return an object with subscribe and set methods
+        return {
+            subscribe,
+            set: newState => {
+                // Check if the new state is valid, then update the state
+                if (setSelectedInstrument(newState)) {
+                    set(newState);
                 }
             }
-        }
-    }
-    const Gf = Uf();
-    function Uf() {
-        const {subscribe: t, set: n} = Lf(void 0)
-          , e = Si();
-        return e && n(e),
-        {
-            subscribe: t,
-            set: t => {
-                ki(t) && n(t)
-            }
-        }
+        };
     }
     const Hf = "#faf9f9"
       , Vf = zt("Fullscreen");
@@ -7762,7 +7827,7 @@
             if (n = this.Z(),
             n) {
                 let n = this.V.iosNativeApi;
-                return n || (n = bi().api,
+                return n || (n = getInstrumentFromBi().api,
                 n = n ? n.split(",") : []),
                 n = n.concat("exit", "openAppStore", "shareApp", "shareText"),
                 n.indexOf(t) >= 0
@@ -8028,7 +8093,7 @@
     }
     function fh(t) {
         const n = t.getColorMode() || nh.DEFAULT
-          , {subscribe: e, set: i} = Lf(n);
+          , {subscribe: e, set: i} = createState(n);
         return {
             subscribe: e,
             set: n => {
@@ -8038,11 +8103,11 @@
         }
     }
     function hh() {
-        const {subscribe: t, set: n} = Lf(ph());
+        const {subscribe: t, set: n} = createState(ph());
         return {
             subscribe: t,
             set: t => {
-                t === nh.DEFAULT ? Wt.removeItem(Ut.MINE_SELECTED_COLOR_MODE) : Wt.setItem(Ut.MINE_SELECTED_COLOR_MODE, t),
+                t === nh.DEFAULT ? LocalStorage.removeItem(Ut.MINE_SELECTED_COLOR_MODE) : LocalStorage.setItem(Ut.MINE_SELECTED_COLOR_MODE, t),
                 n(t)
             }
         }
@@ -8076,7 +8141,7 @@
         ))
     }
     function ph() {
-        return Wt.getItem(Ut.MINE_SELECTED_COLOR_MODE) || nh.DEFAULT
+        return LocalStorage.getItem(Ut.MINE_SELECTED_COLOR_MODE) || nh.DEFAULT
     }
     function mh(t, n, e) {
         t === nh.DEFAULT ? e(n) : t === nh.DARK ? e(!0) : t === nh.LIGHT && e(!1)
@@ -8232,7 +8297,7 @@
         return !1
     }
     const zh = zt("Application")
-      , Lh = bi()["no-tracking"];
+      , Lh = getInstrumentFromBi()["no-tracking"];
     function Gh(t, {errorReporting: n=!0, allowHorizontalScreen: e=!1}={}) {
         if (E(navigator.userAgent))
             return zh("Execuse me? IE11?"),
@@ -8261,11 +8326,11 @@
                 vn("dark", t)
             }
             )),
-            Gf.subscribe((t => {
-                dn("instrument", t)
+            instrumentStateManager.subscribe((t => {
+                setOrRemoveGlobalAttribute("instrument", t)
             }
             ));
-            const r = cn("#c")
+            const r = cn("#song")
               , o = Uh(r);
             o && void 0 !== o.user && (null === o.user ? Ja() : Ya(o.user)),
             t(n, r, o),
@@ -8897,7 +8962,7 @@
     class qd extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Pd, Bd, al, {
+            $f(this, t, Pd, Bd, areValuesDifferent, {
                 disabled: 0,
                 size: 1,
                 theme: 2
@@ -9212,7 +9277,7 @@
     class Hd extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Ud, Gd, al, {
+            $f(this, t, Ud, Gd, areValuesDifferent, {
                 open: 0,
                 noButtons: 1,
                 position: 2,
@@ -9322,11 +9387,11 @@
             }
         }
     }
-    const Jd = Lf("")
-      , Kd = Lf("")
-      , Yd = Lf("确认")
-      , Qd = Lf("取消")
-      , Zd = Lf(!1);
+    const Jd = createState("")
+      , Kd = createState("")
+      , Yd = createState("确认")
+      , Qd = createState("取消")
+      , Zd = createState(!1);
     let tv = () => {}
     ;
     function nv(t, n, e={}) {
@@ -9349,11 +9414,11 @@
     }
     function rv(t, n, e) {
         let i, r, o, s, u;
-        return hl(t, Zd, (t => e(0, i = t))),
-        hl(t, Yd, (t => e(1, r = t))),
-        hl(t, Qd, (t => e(2, o = t))),
-        hl(t, Jd, (t => e(3, s = t))),
-        hl(t, Kd, (t => e(4, u = t))),
+        return addEventListener(t, Zd, (t => e(0, i = t))),
+        addEventListener(t, Yd, (t => e(1, r = t))),
+        addEventListener(t, Qd, (t => e(2, o = t))),
+        addEventListener(t, Jd, (t => e(3, s = t))),
+        addEventListener(t, Kd, (t => e(4, u = t))),
         [i, r, o, s, u, function(t) {
             i = t,
             Zd.set(i)
@@ -9371,7 +9436,7 @@
     class ov extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, rv, Wd, al, {})
+            $f(this, t, rv, Wd, areValuesDifferent, {})
         }
     }
     function sv(t) {
@@ -9470,7 +9535,7 @@
     class av extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, cv, uv, al, {
+            $f(this, t, cv, uv, areValuesDifferent, {
                 open: 0
             })
         }
@@ -10842,8 +10907,8 @@
                 1 & e && n.value !== t[0] && $l(n, t[0]),
                 32 & e && Ll(n, "gray", t[5])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 e = !1,
@@ -10886,7 +10951,7 @@
     class Xp extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Ap, Cp, al, {
+            $f(this, t, Ap, Cp, areValuesDifferent, {
                 placeholder: 1,
                 type: 8,
                 value: 0,
@@ -11017,7 +11082,7 @@
     class Rp extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Mp, Ip, al, {
+            $f(this, t, Mp, Ip, areValuesDifferent, {
                 cell: 4,
                 code: 0
             })
@@ -11033,9 +11098,9 @@
             m(t, e) {
                 Ol(t, n, e)
             },
-            p: el,
-            i: el,
-            o: el,
+            p: defaultStart,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n)
             }
@@ -11254,7 +11319,7 @@
     class $p extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, qp, Pp, al, {
+            $f(this, t, qp, Pp, areValuesDifferent, {
                 open: 0,
                 cell: 1
             })
@@ -11378,8 +11443,8 @@
                 }
                 4 & r && Ll(n, "check-style", t[2])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 Al(i, t)
@@ -11410,7 +11475,7 @@
     class Up extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Gp, Lp, al, {
+            $f(this, t, Gp, Lp, areValuesDifferent, {
                 options: 1,
                 selected: 0,
                 checkStyle: 2,
@@ -11523,7 +11588,7 @@
     }
     function Wp(t, n, e) {
         let i;
-        hl(t, ah, (t => e(6, i = t)));
+        addEventListener(t, ah, (t => e(6, i = t)));
         let {open: r} = n
           , o = i;
         const s = [{
@@ -11557,12 +11622,12 @@
     class Jp extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Wp, Vp, al, {
+            $f(this, t, Wp, Vp, areValuesDifferent, {
                 open: 0
             })
         }
     }
-    function Kp(t) {
+    function PianoPu(t) {
         let n, e, i, r, o, s, u, c;
         return {
             c() {
@@ -11598,8 +11663,8 @@
             }
         }
     }
-    function Yp(t) {
-        let n, e, i, r, o, s, u, c, a, l, f, h, m, y, g, b, w, x, k, S, E, T, O, C, A = t[1] && Kp(t);
+    function GuitarPu(t) {
+        let n, e, i, r, o, s, u, c, a, l, f, h, m, y, g, b, w, x, k, S, E, T, O, C, A = t[1] && PianoPu(t);
         return {
             c() {
                 n = Xl("div"),
@@ -11675,8 +11740,8 @@
                 1 & n && Ll(l, "checked", t[0] === Z.UKULELE),
                 1 & n && Ll(w, "checked", t[0] === Z.JIAN)
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 A && A.d(),
@@ -11704,7 +11769,7 @@
     class Zp extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Qp, Yp, al, {
+            $f(this, t, Qp, GuitarPu, areValuesDifferent, {
                 instrument: 0,
                 user: 3
             })
@@ -11770,10 +11835,11 @@
         }
         getHotQueries(t) {
             return t = t || Z.GUITAR,
+            // return t = Z.GUITAR
             this.Bt(t).then((t => t.slice(0, rm))).then((t => im.shuffle(t))).then((t => t.slice(0, om)))
         }
         getHistoryQueries() {
-            return null == this.jt && (this.jt = Wt.getJson(Ut.USER_DATA_HISTORY_QUERIES) || []),
+            return null == this.jt && (this.jt = LocalStorage.getJson(Ut.USER_DATA_HISTORY_QUERIES) || []),
             this.jt
         }
         addHistoryQuery(t) {
@@ -11786,11 +11852,11 @@
             n >= 0 && this.jt.splice(n, 1),
             this.jt.unshift(t),
             this.jt.length > sm && this.jt.pop(),
-            Wt.setJson(Ut.USER_DATA_HISTORY_QUERIES, this.jt)
+            LocalStorage.setJson(Ut.USER_DATA_HISTORY_QUERIES, this.jt)
         }
         clearHistoryQuery() {
             this.jt = [],
-            Wt.setJson(Ut.USER_DATA_HISTORY_QUERIES, this.jt)
+            LocalStorage.setJson(Ut.USER_DATA_HISTORY_QUERIES, this.jt)
         }
         getAutoCompletion(t, n) {
             return t = t || Z.GUITAR,
@@ -11803,15 +11869,16 @@
             ))
         }
         Bt(t) {
-            return this.Dt[t] || (this.Dt[t] = this.Pt(t)),
+            return this.Dt[t] || (this.Dt[t] = this.getHotInstruments(t)),
             this.Dt[t].then((t => t || []))
         }
-        async Pt(t) {
+        async getHotInstruments(t) {
+            return []; // 跳过查询热点乐器
             const n = va.HOT_QUERIES_FOR_INSTRUMENT + t
               , e = await ga(n);
             if (e && e.timestamp > Date.now() - K.DAY)
                 return e.queries;
-            const i = await Dt(wt(mi, {
+            const i = await Dt(wt(getInstrument, {
                 instrument: t
             }));
             return i && await ya(n, {
@@ -11994,8 +12061,8 @@
                 s.m(n, null)) : s && (s.d(1),
                 s = null)
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 Al(o, t),
@@ -12005,7 +12072,7 @@
     }
     function mm(t, n, e) {
         let i;
-        hl(t, Gf, (t => e(5, i = t)));
+        addEventListener(t, instrumentStateManager, (t => e(5, i = t)));
         let {query: r} = n;
         const o = cm()
           , s = rf();
@@ -12034,7 +12101,7 @@
     class ym extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, mm, pm, al, {
+            $f(this, t, mm, pm, areValuesDifferent, {
                 query: 3
             })
         }
@@ -12234,8 +12301,8 @@
                 r.m(e.parentNode, e)) : r && (r.d(1),
                 r = null)
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 i && i.d(t),
                 t && Cl(n),
@@ -12246,7 +12313,7 @@
     }
     function Tm(t, n, e) {
         let i;
-        hl(t, Gf, (t => e(4, i = t)));
+        addEventListener(t, instrumentStateManager, (t => e(4, i = t)));
         const r = cm()
           , o = rf();
         let s = r.getHistoryQueries()
@@ -12271,7 +12338,7 @@
     class Om extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Tm, Em, al, {})
+            $f(this, t, Tm, Em, areValuesDifferent, {})
         }
     }
     function Cm(t) {
@@ -12289,7 +12356,7 @@
                 Bf(e, n, null),
                 i = !0
             },
-            p: el,
+            p: defaultStart,
             i(t) {
                 i || (Af(e.$$.fragment, t),
                 i = !0)
@@ -12403,7 +12470,7 @@
     class _m extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Im, Xm, al, {
+            $f(this, t, Im, Xm, areValuesDifferent, {
                 query: 0
             })
         }
@@ -12476,8 +12543,8 @@
                 c = null),
                 8 & e && Ll(n, "white", t[3])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(e) {
                 e && Cl(n),
                 t[11](null),
@@ -12541,7 +12608,7 @@
     class jm extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Dm, Rm, al, {
+            $f(this, t, Dm, Rm, areValuesDifferent, {
                 query: 0,
                 placeholder: 1,
                 disabled: 2,
@@ -12625,7 +12692,7 @@
         }
     }
     function Pm(t, n, e) {
-        let i = String(wi().q || "")
+        let i = String(getInstrumentFromWi().q || "")
           , r = !1
           , o = !0;
         function s(t) {
@@ -12650,7 +12717,7 @@
     class qm extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Pm, Bm, al, {})
+            $f(this, t, Pm, Bm, areValuesDifferent, {})
         }
     }
     function $m(t) {
@@ -12664,9 +12731,9 @@
                 Ol(e, n, i),
                 t[4](n)
             },
-            p: el,
-            i: el,
-            o: el,
+            p: defaultStart,
+            i: defaultStart,
+            o: defaultStart,
             d(e) {
                 e && Cl(n),
                 t[4](null)
@@ -12721,7 +12788,7 @@
     class zm extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Nm, $m, al, {
+            $f(this, t, Nm, $m, areValuesDifferent, {
                 src: 1
             })
         }
@@ -12763,7 +12830,7 @@
                 Tl(n, a),
                 l = !0
             },
-            p: el,
+            p: defaultStart,
             i(t) {
                 l || (Af(u.$$.fragment, t),
                 l = !0)
@@ -12781,7 +12848,7 @@
     class Gm extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, null, Lm, al, {})
+            $f(this, t, null, Lm, areValuesDifferent, {})
         }
     }
     function Um(t) {
@@ -12799,8 +12866,8 @@
             p(t, [e]) {
                 1 & e && Ll(n, "above", t[0])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n)
             }
@@ -12817,7 +12884,7 @@
     class Vm extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Hm, Um, al, {
+            $f(this, t, Hm, Um, areValuesDifferent, {
                 above: 0
             })
         }
@@ -13067,7 +13134,7 @@
     class oy extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, ry, Qm, al, {
+            $f(this, t, ry, Qm, areValuesDifferent, {
                 arrow: 1,
                 show: 0,
                 title: 2,
@@ -13161,8 +13228,8 @@
                 1 & r && u !== (u = t[0].ladder) && Dl(n, "ladder", u),
                 4 & r && Ll(n, "link", t[2])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 l && l.d(),
@@ -13206,7 +13273,7 @@
     class ly extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, ay, cy, al, {
+            $f(this, t, ay, cy, areValuesDifferent, {
                 user: 0,
                 size: 1,
                 link: 2
@@ -13258,9 +13325,9 @@
             m(t, e) {
                 Ol(t, n, e)
             },
-            p: el,
-            i: el,
-            o: el,
+            p: defaultStart,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n)
             }
@@ -13333,7 +13400,7 @@
                 Bf(r, n, null),
                 o = !0
             },
-            p: el,
+            p: defaultStart,
             i(t) {
                 o || (Af(r.$$.fragment, t),
                 o = !0)
@@ -13408,7 +13475,7 @@
                 f || (h = Rl(a, "click", t[10]),
                 f = !0)
             },
-            p: el,
+            p: defaultStart,
             d(t) {
                 t && Cl(n),
                 d && d.d(),
@@ -13644,7 +13711,7 @@
     }
     function by(t, n, e) {
         let i;
-        hl(t, Gf, (t => e(5, i = t)));
+        addEventListener(t, instrumentStateManager, (t => e(5, i = t)));
         let {allowLogin: r} = n
           , {hideInstrumentSelection: o} = n;
         const s = Ua()
@@ -13664,7 +13731,7 @@
         }
         , () => e(2, c = !0), () => e(3, a = !0), function(t) {
             i = t,
-            Gf.set(i)
+            instrumentStateManager.set(i)
         }
         , () => e(2, c = !1), function(t) {
             c = t,
@@ -13679,7 +13746,7 @@
     class wy extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, by, gy, al, {
+            $f(this, t, by, gy, areValuesDifferent, {
                 allowLogin: 0,
                 hideInstrumentSelection: 1
             })
@@ -13741,8 +13808,8 @@
                     i.length = e.length
                 }
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 Al(i, t)
@@ -13760,7 +13827,7 @@
     class Ty extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Ey, Sy, al, {
+            $f(this, t, Ey, Sy, areValuesDifferent, {
                 tags: 0
             })
         }
@@ -13836,7 +13903,7 @@
         }
         let o = {
             action: t[3],
-            okButtonText: Si() === Z.PIANO ? "开通会员(目前免费)" : "开通会员",
+            okButtonText: getSelectedInstrument() === Z.PIANO ? "开通会员(目前免费)" : "开通会员",
             cancelButtonText: "先不了",
             $$slots: {
                 default: [Oy]
@@ -13882,8 +13949,8 @@
             }
         }
     }
-    const Ay = Lf(!1)
-      , Xy = Lf("");
+    const Ay = createState(!1)
+      , Xy = createState("");
     let Iy = () => {}
     ;
     async function _y(t, n, e) {
@@ -13922,9 +13989,9 @@
     }
     function Dy(t, n, e) {
         let i, r, o;
-        hl(t, Xy, (t => e(0, i = t))),
-        hl(t, Ay, (t => e(1, r = t))),
-        hl(t, ch, (t => e(2, o = t)));
+        addEventListener(t, Xy, (t => e(0, i = t))),
+        addEventListener(t, Ay, (t => e(1, r = t))),
+        addEventListener(t, ch, (t => e(2, o = t)));
         let {desktop: s=!1} = n;
         return t.$$set = t => {
             "desktop"in t && e(4, s = t.desktop)
@@ -13944,7 +14011,7 @@
     class jy extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Dy, Cy, al, {
+            $f(this, t, Dy, Cy, areValuesDifferent, {
                 desktop: 4
             })
         }
@@ -14091,8 +14158,8 @@
                 E = null),
                 8 & n && ql(p, t[3])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(e) {
                 e && Cl(n),
                 Al(S, e),
@@ -14157,7 +14224,7 @@
     class Ly extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, zy, Ny, al, {
+            $f(this, t, zy, Ny, areValuesDifferent, {
                 src: 0
             })
         }
@@ -18316,7 +18383,7 @@
     class eg extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, ng, tg, al, {
+            $f(this, t, ng, tg, areValuesDifferent, {
                 accept: 0,
                 capture: 1,
                 maxSize: 7,
@@ -18420,7 +18487,7 @@
     class sg extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, og, rg, al, {
+            $f(this, t, og, rg, areValuesDifferent, {
                 disabled: 0,
                 progress: 1,
                 text: 2
@@ -18500,8 +18567,8 @@
                 64 & i && Dl(n, "resize", t[6]),
                 32 & i && Ll(n, "gray", t[5])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 l && l.d(),
@@ -18539,7 +18606,7 @@
     class lg extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, ag, cg, al, {
+            $f(this, t, ag, cg, areValuesDifferent, {
                 error: 1,
                 maxLength: 2,
                 minLength: 8,
@@ -18585,7 +18652,7 @@
             m(t, e) {
                 Ol(t, n, e)
             },
-            p: el,
+            p: defaultStart,
             d(t) {
                 t && Cl(n)
             }
@@ -18904,7 +18971,7 @@
     class gg extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, yg, pg, al, {
+            $f(this, t, yg, pg, areValuesDifferent, {
                 sheetCode: 12,
                 sheetTitle: 0,
                 sheetArtist: 13,
@@ -19020,7 +19087,7 @@
                 e || (i = Rl(n, "click", t[7]),
                 e = !0)
             },
-            p: el,
+            p: defaultStart,
             d(t) {
                 t && Cl(n),
                 e = !1,
@@ -19047,7 +19114,7 @@
                 r || (o = [Rl(n, "click", t[6]), Rl(i, "click", t[5])],
                 r = !0)
             },
-            p: el,
+            p: defaultStart,
             d(t) {
                 t && Cl(n),
                 t && Cl(e),
@@ -19197,7 +19264,7 @@
     class Og extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Tg, Eg, al, {
+            $f(this, t, Tg, Eg, areValuesDifferent, {
                 sheet: 0
             })
         }
@@ -19284,7 +19351,7 @@
     class Ig extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Xg, Ag, al, {
+            $f(this, t, Xg, Ag, areValuesDifferent, {
                 block: 0,
                 disabled: 1,
                 size: 2,
@@ -19862,7 +19929,7 @@
     class Ug extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Gg, Lg, al, {
+            $f(this, t, Gg, Lg, areValuesDifferent, {
                 sheet: 0,
                 user: 10
             })
@@ -19922,8 +19989,8 @@
                 4 & e && Dl(n, "style", t[2]),
                 1 & e && Ll(n, "disabled", t[0])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(e) {
                 e && Cl(n),
                 t[14](null),
@@ -20012,7 +20079,7 @@
     class Kg extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Jg, Wg, al, {
+            $f(this, t, Jg, Wg, areValuesDifferent, {
                 min: 10,
                 max: 11,
                 grain: 12,
@@ -20122,8 +20189,8 @@
                 16 & i && Ll(n, "primary", t[4]),
                 32 & i && Ll(n, "accent", t[5])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 u.d(),
@@ -20157,7 +20224,7 @@
     class eb extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, nb, tb, al, {
+            $f(this, t, nb, tb, areValuesDifferent, {
                 disabled: 0,
                 icon: 1,
                 text: 2,
@@ -20343,7 +20410,7 @@
                     E = !1
                 }
             }(),
-            4 & t.$$.dirty[0] && dn("loopState", d)
+            4 & t.$$.dirty[0] && setOrRemoveGlobalAttribute("loopState", d)
         }
         ,
         [r, o, d, s, l, v, i, u, c, a, f, h]
@@ -20351,7 +20418,7 @@
     class ub extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, sb, null, al, {
+            $f(this, t, sb, null, areValuesDifferent, {
                 player: 6,
                 playing: 0,
                 currentTime: 1,
@@ -20548,8 +20615,8 @@
                     i.length = e.length
                 }
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 Al(i, t),
                 t && Cl(n)
@@ -20630,7 +20697,7 @@
     class mb extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, pb, db, al, {
+            $f(this, t, pb, db, areValuesDifferent, {
                 disabled: 0,
                 sections: 5,
                 progress: 1,
@@ -20727,7 +20794,7 @@
     class bb extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, gb, yb, al, {
+            $f(this, t, gb, yb, areValuesDifferent, {
                 currentTime: 0,
                 totalTime: 1,
                 player: 6,
@@ -20802,7 +20869,7 @@
             n && (hn(n, !0),
             n.textContent = e)
         }
-        Wt.setBoolean(Ut.USER_DATA_REPORT_STALE, !0)
+        LocalStorage.setBoolean(Ut.USER_DATA_REPORT_STALE, !0)
     }
     const Sb = (t, n, e) => zf(null, (function(i) {
         if (e) {
@@ -20954,7 +21021,7 @@
     class Ab extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Cb, Ob, al, {
+            $f(this, t, Cb, Ob, areValuesDifferent, {
                 name: 2,
                 muted: 0,
                 volume: 1,
@@ -21803,7 +21870,7 @@
     }
     function zb(t, n, e) {
         let i, r;
-        hl(t, Gf, (t => e(45, i = t)));
+        addEventListener(t, instrumentStateManager, (t => e(45, i = t)));
         let {user: o} = n
           , {player: s} = n
           , {tempo: u=0} = n
@@ -21816,7 +21883,7 @@
           , v = sf("synd");
         let p, m, y, g, b = u, w = !1, x = !1, k = !1, S = !1, E = !1, T = !E, O = !1, C = !1, A = !1;
         const X = Sb(a, null, !!o);
-        hl(t, X, (t => e(19, r = t)));
+        addEventListener(t, X, (t => e(19, r = t)));
         return t.$$set = t => {
             "user"in t && e(3, o = t.user),
             "player"in t && e(4, s = t.player),
@@ -21924,7 +21991,7 @@
     class Lb extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, zb, Nb, al, {
+            $f(this, t, zb, Nb, areValuesDifferent, {
                 user: 3,
                 player: 4,
                 tempo: 0,
@@ -21955,8 +22022,8 @@
                 1 & e && Ll(n, "on", t[0]),
                 2 & e && Ll(n, "disabled", t[1])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 e = !1,
@@ -21980,7 +22047,7 @@
     class Hb extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Ub, Gb, al, {
+            $f(this, t, Ub, Gb, areValuesDifferent, {
                 disabled: 1,
                 on: 0
             })
@@ -22114,8 +22181,8 @@
                 8 & r && Ll(n, "gray", t[3]),
                 16 & r && Ll(n, "small", "small" == t[4])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 Al(i, t)
@@ -22143,7 +22210,7 @@
     class Zb extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Qb, Yb, al, {
+            $f(this, t, Qb, Yb, areValuesDifferent, {
                 options: 1,
                 selected: 0,
                 white: 2,
@@ -22320,7 +22387,7 @@
       , uw = 8;
     function cw(t) {
         return {
-            instrument: Si() || t.type,
+            instrument: getSelectedInstrument() || t.type,
             keyShift: 0,
             capo: t.capo || 0,
             scrollSpeed: uw,
@@ -22492,7 +22559,7 @@
     class vw extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, dw, hw, al, {
+            $f(this, t, dw, hw, areValuesDifferent, {
                 element: 6,
                 sheetRenderCompleteCount: 7,
                 scrollValue: 8,
@@ -23077,7 +23144,7 @@
                 await _y(v, p, "鼓机"))
             }(E, s) : b && b.stop()
         }
-        hl(t, O, (t => e(10, i = t))),
+        addEventListener(t, O, (t => e(10, i = t))),
         Ea(o, Sa.SCROLL, ( () => {
             e(9, T = o.scrollTop)
         }
@@ -23135,7 +23202,7 @@
     class Sw extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, kw, ww, al, {
+            $f(this, t, kw, ww, areValuesDifferent, {
                 scrollElement: 16,
                 tempo: 0,
                 chordStyle: 17,
@@ -23180,8 +23247,8 @@
                 13 & i && c !== (c = t[3] || t[0] == t[2]) && (s.disabled = c),
                 8 & i && a !== (a = t[3] || void 0) && Dl(n, "disabled", a)
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 l = !1,
@@ -23212,7 +23279,7 @@
     class Ow extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Tw, Ew, al, {
+            $f(this, t, Tw, Ew, areValuesDifferent, {
                 value: 0,
                 min: 1,
                 max: 2,
@@ -23319,8 +23386,8 @@
                 3 & r && Nl(i, t[0]),
                 8 & r && Ll(n, "required", t[3])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 s && s.d(),
@@ -23357,7 +23424,7 @@
     class Mw extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, _w, Iw, al, {
+            $f(this, t, _w, Iw, areValuesDifferent, {
                 options: 1,
                 selected: 0,
                 label: 2,
@@ -23366,7 +23433,7 @@
             })
         }
     }
-    const Rw = {
+    const Guitar = {
         [rt.INLINE]: "和弦图",
         [rt.REGULAR]: "和弦名",
         [rt.NUMBER]: "级数"
@@ -23399,7 +23466,7 @@
         icon: "",
         value: ot.STAFF
     }]
-      , qw = {
+      , Piano = {
         [ot.STAFF]: "五线谱",
         [ot.NUMBER]: "简谱"
     };
@@ -23520,7 +23587,7 @@
         }
     }
     function Fw(t) {
-        let n, e, i, r, o, s, u, c, a, l, f, h, d, v, p, m, y, g, b = qw[t[2]] + "";
+        let n, e, i, r, o, s, u, c, a, l, f, h, d, v, p, m, y, g, b = Piano[t[2]] + "";
         function w(n) {
             t[14](n)
         }
@@ -23588,7 +23655,7 @@
                 g = !0
             },
             p(t, n) {
-                (!g || 4 & n) && b !== (b = qw[t[2]] + "") && ql(i, b);
+                (!g || 4 & n) && b !== (b = Piano[t[2]] + "") && ql(i, b);
                 const e = {};
                 !u && 4 & n && (u = !0,
                 e.selected = t[2],
@@ -23626,7 +23693,7 @@
         }
     }
     function Nw(t) {
-        let n, e, i, r, o, s, u, c, a = Rw[t[1]] + "";
+        let n, e, i, r, o, s, u, c, a = Guitar[t[1]] + "";
         function l(n) {
             t[18](n)
         }
@@ -23661,7 +23728,7 @@
                 c = !0
             },
             p(t, n) {
-                (!c || 2 & n) && a !== (a = Rw[t[1]] + "") && ql(i, a);
+                (!c || 2 & n) && a !== (a = Guitar[t[1]] + "") && ql(i, a);
                 const e = {};
                 !u && 2 & n && (u = !0,
                 e.selected = t[1],
@@ -23695,7 +23762,7 @@
                 e || (i = Rl(n, "click", t[15]),
                 e = !0)
             },
-            p: el,
+            p: defaultStart,
             d(t) {
                 t && Cl(n),
                 e = !1,
@@ -23899,7 +23966,7 @@
     }
     function Uw(t, n, e) {
         let i;
-        hl(t, Gf, (t => e(12, i = t)));
+        addEventListener(t, instrumentStateManager, (t => e(12, i = t)));
         let {instrument: r} = n
           , {nierStyle: o} = n
           , {chordStyle: s} = n
@@ -23964,7 +24031,7 @@
     class Hw extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Uw, Gw, al, {
+            $f(this, t, Uw, Gw, areValuesDifferent, {
                 instrument: 8,
                 nierStyle: 0,
                 chordStyle: 1,
@@ -24190,8 +24257,8 @@
                 s.m(n, null)) : s && (s.d(1),
                 s = null)
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n),
                 Al(o, t),
@@ -24254,7 +24321,7 @@
     class ix extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, ex, tx, al, {
+            $f(this, t, ex, tx, areValuesDifferent, {
                 api: 4,
                 showErrorsOnly: 5
             })
@@ -24280,7 +24347,7 @@
                 }
                 ))
             },
-            o: el,
+            o: defaultStart,
             d(t) {
                 t && Cl(n)
             }
@@ -24306,7 +24373,7 @@
                 }
                 ))
             },
-            o: el,
+            o: defaultStart,
             d(t) {
                 t && Cl(n)
             }
@@ -24433,8 +24500,8 @@
     }
     function lx(t, n, e) {
         let i, r;
-        hl(t, ch, (t => e(22, i = t))),
-        hl(t, Gf, (t => e(26, r = t)));
+        addEventListener(t, ch, (t => e(22, i = t))),
+        addEventListener(t, instrumentStateManager, (t => e(26, r = t)));
         const o = zt("NierSheet")
           , s = Lt("NierSheet");
         let {sheet: u} = n
@@ -24696,7 +24763,7 @@
     class fx extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, lx, ux, al, {
+            $f(this, t, lx, ux, areValuesDifferent, {
                 sheet: 10,
                 printable: 1,
                 fullSize: 2,
@@ -25012,8 +25079,8 @@
                 512 & o && Dl(n, "columns", t[9]),
                 64 & o && Ll(n, "mobile", t[6])
             },
-            i: el,
-            o: el,
+            i: defaultStart,
+            o: defaultStart,
             d(e) {
                 e && Cl(n),
                 s && s.d(),
@@ -25026,7 +25093,7 @@
     }
     function kx(t, n, e) {
         let i;
-        hl(t, ch, (t => e(20, i = t)));
+        addEventListener(t, ch, (t => e(20, i = t)));
         let {sheet: r} = n
           , {instrument: o} = n
           , {chordStyle: s} = n
@@ -25151,7 +25218,7 @@
     class Sx extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, kx, xx, al, {
+            $f(this, t, kx, xx, areValuesDifferent, {
                 sheet: 2,
                 instrument: 3,
                 chordStyle: 4,
@@ -25188,9 +25255,9 @@
             m(t, e) {
                 Ol(t, n, e)
             },
-            p: el,
-            i: el,
-            o: el,
+            p: defaultStart,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n)
             }
@@ -25464,7 +25531,7 @@
     const _x = 1200;
     function Mx(t, n, e) {
         const i = sf("webViewInterface")
-          , r = bi().iVersion || k(navigator.userAgent) ? void 0 : 2;
+          , r = getInstrumentFromBi().iVersion || k(navigator.userAgent) ? void 0 : 2;
         let o, s, u, c, a, l = !1;
         return [o, s, u, c, l, a, r, async function() {
             if (l) {
@@ -25500,7 +25567,7 @@
     class Rx extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Mx, Ix, al, {
+            $f(this, t, Mx, Ix, areValuesDifferent, {
                 print: 8
             })
         }
@@ -25617,7 +25684,7 @@
     class Px extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Bx, jx, al, {
+            $f(this, t, Bx, jx, areValuesDifferent, {
                 user: 0
             })
         }
@@ -25702,9 +25769,9 @@
                 Tl(k, E),
                 Tl(k, T)
             },
-            p: el,
-            i: el,
-            o: el,
+            p: defaultStart,
+            i: defaultStart,
+            o: defaultStart,
             d(t) {
                 t && Cl(n)
             }
@@ -25730,7 +25797,7 @@
     class Fx extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, $x, qx, al, {
+            $f(this, t, $x, qx, areValuesDifferent, {
                 vocalRange: 8,
                 getPitchName: 0
             })
@@ -25740,7 +25807,7 @@
         }
     }
     function Nx(t) {
-        let n, e, i, r, o, s, u, c, a, l, f, h, d, v, p, m, y, g, b, w, x, k, S, E, T, O, C, A, X, I, _, M, R, D, j, B, P, q, $, F = Rw[t[0]] + "";
+        let n, e, i, r, o, s, u, c, a, l, f, h, d, v, p, m, y, g, b, w, x, k, S, E, T, O, C, A, X, I, _, M, R, D, j, B, P, q, $, F = Guitar[t[0]] + "";
         function N(n) {
             t[11](n)
         }
@@ -25885,7 +25952,7 @@
                 $ = !0
             },
             p(t, n) {
-                (!$ || 1 & n) && F !== (F = Rw[t[0]] + "") && ql(i, F);
+                (!$ || 1 & n) && F !== (F = Guitar[t[0]] + "") && ql(i, F);
                 const e = {};
                 !u && 1 & n && (u = !0,
                 e.selected = t[0],
@@ -25966,7 +26033,7 @@
                 e || (i = Rl(n, "click", t[14]),
                 e = !0)
             },
-            p: el,
+            p: defaultStart,
             d(t) {
                 t && Cl(n),
                 e = !1,
@@ -26105,7 +26172,7 @@
     class Ux extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, Gx, Lx, al, {
+            $f(this, t, Gx, Lx, areValuesDifferent, {
                 chordStyle: 0,
                 instrument: 6,
                 keyShift: 1,
@@ -26129,7 +26196,7 @@
             m(t, e) {
                 Ol(t, n, e)
             },
-            p: el,
+            p: defaultStart,
             d(t) {
                 t && Cl(n)
             }
@@ -27231,9 +27298,10 @@
             }
         }
     }
-    function pk(t, n, e) {
-        let i;
-        hl(t, Gf, (t => e(8, i = t)));
+    function LoadSong(target, n, callback) {
+        let instrument;
+        addEventListener(target, instrumentStateManager, (event => callback(8, instrument = event)));
+        instrument = "guitar";
         let {webViewInterface: r} = n
           , {synd: o} = n
           , {sheet: s} = n
@@ -27248,7 +27316,7 @@
           , d = s.isOwned
           , v = Oi(s)
           , p = s.type
-          , m = [Z.PIANO, Z.JIAN].includes(i)
+          , m = [Z.PIANO, Z.JIAN].includes(instrument)
           , y = !f || m
           , g = (m ? s.key : s.keyUse) || "C";
         let b, w, x, k, S, E = 1, T = !0, O = !0, C = 0, {keyShift: A, capo: X, tempo: I, scrollSpeed: _} = Object.assign(cw(s), s.settings), M = rt.INLINE, R = g;
@@ -27257,10 +27325,10 @@
         function F(t) {
             if (!t)
                 return;
-            e(23, j = t.detail.vocalRange);
+            callback(23, j = t.detail.vocalRange);
             const {tracks: n} = t.detail.score;
             if (n) {
-                e(20, P = []);
+                callback(20, P = []);
                 for (const t of n)
                     t.staves.length > 1 && s.type === Z.PIANO ? (P.push({
                         name: "右手",
@@ -27283,27 +27351,27 @@
                         muted: !1
                     })
             }
-            e(12, C++, C)
+            callback(12, C++, C)
         }
         of("webViewInterface", r);
-        return t.$$set = t => {
-            "webViewInterface"in t && e(36, r = t.webViewInterface),
-            "synd"in t && e(37, o = t.synd),
-            "sheet"in t && e(0, s = t.sheet),
-            "user"in t && e(1, u = t.user),
-            "sheetId"in t && e(2, c = t.sheetId),
-            "ownerId"in t && e(3, a = t.ownerId)
+        return target.$$set = t => {
+            "webViewInterface"in t && callback(36, r = t.webViewInterface),
+            "synd"in t && callback(37, o = t.synd),
+            "sheet"in t && callback(0, s = t.sheet),
+            "user"in t && callback(1, u = t.user),
+            "sheetId"in t && callback(2, c = t.sheetId),
+            "ownerId"in t && callback(3, a = t.ownerId)
         }
         ,
-        t.$$.update = () => {
-            17 & t.$$.dirty[0] && async function() {
+        target.$$.update = () => {
+            17 & target.$$.dirty[0] && async function() {
                 if (y) {
                     const {shiftKey: t} = await Da(_a);
-                    e(14, R = t(g, A))
+                    callback(14, R = t(g, A))
                 }
             }(s.keyUse),
-            256 & t.$$.dirty[0] && e(13, M = [Z.PIANO, Z.JIAN].includes(i) ? rt.NUMBER : rt.INLINE),
-            243 & t.$$.dirty[0] && Cd(( () => {
+            256 & target.$$.dirty[0] && callback(13, M = [Z.PIANO, Z.JIAN].includes(instrument) ? rt.NUMBER : rt.INLINE),
+            243 & target.$$.dirty[0] && Cd(( () => {
                 u && aw(s, {
                     keyShift: A,
                     capo: X,
@@ -27315,7 +27383,7 @@
         }
         ,
         F(),
-        [s, u, c, a, A, X, I, _, i, E, T, O, C, M, R, b, w, x, k, S, P, q, $, j, B, l, f, h, d, v, p, y, D, F, function() {
+        [s, u, c, a, A, X, I, _, instrument, E, T, O, C, M, R, b, w, x, k, S, P, q, $, j, B, l, f, h, d, v, p, y, D, F, function() {
             if (!Wf())
                 return void Cn.error("浏览器不支持全屏模式，推荐Chrome浏览器");
             const t = cn(s.format === nt.XHE ? ".xhe-sheet" : "hexi-sheet");
@@ -27339,7 +27407,7 @@
                 zoom: E,
                 instrument: p,
                 chordStyle: M,
-                staveProfile: Ci(i, s.type, s.use, q, $),
+                staveProfile: Ci(instrument, s.type, s.use, q, $),
                 simplifyChords: b,
                 noLineBreak: w,
                 keyShift: A,
@@ -27350,93 +27418,93 @@
         }
         , r, o, function(t) {
             S = t,
-            e(19, S)
+            callback(19, S)
         }
         , function(t) {
             I = t,
-            e(6, I)
+            callback(6, I)
         }
         , function(t) {
             k = t,
-            e(18, k)
+            callback(18, k)
         }
-        , () => e(12, C++, C), function(t) {
+        , () => callback(12, C++, C), function(t) {
             af[t ? "unshift" : "push"](( () => {
                 x = t,
-                e(17, x)
+                callback(17, x)
             }
             ))
         }
         , function(t) {
             I = t,
-            e(6, I)
+            callback(6, I)
         }
         , function(t) {
             _ = t,
-            e(7, _)
+            callback(7, _)
         }
         , function(t) {
             E = t,
-            e(9, E)
+            callback(9, E)
         }
         , function(t) {
             q = t,
-            e(21, q)
+            callback(21, q)
         }
         , function(t) {
             M = t,
-            e(13, M),
-            e(8, i)
+            callback(13, M),
+            callback(8, instrument)
         }
         , function(t) {
             $ = t,
-            e(22, $)
+            callback(22, $)
         }
         , function(t) {
             A = t,
-            e(4, A)
+            callback(4, A)
         }
         , function(t) {
             T = t,
-            e(10, T)
+            callback(10, T)
         }
         , function(t) {
             O = t,
-            e(11, O)
+            callback(11, O)
         }
         , function(t) {
             X = t,
-            e(5, X)
+            callback(5, X)
         }
         , function(t) {
             E = t,
-            e(9, E)
+            callback(9, E)
         }
         , function(t) {
             M = t,
-            e(13, M),
-            e(8, i)
+            callback(13, M),
+            callback(8, instrument)
         }
         , function(t) {
             b = t,
-            e(15, b)
+            callback(15, b)
         }
         , function(t) {
             w = t,
-            e(16, w)
+            callback(16, w)
         }
         , function(t) {
             A = t,
-            e(4, A)
+            callback(4, A)
         }
         , function(t) {
             X = t,
-            e(5, X)
+            callback(5, X)
         }
         , function(t) {
             af[t ? "unshift" : "push"](( () => {
                 B = t,
-                e(24, B)
+                callback(24, B)
             }
             ))
         }
@@ -27445,7 +27513,7 @@
     class mk extends Ff {
         constructor(t) {
             super(),
-            $f(this, t, pk, vk, al, {
+            $f(this, t, LoadSong, vk, areValuesDifferent, {
                 webViewInterface: 36,
                 synd: 37,
                 sheet: 0,
