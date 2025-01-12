@@ -80,7 +80,7 @@
         return _(n),
         n.join("")
     }
-    function R(t) {
+    function parseHTML(t) {
         const n = decodeURIComponent(M(t));
         try {
             return JSON.parse(n)
@@ -8304,7 +8304,7 @@
                 ))
             }
             )),
-            !$h() && Nh() && Bh())
+            !$h() && isMobileDevice() && Bh())
         }
     }
     function Bh() {
@@ -8330,7 +8330,7 @@
         )
     }
     function Ph() {
-        return !!qh() || !$h() && Nh() && !Fh()
+        return !!qh() || !$h() && isMobileDevice() && !Fh()
     }
     function qh() {
         return location.search.indexOf("sw=1") > 0
@@ -8341,7 +8341,7 @@
     function Fh() {
         return 0 === location.pathname.indexOf("/i/") || "/i" === location.pathname
     }
-    function Nh() {
+    function isMobileDevice() {
         const t = [/Android/i, /iPhone/i, /iPad/i, /Windows Phone/i];
         for (let n = 0; n < t.length; ++n)
             if (navigator.userAgent.match(t[n]))
@@ -8352,18 +8352,23 @@
       , isTrackingDisabled = getInstrumentFromBi()["no-tracking"];
     function initializeApplication(t, {errorReporting: errorReporting=true, 
         allowHorizontalScreen: allowHorizontalScreen=false}={}) {
-        if (isIE11(navigator.userAgent))
-            return applicationLog("Execuse me? IE11?"),
-            void terminateApplication();
-        errorReporting && !isTrackingDisabled && enableErrorReporting(),
-        performInitialSetup(),
+        if (isIE11(navigator.userAgent)) {
+            applicationLog("Execuse me? IE11?");
+            return terminateApplication();
+        }
+        if (errorReporting && !isTrackingDisabled) {
+            enableErrorReporting();
+        };
+        performInitialSetup();
         setTimeout(( () => {
             const screenHandler = new ScreenHandler();
             screenHandler.install(self),
             !allowHorizontalScreen && isMobileDevice() && screenHandler.lockScreenOrientation(eh.PORTRAIT);
             let trackingTasks = [];
-            isTrackingDisabled || (trackingTasks = getTrackingTasks(screenHandler)),
-            performTrackingTasks().then(( () => {
+            if( !isTrackingDisabled ) {
+                trackingTasks = getTrackingTasks(screenHandler);
+            } 
+            onLoaded().then(( () => {
                 trackingTasks.forEach((t => {
                     executeTrackingTask(t).catch(( () => {}
                     ))
@@ -8371,33 +8376,39 @@
                 )),
                 finalizeSetup()
             }
-            )),
-            setupDarkMode(),
-            setupKeyboardShortcuts(),
-            setupScreenHandler(screenHandler),
+            ));
+            setupDarkMode();
+            setupKeyboardShortcuts();
+            setupScreenHandler(screenHandler);
             darkModeState.subscribe((isDarkMode => {
                 toggleDarkModeClass("dark", isDarkMode)
             }
-            )),
+            ));
             instrumentStateManager.subscribe((instrument => {
                 setOrRemoveGlobalAttribute("instrument", instrument)
             }
             ));
             const r = querySelector("#song")
-              , o = Uh(r);
+              , o = parseElementContent(r);
             o && void 0 !== o.user && (null === o.user ? Ja() : Ya(o.user)),
             t(screenHandler, r, o),
             applicationLog("Ready!")
         }
         ), 1)
     }
-    function Uh(t) {
-        if (!t)
+    function parseElementContent(element) {
+        if (!element) {
             return {};
-        const n = R(t.innerHTML);
-        return t.innerHTML = "",
-        t.style.display = "",
-        n
+        }
+    
+        // Parse the inner HTML of the element
+        const parsedContent = parseHTML(element.innerHTML);
+    
+        // Clear the inner HTML and reset the display style
+        element.innerHTML = "";
+        element.style.display = "";
+    
+        return parsedContent;
     }
     function terminateApplication() {
         document.body.innerHTML = '\n<h1 style="text-align: center; color: indianred">有谱么网站不支持IE11，请更新浏览器。</h1>\n<br>\n<h2 style="text-align: center">如果是QQ或360之类的双核浏览器，请切换至"极速模式"</h2>\n    '
@@ -8412,7 +8423,7 @@
         }
         ), !1)
     }
-    async function performTrackingTasks() {
+    async function onLoaded() {
         if ("loading" === document.readyState)
             return waitForEvent(document, "DOMContentLoaded")
     }
