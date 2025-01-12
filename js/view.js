@@ -680,7 +680,7 @@
     function yn(t, n) {
         t.classList.remove(n)
     }
-    function gn(t, n) {
+    function installHandler(t, n) {
         self.customElements.define(t, n)
     }
     const bn = zt("Toast")
@@ -7565,7 +7565,7 @@
         t.$$.dirty.fill(0)),
         t.$$.dirty[n / 31 | 0] |= 1 << n % 31
     }
-    function $f(t, n, e, i, r, o, s=[-1]) {
+    function initializeComponent(t, n, e, i, r, o, s=[-1]) {
         const u = Wl;
         Zl(t);
         const c = t.$$ = {
@@ -8747,14 +8747,16 @@
     function Cd(t) {
         Od[t] ? t() : Od[t] = 1
     }
-    function Ad(t) {
-        t._xheInstalled || (gn(wd[td.TEXT], md),
-        gn(wd[td.CHORD_ANCHOR], Kh),
-        gn(wd[td.HEADLINE], Yh),
-        gn(wd[td.LINE_BREAK], Qh),
-        gn(wd[td.RHYTHM], hd),
-        gn(wd[td.TAB], vd),
-        t._xheInstalled = !0)
+    function installHandlers(t) {
+        if(!t._xheInstalled) {
+            installHandler(wd[td.TEXT], md);
+            installHandler(wd[td.CHORD_ANCHOR], Kh);
+            installHandler(wd[td.HEADLINE], Yh);
+            installHandler(wd[td.LINE_BREAK], Qh);
+            installHandler(wd[td.RHYTHM], hd);
+            installHandler(wd[td.TAB], vd);
+            t._xheInstalled = true;
+        }
     }
     Lt("Xhe"),
     Lt("deleteBackwardAt"),
@@ -8999,7 +9001,7 @@
     class qd extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Pd, Bd, areValuesDifferent, {
+            initializeComponent(this, t, Pd, Bd, areValuesDifferent, {
                 disabled: 0,
                 size: 1,
                 theme: 2
@@ -9314,7 +9316,7 @@
     class Hd extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Ud, Gd, areValuesDifferent, {
+            initializeComponent(this, t, Ud, Gd, areValuesDifferent, {
                 open: 0,
                 noButtons: 1,
                 position: 2,
@@ -9473,7 +9475,7 @@
     class ov extends Component {
         constructor(t) {
             super(),
-            $f(this, t, rv, Wd, areValuesDifferent, {})
+            initializeComponent(this, t, rv, Wd, areValuesDifferent, {})
         }
     }
     function sv(t) {
@@ -9572,7 +9574,7 @@
     class av extends Component {
         constructor(t) {
             super(),
-            $f(this, t, cv, uv, areValuesDifferent, {
+            initializeComponent(this, t, cv, uv, areValuesDifferent, {
                 open: 0
             })
         }
@@ -10988,7 +10990,7 @@
     class Xp extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Ap, Cp, areValuesDifferent, {
+            initializeComponent(this, t, Ap, Cp, areValuesDifferent, {
                 placeholder: 1,
                 type: 8,
                 value: 0,
@@ -11119,7 +11121,7 @@
     class Rp extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Mp, Ip, areValuesDifferent, {
+            initializeComponent(this, t, Mp, Ip, areValuesDifferent, {
                 cell: 4,
                 code: 0
             })
@@ -11356,7 +11358,7 @@
     class $p extends Component {
         constructor(t) {
             super(),
-            $f(this, t, qp, Pp, areValuesDifferent, {
+            initializeComponent(this, t, qp, Pp, areValuesDifferent, {
                 open: 0,
                 cell: 1
             })
@@ -11512,7 +11514,7 @@
     class Up extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Gp, Lp, areValuesDifferent, {
+            initializeComponent(this, t, Gp, Lp, areValuesDifferent, {
                 options: 1,
                 selected: 0,
                 checkStyle: 2,
@@ -11659,7 +11661,7 @@
     class Jp extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Wp, Vp, areValuesDifferent, {
+            initializeComponent(this, t, Wp, Vp, areValuesDifferent, {
                 open: 0
             })
         }
@@ -11806,7 +11808,7 @@
     class Zp extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Qp, GuitarPu, areValuesDifferent, {
+            initializeComponent(this, t, Qp, GuitarPu, areValuesDifferent, {
                 instrument: 0,
                 user: 3
             })
@@ -12138,7 +12140,7 @@
     class ym extends Component {
         constructor(t) {
             super(),
-            $f(this, t, mm, pm, areValuesDifferent, {
+            initializeComponent(this, t, mm, pm, areValuesDifferent, {
                 query: 3
             })
         }
@@ -12375,7 +12377,7 @@
     class Om extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Tm, Em, areValuesDifferent, {})
+            initializeComponent(this, t, Tm, Em, areValuesDifferent, {})
         }
     }
     function Cm(t) {
@@ -12507,7 +12509,7 @@
     class _m extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Im, Xm, areValuesDifferent, {
+            initializeComponent(this, t, Im, Xm, areValuesDifferent, {
                 query: 0
             })
         }
@@ -12645,7 +12647,7 @@
     class jm extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Dm, Rm, areValuesDifferent, {
+            initializeComponent(this, t, Dm, Rm, areValuesDifferent, {
                 query: 0,
                 placeholder: 1,
                 disabled: 2,
@@ -12754,7 +12756,7 @@
     class qm extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Pm, Bm, areValuesDifferent, {})
+            initializeComponent(this, t, Pm, Bm, areValuesDifferent, {})
         }
     }
     function $m(t) {
@@ -12825,7 +12827,7 @@
     class zm extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Nm, $m, areValuesDifferent, {
+            initializeComponent(this, t, Nm, $m, areValuesDifferent, {
                 src: 1
             })
         }
@@ -12885,7 +12887,7 @@
     class Gm extends Component {
         constructor(t) {
             super(),
-            $f(this, t, null, Lm, areValuesDifferent, {})
+            initializeComponent(this, t, null, Lm, areValuesDifferent, {})
         }
     }
     function Um(t) {
@@ -12921,7 +12923,7 @@
     class Vm extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Hm, Um, areValuesDifferent, {
+            initializeComponent(this, t, Hm, Um, areValuesDifferent, {
                 above: 0
             })
         }
@@ -13171,7 +13173,7 @@
     class oy extends Component {
         constructor(t) {
             super(),
-            $f(this, t, ry, Qm, areValuesDifferent, {
+            initializeComponent(this, t, ry, Qm, areValuesDifferent, {
                 arrow: 1,
                 show: 0,
                 title: 2,
@@ -13310,7 +13312,7 @@
     class ly extends Component {
         constructor(t) {
             super(),
-            $f(this, t, ay, cy, areValuesDifferent, {
+            initializeComponent(this, t, ay, cy, areValuesDifferent, {
                 user: 0,
                 size: 1,
                 link: 2
@@ -13783,7 +13785,7 @@
     class wy extends Component {
         constructor(t) {
             super(),
-            $f(this, t, by, gy, areValuesDifferent, {
+            initializeComponent(this, t, by, gy, areValuesDifferent, {
                 allowLogin: 0,
                 hideInstrumentSelection: 1
             })
@@ -13864,7 +13866,7 @@
     class Ty extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Ey, Sy, areValuesDifferent, {
+            initializeComponent(this, t, Ey, Sy, areValuesDifferent, {
                 tags: 0
             })
         }
@@ -14048,7 +14050,7 @@
     class jy extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Dy, Cy, areValuesDifferent, {
+            initializeComponent(this, t, Dy, Cy, areValuesDifferent, {
                 desktop: 4
             })
         }
@@ -14261,7 +14263,7 @@
     class Ly extends Component {
         constructor(t) {
             super(),
-            $f(this, t, zy, Ny, areValuesDifferent, {
+            initializeComponent(this, t, zy, Ny, areValuesDifferent, {
                 src: 0
             })
         }
@@ -18420,7 +18422,7 @@
     class eg extends Component {
         constructor(t) {
             super(),
-            $f(this, t, ng, tg, areValuesDifferent, {
+            initializeComponent(this, t, ng, tg, areValuesDifferent, {
                 accept: 0,
                 capture: 1,
                 maxSize: 7,
@@ -18524,7 +18526,7 @@
     class sg extends Component {
         constructor(t) {
             super(),
-            $f(this, t, og, rg, areValuesDifferent, {
+            initializeComponent(this, t, og, rg, areValuesDifferent, {
                 disabled: 0,
                 progress: 1,
                 text: 2
@@ -18643,7 +18645,7 @@
     class lg extends Component {
         constructor(t) {
             super(),
-            $f(this, t, ag, cg, areValuesDifferent, {
+            initializeComponent(this, t, ag, cg, areValuesDifferent, {
                 error: 1,
                 maxLength: 2,
                 minLength: 8,
@@ -19008,7 +19010,7 @@
     class gg extends Component {
         constructor(t) {
             super(),
-            $f(this, t, yg, pg, areValuesDifferent, {
+            initializeComponent(this, t, yg, pg, areValuesDifferent, {
                 sheetCode: 12,
                 sheetTitle: 0,
                 sheetArtist: 13,
@@ -19301,7 +19303,7 @@
     class Og extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Tg, Eg, areValuesDifferent, {
+            initializeComponent(this, t, Tg, Eg, areValuesDifferent, {
                 sheet: 0
             })
         }
@@ -19388,7 +19390,7 @@
     class Ig extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Xg, Ag, areValuesDifferent, {
+            initializeComponent(this, t, Xg, Ag, areValuesDifferent, {
                 block: 0,
                 disabled: 1,
                 size: 2,
@@ -19966,7 +19968,7 @@
     class Ug extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Gg, Lg, areValuesDifferent, {
+            initializeComponent(this, t, Gg, Lg, areValuesDifferent, {
                 sheet: 0,
                 user: 10
             })
@@ -20116,7 +20118,7 @@
     class Kg extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Jg, Wg, areValuesDifferent, {
+            initializeComponent(this, t, Jg, Wg, areValuesDifferent, {
                 min: 10,
                 max: 11,
                 grain: 12,
@@ -20261,7 +20263,7 @@
     class eb extends Component {
         constructor(t) {
             super(),
-            $f(this, t, nb, tb, areValuesDifferent, {
+            initializeComponent(this, t, nb, tb, areValuesDifferent, {
                 disabled: 0,
                 icon: 1,
                 text: 2,
@@ -20455,7 +20457,7 @@
     class ub extends Component {
         constructor(t) {
             super(),
-            $f(this, t, sb, null, areValuesDifferent, {
+            initializeComponent(this, t, sb, null, areValuesDifferent, {
                 player: 6,
                 playing: 0,
                 currentTime: 1,
@@ -20734,7 +20736,7 @@
     class mb extends Component {
         constructor(t) {
             super(),
-            $f(this, t, pb, db, areValuesDifferent, {
+            initializeComponent(this, t, pb, db, areValuesDifferent, {
                 disabled: 0,
                 sections: 5,
                 progress: 1,
@@ -20831,7 +20833,7 @@
     class bb extends Component {
         constructor(t) {
             super(),
-            $f(this, t, gb, yb, areValuesDifferent, {
+            initializeComponent(this, t, gb, yb, areValuesDifferent, {
                 currentTime: 0,
                 totalTime: 1,
                 player: 6,
@@ -21058,7 +21060,7 @@
     class Ab extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Cb, Ob, areValuesDifferent, {
+            initializeComponent(this, t, Cb, Ob, areValuesDifferent, {
                 name: 2,
                 muted: 0,
                 volume: 1,
@@ -22028,7 +22030,7 @@
     class Lb extends Component {
         constructor(t) {
             super(),
-            $f(this, t, zb, Nb, areValuesDifferent, {
+            initializeComponent(this, t, zb, Nb, areValuesDifferent, {
                 user: 3,
                 player: 4,
                 tempo: 0,
@@ -22084,7 +22086,7 @@
     class Hb extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Ub, Gb, areValuesDifferent, {
+            initializeComponent(this, t, Ub, Gb, areValuesDifferent, {
                 disabled: 1,
                 on: 0
             })
@@ -22247,7 +22249,7 @@
     class Zb extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Qb, Yb, areValuesDifferent, {
+            initializeComponent(this, t, Qb, Yb, areValuesDifferent, {
                 options: 1,
                 selected: 0,
                 white: 2,
@@ -22596,7 +22598,7 @@
     class vw extends Component {
         constructor(t) {
             super(),
-            $f(this, t, dw, hw, areValuesDifferent, {
+            initializeComponent(this, t, dw, hw, areValuesDifferent, {
                 element: 6,
                 sheetRenderCompleteCount: 7,
                 scrollValue: 8,
@@ -23239,7 +23241,7 @@
     class Sw extends Component {
         constructor(t) {
             super(),
-            $f(this, t, kw, ww, areValuesDifferent, {
+            initializeComponent(this, t, kw, ww, areValuesDifferent, {
                 scrollElement: 16,
                 tempo: 0,
                 chordStyle: 17,
@@ -23316,7 +23318,7 @@
     class Ow extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Tw, Ew, areValuesDifferent, {
+            initializeComponent(this, t, Tw, Ew, areValuesDifferent, {
                 value: 0,
                 min: 1,
                 max: 2,
@@ -23461,7 +23463,7 @@
     class Mw extends Component {
         constructor(t) {
             super(),
-            $f(this, t, _w, Iw, areValuesDifferent, {
+            initializeComponent(this, t, _w, Iw, areValuesDifferent, {
                 options: 1,
                 selected: 0,
                 label: 2,
@@ -24068,7 +24070,7 @@
     class Hw extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Uw, Gw, areValuesDifferent, {
+            initializeComponent(this, t, Uw, Gw, areValuesDifferent, {
                 instrument: 8,
                 nierStyle: 0,
                 chordStyle: 1,
@@ -24358,7 +24360,7 @@
     class ix extends Component {
         constructor(t) {
             super(),
-            $f(this, t, ex, tx, areValuesDifferent, {
+            initializeComponent(this, t, ex, tx, areValuesDifferent, {
                 api: 4,
                 showErrorsOnly: 5
             })
@@ -24800,7 +24802,7 @@
     class fx extends Component {
         constructor(t) {
             super(),
-            $f(this, t, lx, ux, areValuesDifferent, {
+            initializeComponent(this, t, lx, ux, areValuesDifferent, {
                 sheet: 10,
                 printable: 1,
                 fullSize: 2,
@@ -25255,7 +25257,7 @@
     class Sx extends Component {
         constructor(t) {
             super(),
-            $f(this, t, kx, xx, areValuesDifferent, {
+            initializeComponent(this, t, kx, xx, areValuesDifferent, {
                 sheet: 2,
                 instrument: 3,
                 chordStyle: 4,
@@ -25604,7 +25606,7 @@
     class Rx extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Mx, Ix, areValuesDifferent, {
+            initializeComponent(this, t, Mx, Ix, areValuesDifferent, {
                 print: 8
             })
         }
@@ -25721,7 +25723,7 @@
     class Px extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Bx, jx, areValuesDifferent, {
+            initializeComponent(this, t, Bx, jx, areValuesDifferent, {
                 user: 0
             })
         }
@@ -25834,7 +25836,7 @@
     class Fx extends Component {
         constructor(t) {
             super(),
-            $f(this, t, $x, qx, areValuesDifferent, {
+            initializeComponent(this, t, $x, qx, areValuesDifferent, {
                 vocalRange: 8,
                 getPitchName: 0
             })
@@ -26209,7 +26211,7 @@
     class Ux extends Component {
         constructor(t) {
             super(),
-            $f(this, t, Gx, Lx, areValuesDifferent, {
+            initializeComponent(this, t, Gx, Lx, areValuesDifferent, {
                 chordStyle: 0,
                 instrument: 6,
                 keyShift: 1,
@@ -27547,10 +27549,10 @@
         }
         ]
     }
-    class mk extends Component {
+    class MusicComponent extends Component {
         constructor(t) {
             super(),
-            $f(this, t, LoadSong, vk, areValuesDifferent, {
+            initializeComponent(this, t, LoadSong, vk, areValuesDifferent, {
                 webViewInterface: 36,
                 synd: 37,
                 sheet: 0,
@@ -27561,9 +27563,9 @@
         }
     }
     function yk(t, n, e) {
-        Ad(self),
+        installHandlers(self),
         Md(),
-        new mk({
+        new MusicComponent({
             target: n,
             props: {
                 webViewInterface: t,
