@@ -319,7 +319,7 @@
         [ht.EDITOR]: 3,
         [ht.ADMIN]: 4
     };
-    function kt(t, n) {
+    function checkUserRole(t, n) {
         return (xt[t] || 1) >= (xt[n] || 4)
     }
     class St {
@@ -7020,7 +7020,7 @@
         return t <= 600 ? 0 : t <= 1024 ? 1 : 2
     }
     const Ga = gt(Za);
-    function Ua() {
+    function getUserInfo() {
         return Ka(Ut.USER_DATA_USER_INFO)
     }
     async function Ha(t=!1) {
@@ -7190,7 +7190,7 @@
     function Tl(t, n) {
         t.appendChild(n)
     }
-    function Ol(t, n, e) {
+    function insertBefore(t, n, e) {
         t.insertBefore(n, e || null)
     }
     function Cl(t) {
@@ -7200,27 +7200,27 @@
         for (let e = 0; e < t.length; e += 1)
             t[e] && t[e].d(n)
     }
-    function Xl(t) {
+    function createElement(t) {
         return document.createElement(t)
     }
-    function Il(t) {
+    function createTextNode(t) {
         return document.createTextNode(t)
     }
-    function _l() {
-        return Il(" ")
+    function createSpacer() {
+        return createTextNode(" ")
     }
     function Ml() {
-        return Il("")
+        return createTextNode("")
     }
     function Rl(t, n, e, i) {
         return t.addEventListener(n, e, i),
         () => t.removeEventListener(n, e, i)
     }
-    function Dl(t, n, e) {
+    function setOrRemoveAttribute(t, n, e) {
         null == e ? t.removeAttribute(n) : t.getAttribute(n) !== e && t.setAttribute(n, e)
     }
     function jl(t, n, e) {
-        n in t ? t[n] = e : Dl(t, n, e)
+        n in t ? t[n] = e : setOrRemoveAttribute(t, n, e)
     }
     function Bl(t) {
         const n = [];
@@ -7269,7 +7269,7 @@
             this.e = this.n = null
         }
         m(t, n, e=null) {
-            this.e || (this.e = Xl(n.nodeName),
+            this.e || (this.e = createElement(n.nodeName),
             this.t = n,
             this.h(t)),
             this.i(e)
@@ -7280,7 +7280,7 @@
         }
         i(t) {
             for (let n = 0; n < this.n.length; n += 1)
-                Ol(this.t, this.n[n], t)
+                insertBefore(this.t, this.n[n], t)
         }
         p(t) {
             this.d(),
@@ -7311,7 +7311,7 @@
           , f = `__svelte_${Jl(l)}_${u}`
           , h = t.ownerDocument;
         Hl.add(h);
-        const d = h.__svelte_stylesheet || (h.__svelte_stylesheet = h.head.appendChild(Xl("style")).sheet)
+        const d = h.__svelte_stylesheet || (h.__svelte_stylesheet = h.head.appendChild(createElement("style")).sheet)
           , v = h.__svelte_rules || (h.__svelte_rules = {});
         v[f] || (v[f] = !0,
         d.insertRule(`@keyframes ${f} ${l}`, d.cssRules.length));
@@ -7356,7 +7356,7 @@
     function ef(t) {
         tf().$$.on_destroy.push(t)
     }
-    function rf() {
+    function createEventDispatcher() {
         const t = tf();
         return (n, e) => {
             const i = t.$$.callbacks[n];
@@ -7585,50 +7585,61 @@
         t.$$.dirty.fill(0)),
         t.$$.dirty[n / 31 | 0] |= 1 << n % 31
     }
-    function initializeComponent(t, n, e, i, r, o, s=[-1]) {
-        const u = Wl;
-        Zl(t);
-        const c = t.$$ = {
+    /**
+     * Initializes a component with the given properties and state management functions.
+     * @param {Object} component - The component instance.
+     * @param {Object} options - The options passed to the component.
+     * @param {Function} createContext - The function to create the component context.
+     * @param {Function} createFragment - The function to create the component fragment.
+     * @param {Function} notEqual - The function to compare values for equality.
+     * @param {Object} props - The properties passed to the component.
+     * @param {Array} dirty - The array to track dirty state.
+     */
+    function initializeComponent(component, options, createContext, createFragment, 
+        notEqual, props, dirty=[-1]) {
+        const parentComponent = Wl;
+        Zl(component);
+        const c = component.$$ = {
             fragment: null,
             ctx: null,
-            props: o,
+            props: props,
             update: defaultStart,
-            not_equal: r,
+            not_equal: notEqual,
             bound: sl(),
             on_mount: [],
             on_destroy: [],
             on_disconnect: [],
             before_update: [],
             after_update: [],
-            context: new Map(u ? u.$$.context : n.context || []),
+            context: new Map(parentComponent ? parentComponent.$$.context : options.context || []),
             callbacks: sl(),
-            dirty: s,
+            dirty: dirty,
             skip_bound: !1
         };
         let a = !1;
-        if (c.ctx = e ? e(t, n.props || {}, ( (n, e, ...i) => {
+        if (c.ctx = createContext ? createContext(component, options.props || {}, ( (n, e, ...i) => {
             const o = i.length ? i[0] : e;
-            return c.ctx && r(c.ctx[n], c.ctx[n] = o) && (!c.skip_bound && c.bound[n] && c.bound[n](o),
-            a && qf(t, n)),
+            return c.ctx && notEqual(c.ctx[n], c.ctx[n] = o) && (!c.skip_bound && c.bound[n] && c.bound[n](o),
+            a && qf(component, n)),
             e
         }
         )) : [],
         c.update(),
         a = !0,
         ul(c.before_update),
-        c.fragment = !!i && i(c.ctx),
-        n.target) {
-            if (n.hydrate) {
-                const t = Pl(n.target);
+        c.fragment = !!createFragment && createFragment(c.ctx),
+        options.target) {
+            if (options.hydrate) {
+                const t = Pl(options.target);
                 c.fragment && c.fragment.l(t),
                 t.forEach(Cl)
             } else
                 c.fragment && c.fragment.c();
-            n.intro && Af(t.$$.fragment),
-            Bf(t, n.target, n.anchor, n.customElement),
+            options.intro && Af(component.$$.fragment),
+            Bf(component, options.target, options.anchor, options.customElement),
             bf()
         }
-        Zl(u)
+        Zl(parentComponent)
     }
     /**
      * A class representing a component with lifecycle methods and state management.
@@ -8964,10 +8975,10 @@
         let n;
         return {
             c() {
-                n = Xl("span")
+                n = createElement("span")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -8981,16 +8992,16 @@
           , u = s || jd();
         return {
             c() {
-                n = Xl("button"),
+                n = createElement("button"),
                 u && u.c(),
                 n.disabled = t[0],
-                Dl(n, "size", t[1]),
-                Dl(n, "theme", t[2]),
-                Dl(n, "type", "button"),
-                Dl(n, "class", "svelte-1kcxt4g")
+                setOrRemoveAttribute(n, "size", t[1]),
+                setOrRemoveAttribute(n, "theme", t[2]),
+                setOrRemoveAttribute(n, "type", "button"),
+                setOrRemoveAttribute(n, "class", "svelte-1kcxt4g")
             },
             m(o, s) {
-                Ol(o, n, s),
+                insertBefore(o, n, s),
                 u && u.m(n, null),
                 e = !0,
                 i || (r = Rl(n, "click", t[5]),
@@ -8999,8 +9010,8 @@
             p(t, [i]) {
                 s && s.p && 8 & i && ml(s, o, t, t[3], i, null, null),
                 (!e || 1 & i) && (n.disabled = t[0]),
-                (!e || 2 & i) && Dl(n, "size", t[1]),
-                (!e || 4 & i) && Dl(n, "theme", t[2])
+                (!e || 2 & i) && setOrRemoveAttribute(n, "size", t[1]),
+                (!e || 4 & i) && setOrRemoveAttribute(n, "theme", t[2])
             },
             i(t) {
                 e || (Af(u, t),
@@ -9053,28 +9064,28 @@
         let h = !t[1] && (t[7] || t[9]) && Fd(t);
         return {
             c() {
-                n = Xl("dialog"),
-                e = Xl("div"),
-                i = _l(),
-                r = Xl("div"),
-                o = Xl("div"),
+                n = createElement("dialog"),
+                e = createElement("div"),
+                i = createSpacer(),
+                r = createElement("div"),
+                o = createElement("div"),
                 f && f.c(),
-                s = _l(),
+                s = createSpacer(),
                 h && h.c(),
-                Dl(e, "glass", ""),
-                Dl(e, "class", "svelte-4llsvh"),
-                Dl(o, "content", ""),
-                Dl(o, "class", "svelte-4llsvh"),
-                Dl(r, "wrapper", ""),
-                Dl(r, "class", "svelte-4llsvh"),
-                Dl(n, "position", t[2]),
+                setOrRemoveAttribute(e, "glass", ""),
+                setOrRemoveAttribute(e, "class", "svelte-4llsvh"),
+                setOrRemoveAttribute(o, "content", ""),
+                setOrRemoveAttribute(o, "class", "svelte-4llsvh"),
+                setOrRemoveAttribute(r, "wrapper", ""),
+                setOrRemoveAttribute(r, "class", "svelte-4llsvh"),
+                setOrRemoveAttribute(n, "position", t[2]),
                 n.open = !0,
-                Dl(n, "class", "svelte-4llsvh"),
+                setOrRemoveAttribute(n, "class", "svelte-4llsvh"),
                 Ll(n, "wide", t[5]),
                 Ll(n, "horizontal-buttons", t[4])
             },
             m(l, d) {
-                Ol(l, n, d),
+                insertBefore(l, n, d),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -9098,7 +9109,7 @@
                 h.c(),
                 Af(h, 1),
                 h.m(r, null)),
-                (!u || 4 & e) && Dl(n, "position", t[2]),
+                (!u || 4 & e) && setOrRemoveAttribute(n, "position", t[2]),
                 32 & e && Ll(n, "wide", t[5]),
                 16 & e && Ll(n, "horizontal-buttons", t[4])
             },
@@ -9140,14 +9151,14 @@
         let o = t[9] && zd(t);
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                i = _l(),
+                i = createSpacer(),
                 o && o.c(),
-                Dl(n, "class", "buttons svelte-4llsvh")
+                setOrRemoveAttribute(n, "class", "buttons svelte-4llsvh")
             },
             m(t, s) {
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 Bf(e, n, null),
                 Tl(n, i),
                 o && o.m(n, null),
@@ -9195,10 +9206,10 @@
         let n;
         return {
             c() {
-                n = Il(t[8])
+                n = createTextNode(t[8])
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p(t, e) {
                 256 & e && ql(n, t[8])
@@ -9260,10 +9271,10 @@
         let n;
         return {
             c() {
-                n = Il(t[9])
+                n = createTextNode(t[9])
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p(t, e) {
                 512 & e && ql(n, t[9])
@@ -9282,7 +9293,7 @@
             },
             m(t, r) {
                 i && i.m(t, r),
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 e = !0
             },
             p(t, [e]) {
@@ -9351,7 +9362,7 @@
         }
         , h, d, v, i, () => b(!0), () => b(!1), r]
     }
-    class Hd extends Component {
+    class ModalComponent extends Component {
         constructor(t) {
             super(),
             initializeComponent(this, t, Ud, Gd, areValuesDifferent, {
@@ -9371,19 +9382,19 @@
         let n, e, i, r, o;
         return {
             c() {
-                n = Xl("div"),
-                e = Il(t[3]),
-                i = _l(),
-                r = Xl("div"),
-                o = Il(t[4]),
-                Dl(n, "title", ""),
-                Dl(r, "description", "")
+                n = createElement("div"),
+                e = createTextNode(t[3]),
+                i = createSpacer(),
+                r = createElement("div"),
+                o = createTextNode(t[4]),
+                setOrRemoveAttribute(n, "title", ""),
+                setOrRemoveAttribute(r, "description", "")
             },
             m(t, s) {
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 Tl(n, e),
-                Ol(t, i, s),
-                Ol(t, r, s),
+                insertBefore(t, i, s),
+                insertBefore(t, r, s),
                 Tl(r, o)
             },
             p(t, n) {
@@ -9420,7 +9431,7 @@
         return void 0 !== t[0] && (a.open = t[0]),
         void 0 !== t[1] && (a.okButtonText = t[1]),
         void 0 !== t[2] && (a.cancelButtonText = t[2]),
-        n = new Hd({
+        n = new ModalComponent({
             props: a
         }),
         af.push(( () => Df(n, "open", s))),
@@ -9520,18 +9531,18 @@
         let n, e, i;
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.textContent = "账号被暂停使用",
-                e = _l(),
-                i = Xl("div"),
+                e = createSpacer(),
+                i = createElement("div"),
                 i.innerHTML = '<p>该账号违反<a class="blue" href="/help#terms">用户协议</a>、<a class="blue" href="/help#membership">会员服务协议</a>或国家相关法规，目前已被暂停使用。</p> \n    <p>最近有谱君发现一些不法商家冒充有谱么官方在淘宝等电商平台销售所谓<b>“有谱么共享会员账号”</b>， 还请用户擦亮眼睛，切勿上当受骗。\n      您如购买了此类“账号”，请及时联系卖家退款，必要时可向电商平台发起投诉以维护您自身的权益。</p> \n    <p>感谢使用有谱么！请明白，只有维护一个公平有序的环境，有谱君才能持续为大家提供更好的服务。</p>',
-                Dl(n, "title", ""),
-                Dl(i, "description", "")
+                setOrRemoveAttribute(n, "title", ""),
+                setOrRemoveAttribute(i, "description", "")
             },
             m(t, r) {
-                Ol(t, n, r),
-                Ol(t, e, r),
-                Ol(t, i, r)
+                insertBefore(t, n, r),
+                insertBefore(t, e, r),
+                insertBefore(t, i, r)
             },
             d(t) {
                 t && Cl(n),
@@ -9557,7 +9568,7 @@
             }
         };
         return void 0 !== t[0] && (o.open = t[0]),
-        n = new Hd({
+        n = new ModalComponent({
             props: o
         }),
         af.push(( () => Df(n, "open", r))),
@@ -10960,26 +10971,26 @@
         let n, e, i;
         return {
             c() {
-                n = Xl("input"),
-                Dl(n, "placeholder", t[1]),
-                Dl(n, "autocomplete", t[2]),
+                n = createElement("input"),
+                setOrRemoveAttribute(n, "placeholder", t[1]),
+                setOrRemoveAttribute(n, "autocomplete", t[2]),
                 n.autofocus = t[3],
-                Dl(n, "maxlength", t[4]),
+                setOrRemoveAttribute(n, "maxlength", t[4]),
                 n.disabled = t[6],
-                Dl(n, "class", "svelte-1bm78md"),
+                setOrRemoveAttribute(n, "class", "svelte-1bm78md"),
                 Ll(n, "gray", t[5])
             },
             m(r, o) {
-                Ol(r, n, o),
+                insertBefore(r, n, o),
                 $l(n, t[0]),
                 e || (i = [gl(t[7].call(null, n)), Rl(n, "input", t[10]), Rl(n, "input", t[9])],
                 e = !0)
             },
             p(t, [e]) {
-                2 & e && Dl(n, "placeholder", t[1]),
-                4 & e && Dl(n, "autocomplete", t[2]),
+                2 & e && setOrRemoveAttribute(n, "placeholder", t[1]),
+                4 & e && setOrRemoveAttribute(n, "autocomplete", t[2]),
                 8 & e && (n.autofocus = t[3]),
-                16 & e && Dl(n, "maxlength", t[4]),
+                16 & e && setOrRemoveAttribute(n, "maxlength", t[4]),
                 64 & e && (n.disabled = t[6]),
                 1 & e && n.value !== t[0] && $l(n, t[0]),
                 32 & e && Ll(n, "gray", t[5])
@@ -11057,19 +11068,19 @@
         af.push(( () => Df(e, "value", f))),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                r = _l(),
-                o = Xl("div"),
-                s = Xl("button"),
-                u = Il(t[1]),
+                r = createSpacer(),
+                o = createElement("div"),
+                s = createElement("button"),
+                u = createTextNode(t[1]),
                 s.disabled = t[2],
-                Dl(s, "class", "svelte-1ci3qls"),
-                Dl(o, "class", "code-input-button svelte-1ci3qls"),
-                Dl(n, "class", "code-input svelte-1ci3qls")
+                setOrRemoveAttribute(s, "class", "svelte-1ci3qls"),
+                setOrRemoveAttribute(o, "class", "code-input-button svelte-1ci3qls"),
+                setOrRemoveAttribute(n, "class", "code-input svelte-1ci3qls")
             },
             m(i, f) {
-                Ol(i, n, f),
+                insertBefore(i, n, f),
                 Bf(e, n, null),
                 Tl(n, r),
                 Tl(n, o),
@@ -11169,11 +11180,11 @@
         let n;
         return {
             c() {
-                n = Xl("p"),
+                n = createElement("p"),
                 n.textContent = "本账号在过多设备上登录，未防止盗号，请绑定手机。"
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p: defaultStart,
             i: defaultStart,
@@ -11196,25 +11207,25 @@
         af.push(( () => Df(c, "code", f))),
         {
             c() {
-                n = Xl("p"),
+                n = createElement("p"),
                 n.textContent = "本账号在过多设备上登录，需二次验证身份。",
-                e = _l(),
-                i = Xl("div"),
-                r = Il("我们将向"),
-                o = Il(t[1]),
-                s = Il("的手机号发送验证码。"),
-                u = _l(),
+                e = createSpacer(),
+                i = createElement("div"),
+                r = createTextNode("我们将向"),
+                o = createTextNode(t[1]),
+                s = createTextNode("的手机号发送验证码。"),
+                u = createSpacer(),
                 jf(c.$$.fragment),
-                Dl(i, "class", "tip svelte-15ra0dz")
+                setOrRemoveAttribute(i, "class", "tip svelte-15ra0dz")
             },
             m(t, a) {
-                Ol(t, n, a),
-                Ol(t, e, a),
-                Ol(t, i, a),
+                insertBefore(t, n, a),
+                insertBefore(t, e, a),
+                insertBefore(t, i, a),
                 Tl(i, r),
                 Tl(i, o),
                 Tl(i, s),
-                Ol(t, u, a),
+                insertBefore(t, u, a),
                 Bf(c, t, a),
                 l = !0
             },
@@ -11254,19 +11265,19 @@
         o = c[r] = u[r](t),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.textContent = "二次验证",
-                e = _l(),
-                i = Xl("div"),
+                e = createSpacer(),
+                i = createElement("div"),
                 o.c(),
-                Dl(n, "title", ""),
-                Dl(i, "description", ""),
-                Dl(i, "class", "svelte-15ra0dz")
+                setOrRemoveAttribute(n, "title", ""),
+                setOrRemoveAttribute(i, "description", ""),
+                setOrRemoveAttribute(i, "class", "svelte-15ra0dz")
             },
             m(t, o) {
-                Ol(t, n, o),
-                Ol(t, e, o),
-                Ol(t, i, o),
+                insertBefore(t, n, o),
+                insertBefore(t, e, o),
+                insertBefore(t, i, o),
                 c[r].m(i, null),
                 s = !0
             },
@@ -11319,7 +11330,7 @@
             }
         };
         return void 0 !== t[0] && (o.open = t[0]),
-        n = new Hd({
+        n = new ModalComponent({
             props: o
         }),
         af.push(( () => Df(n, "open", r))),
@@ -11411,18 +11422,18 @@
         let n, e, i, r = t[8].icon + "";
         return {
             c() {
-                n = Xl("span"),
-                e = Il(r),
-                Dl(n, "class", "icon yoopu3-icon svelte-av5z1h"),
-                Dl(n, "style", i = t[8].iconColor ? `color: ${t[8].iconColor}` : "")
+                n = createElement("span"),
+                e = createTextNode(r),
+                setOrRemoveAttribute(n, "class", "icon yoopu3-icon svelte-av5z1h"),
+                setOrRemoveAttribute(n, "style", i = t[8].iconColor ? `color: ${t[8].iconColor}` : "")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, o) {
                 2 & o && r !== (r = t[8].icon + "") && ql(e, r),
-                2 & o && i !== (i = t[8].iconColor ? `color: ${t[8].iconColor}` : "") && Dl(n, "style", i)
+                2 & o && i !== (i = t[8].iconColor ? `color: ${t[8].iconColor}` : "") && setOrRemoveAttribute(n, "style", i)
             },
             d(t) {
                 t && Cl(n)
@@ -11436,27 +11447,27 @@
         }
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("span"),
+                n = createElement("div"),
+                e = createElement("span"),
                 e.innerHTML = '<span class="checkmark-checked svelte-av5z1h"></span>',
-                i = _l(),
-                r = Xl("div"),
+                i = createSpacer(),
+                r = createElement("div"),
                 h && h.c(),
-                o = _l(),
-                s = Xl("span"),
-                u = Il(f),
-                c = _l(),
-                Dl(e, "class", "checkmark svelte-av5z1h"),
-                Dl(s, "class", "title svelte-av5z1h"),
-                Dl(r, "class", "content svelte-av5z1h"),
-                Dl(n, "class", "option svelte-av5z1h"),
+                o = createSpacer(),
+                s = createElement("span"),
+                u = createTextNode(f),
+                c = createSpacer(),
+                setOrRemoveAttribute(e, "class", "checkmark svelte-av5z1h"),
+                setOrRemoveAttribute(s, "class", "title svelte-av5z1h"),
+                setOrRemoveAttribute(r, "class", "content svelte-av5z1h"),
+                setOrRemoveAttribute(n, "class", "option svelte-av5z1h"),
                 Ll(n, "bottom-line", t[3]),
                 Ll(n, "reverse", t[4]),
                 Ll(n, "selected", t[8].value == t[0]),
                 Ll(n, "disabled", t[8].disabled)
             },
             m(t, f) {
-                Ol(t, n, f),
+                insertBefore(t, n, f),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -11493,14 +11504,14 @@
             i[n] = zp(Fp(t, e, n));
         return {
             c() {
-                n = Xl("div");
+                n = createElement("div");
                 for (let t = 0; t < i.length; t += 1)
                     i[t].c();
-                Dl(n, "class", "container svelte-av5z1h"),
+                setOrRemoveAttribute(n, "class", "container svelte-av5z1h"),
                 Ll(n, "check-style", t[2])
             },
             m(t, e) {
-                Ol(t, n, e);
+                insertBefore(t, n, e);
                 for (let t = 0; t < i.length; t += 1)
                     i[t].m(n, null)
             },
@@ -11534,7 +11545,7 @@
           , {checkStyle: o=!1} = n
           , {bottomLine: s=!1} = n
           , {reverse: u=!1} = n;
-        const c = rf();
+        const c = createEventDispatcher();
         return t.$$set = t => {
             "options"in t && e(1, i = t.options),
             "selected"in t && e(0, r = t.selected),
@@ -11577,15 +11588,15 @@
         i.$on("change", t[3]),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.textContent = "黑夜模式设置",
-                e = _l(),
+                e = createSpacer(),
                 jf(i.$$.fragment),
-                Dl(n, "title", "")
+                setOrRemoveAttribute(n, "title", "")
             },
             m(t, r) {
-                Ol(t, n, r),
-                Ol(t, e, r),
+                insertBefore(t, n, r),
+                insertBefore(t, e, r),
                 Bf(i, t, r),
                 o = !0
             },
@@ -11627,7 +11638,7 @@
             }
         };
         return void 0 !== t[0] && (o.open = t[0]),
-        n = new Hd({
+        n = new ModalComponent({
             props: o
         }),
         af.push(( () => Df(n, "open", r))),
@@ -11708,21 +11719,21 @@
         let n, e, i, r, o, s, u, c;
         return {
             c() {
-                n = Xl("label"),
-                e = Xl("div"),
-                i = Xl("img"),
-                o = _l(),
-                s = Xl("div"),
+                n = createElement("label"),
+                e = createElement("div"),
+                i = createElement("img"),
+                o = createSpacer(),
+                s = createElement("div"),
                 s.innerHTML = '<div class="minor svelte-1kspwqr">五线谱+功能谱</div> \n          <div class="main svelte-1kspwqr">钢琴</div> \n          <div class="promotion svelte-1kspwqr">新！免费会员发放中</div>',
-                i.src !== (r = h) && Dl(i, "src", r),
-                Dl(i, "class", "svelte-1kspwqr"),
-                Dl(s, "class", "label svelte-1kspwqr"),
-                Dl(e, "class", "checkbox svelte-1kspwqr"),
-                Dl(n, "class", "option svelte-1kspwqr"),
+                i.src !== (r = h) && setOrRemoveAttribute(i, "src", r),
+                setOrRemoveAttribute(i, "class", "svelte-1kspwqr"),
+                setOrRemoveAttribute(s, "class", "label svelte-1kspwqr"),
+                setOrRemoveAttribute(e, "class", "checkbox svelte-1kspwqr"),
+                setOrRemoveAttribute(n, "class", "option svelte-1kspwqr"),
                 Ll(n, "checked", t[0] === Z.PIANO)
             },
             m(r, a) {
-                Ol(r, n, a),
+                insertBefore(r, n, a),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(e, o),
@@ -11740,55 +11751,56 @@
             }
         }
     }
-    function GuitarPu(t) {
+    function createSelectInstrumentMenu(t) {
+        console.log("createSelectInstrumentMenu");
         let n, e, i, r, o, s, u, c, a, l, f, h, m, y, g, b, w, x, k, S, E, T, O, C, A = t[1] && PianoPu(t);
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 A && A.c(),
-                e = _l(),
-                i = Xl("label"),
-                r = Xl("div"),
-                o = Xl("img"),
-                u = _l(),
-                c = Xl("div"),
+                e = createSpacer(),
+                i = createElement("label"),
+                r = createElement("div"),
+                o = createElement("img"),
+                u = createSpacer(),
+                c = createElement("div"),
                 c.innerHTML = '<div class="minor svelte-1kspwqr">六线谱+和弦谱</div> \n        <div class="main svelte-1kspwqr">吉他</div>',
-                a = _l(),
-                l = Xl("label"),
-                f = Xl("div"),
-                h = Xl("img"),
-                y = _l(),
-                g = Xl("div"),
+                a = createSpacer(),
+                l = createElement("label"),
+                f = createElement("div"),
+                h = createElement("img"),
+                y = createSpacer(),
+                g = createElement("div"),
                 g.innerHTML = '<div class="minor svelte-1kspwqr">四线谱+和弦谱</div> \n        <div class="main svelte-1kspwqr">尤克里里</div>',
-                b = _l(),
-                w = Xl("label"),
-                x = Xl("div"),
-                k = Xl("img"),
-                E = _l(),
-                T = Xl("div"),
+                b = createSpacer(),
+                w = createElement("label"),
+                x = createElement("div"),
+                k = createElement("img"),
+                E = createSpacer(),
+                T = createElement("div"),
                 T.innerHTML = '<div class="minor svelte-1kspwqr">简谱</div> \n        <div class="main svelte-1kspwqr">民乐</div>',
-                o.src !== (s = d) && Dl(o, "src", s),
-                Dl(o, "class", "svelte-1kspwqr"),
-                Dl(c, "class", "label svelte-1kspwqr"),
-                Dl(r, "class", "checkbox svelte-1kspwqr"),
-                Dl(i, "class", "option svelte-1kspwqr"),
+                o.src !== (s = d) && setOrRemoveAttribute(o, "src", s),
+                setOrRemoveAttribute(o, "class", "svelte-1kspwqr"),
+                setOrRemoveAttribute(c, "class", "label svelte-1kspwqr"),
+                setOrRemoveAttribute(r, "class", "checkbox svelte-1kspwqr"),
+                setOrRemoveAttribute(i, "class", "option svelte-1kspwqr"),
                 Ll(i, "checked", t[0] === Z.GUITAR),
-                h.src !== (m = v) && Dl(h, "src", m),
-                Dl(h, "class", "svelte-1kspwqr"),
-                Dl(g, "class", "label svelte-1kspwqr"),
-                Dl(f, "class", "checkbox svelte-1kspwqr"),
-                Dl(l, "class", "option svelte-1kspwqr"),
+                h.src !== (m = v) && setOrRemoveAttribute(h, "src", m),
+                setOrRemoveAttribute(h, "class", "svelte-1kspwqr"),
+                setOrRemoveAttribute(g, "class", "label svelte-1kspwqr"),
+                setOrRemoveAttribute(f, "class", "checkbox svelte-1kspwqr"),
+                setOrRemoveAttribute(l, "class", "option svelte-1kspwqr"),
                 Ll(l, "checked", t[0] === Z.UKULELE),
-                k.src !== (S = p) && Dl(k, "src", S),
-                Dl(k, "class", "svelte-1kspwqr"),
-                Dl(T, "class", "label svelte-1kspwqr"),
-                Dl(x, "class", "checkbox svelte-1kspwqr"),
-                Dl(w, "class", "option svelte-1kspwqr"),
+                k.src !== (S = p) && setOrRemoveAttribute(k, "src", S),
+                setOrRemoveAttribute(k, "class", "svelte-1kspwqr"),
+                setOrRemoveAttribute(T, "class", "label svelte-1kspwqr"),
+                setOrRemoveAttribute(x, "class", "checkbox svelte-1kspwqr"),
+                setOrRemoveAttribute(w, "class", "option svelte-1kspwqr"),
                 Ll(w, "checked", t[0] === Z.JIAN),
-                Dl(n, "class", "options svelte-1kspwqr")
+                setOrRemoveAttribute(n, "class", "options svelte-1kspwqr")
             },
             m(s, d) {
-                Ol(s, n, d),
+                insertBefore(s, n, d),
                 A && A.m(n, null),
                 Tl(n, e),
                 Tl(n, i),
@@ -11827,26 +11839,38 @@
             }
         }
     }
-    function Qp(t, n, e) {
-        let {instrument: i} = n
-          , {user: r=Ua()} = n;
-        r && kt(r.role, ht.EDITOR);
-        const o = rf();
-        function s(t) {
-            e(0, i = t),
-            o("change")
+    function manageSelectInstrumentMenuState(component, props, setState) {
+        let {instrument: i} = props
+          , {user: r=getUserInfo()} = props;
+        r && checkUserRole(r.role, ht.EDITOR);
+        const dispatch = createEventDispatcher();
+        function handleInstrumentChange(t) {
+            setState(0, i = t),
+            dispatch("change")
         }
-        return t.$$set = t => {
-            "instrument"in t && e(0, i = t.instrument),
-            "user"in t && e(3, r = t.user)
+        component.$$set = t => {
+            "instrument"in t && setState(0, i = t.instrument),
+            "user"in t && setState(3, r = t.user)
         }
-        ,
-        [i, !0, s, r, () => s(Z.PIANO), () => s(Z.GUITAR), () => s(Z.UKULELE), () => s(Z.JIAN)]
+        
+        return [
+            i,
+            true, 
+            handleInstrumentChange, 
+            r, 
+            () => handleInstrumentChange(Z.PIANO), 
+            () => handleInstrumentChange(Z.GUITAR), 
+            () => handleInstrumentChange(Z.UKULELE),
+            () => handleInstrumentChange(Z.JIAN)
+        ]
     }
-    class Zp extends Component {
-        constructor(t) {
+    class SelectInstrumentMenuComponent extends Component {
+        constructor(props) {
             super(),
-            initializeComponent(this, t, Qp, GuitarPu, areValuesDifferent, {
+            initializeComponent(this, props, 
+                manageSelectInstrumentMenuState, 
+                createSelectInstrumentMenu, 
+                areValuesDifferent, {
                 instrument: 0,
                 user: 3
             })
@@ -11982,18 +12006,18 @@
         }
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("i"),
+                n = createElement("div"),
+                e = createElement("i"),
                 e.textContent = "",
-                i = _l(),
-                r = Xl("span"),
-                o = Il(a),
-                s = _l(),
-                Dl(e, "class", "yoopu3-icon svelte-vbhppz"),
-                Dl(n, "class", "row svelte-vbhppz")
+                i = createSpacer(),
+                r = createElement("span"),
+                o = createTextNode(a),
+                s = createSpacer(),
+                setOrRemoveAttribute(e, "class", "yoopu3-icon svelte-vbhppz"),
+                setOrRemoveAttribute(n, "class", "row svelte-vbhppz")
             },
             m(t, a) {
-                Ol(t, n, a),
+                insertBefore(t, n, a),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -12019,19 +12043,19 @@
             o[n] = vm(lm(t, r, n));
         return {
             c() {
-                n = Xl("h5"),
+                n = createElement("h5"),
                 n.textContent = "我的原创和收藏",
-                e = _l(),
-                i = Xl("div");
+                e = createSpacer(),
+                i = createElement("div");
                 for (let t = 0; t < o.length; t += 1)
                     o[t].c();
-                Dl(n, "class", "svelte-vbhppz"),
-                Dl(i, "class", "list svelte-vbhppz")
+                setOrRemoveAttribute(n, "class", "svelte-vbhppz"),
+                setOrRemoveAttribute(i, "class", "list svelte-vbhppz")
             },
             m(t, r) {
-                Ol(t, n, r),
-                Ol(t, e, r),
-                Ol(t, i, r);
+                insertBefore(t, n, r),
+                insertBefore(t, e, r),
+                insertBefore(t, i, r);
                 for (let t = 0; t < o.length; t += 1)
                     o[t].m(i, null)
             },
@@ -12062,21 +12086,21 @@
         let n, e, i, r, o, s, u, c, a, l = t[10].artist + "", f = t[10].title + "";
         return {
             c() {
-                n = Xl("a"),
-                e = Xl("i"),
+                n = createElement("a"),
+                e = createElement("i"),
                 e.textContent = "",
-                i = _l(),
-                r = Xl("span"),
-                o = Il(l),
-                s = Il(" - "),
-                u = Il(f),
-                c = _l(),
-                Dl(e, "class", "yoopu3-icon svelte-vbhppz"),
-                Dl(n, "class", "row svelte-vbhppz"),
-                Dl(n, "href", a = "/view/" + t[10].id)
+                i = createSpacer(),
+                r = createElement("span"),
+                o = createTextNode(l),
+                s = createTextNode(" - "),
+                u = createTextNode(f),
+                c = createSpacer(),
+                setOrRemoveAttribute(e, "class", "yoopu3-icon svelte-vbhppz"),
+                setOrRemoveAttribute(n, "class", "row svelte-vbhppz"),
+                setOrRemoveAttribute(n, "href", a = "/view/" + t[10].id)
             },
             m(t, a) {
-                Ol(t, n, a),
+                insertBefore(t, n, a),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -12088,7 +12112,7 @@
             p(t, e) {
                 2 & e && l !== (l = t[10].artist + "") && ql(o, l),
                 2 & e && f !== (f = t[10].title + "") && ql(u, f),
-                2 & e && a !== (a = "/view/" + t[10].id) && Dl(n, "href", a)
+                2 & e && a !== (a = "/view/" + t[10].id) && setOrRemoveAttribute(n, "href", a)
             },
             d(t) {
                 t && Cl(n)
@@ -12102,17 +12126,17 @@
         let s = t[1].length && dm(t);
         return {
             c() {
-                n = Xl("section"),
-                e = Xl("div");
+                n = createElement("section"),
+                e = createElement("div");
                 for (let t = 0; t < o.length; t += 1)
                     o[t].c();
-                i = _l(),
+                i = createSpacer(),
                 s && s.c(),
-                Dl(e, "class", "list svelte-vbhppz"),
-                Dl(n, "class", "searchAutoComplete svelte-vbhppz")
+                setOrRemoveAttribute(e, "class", "list svelte-vbhppz"),
+                setOrRemoveAttribute(n, "class", "searchAutoComplete svelte-vbhppz")
             },
             m(t, r) {
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 Tl(n, e);
                 for (let t = 0; t < o.length; t += 1)
                     o[t].m(e, null);
@@ -12152,7 +12176,7 @@
         addEventListener(t, instrumentStateManager, (t => e(5, i = t)));
         let {query: r} = n;
         const o = cm()
-          , s = rf();
+          , s = createEventDispatcher();
         let u = []
           , c = [];
         function a(t) {
@@ -12169,7 +12193,7 @@
                 e(0, u = await o.getAutoCompletion(i, r))
             }(),
             8 & t.$$.dirty && async function(t) {
-                e(1, c = Ua() ? await tm(t) : [])
+                e(1, c = getUserInfo() ? await tm(t) : [])
             }(r)
         }
         ,
@@ -12199,24 +12223,24 @@
             f[n] = xm(bm(t, l, n));
         return {
             c() {
-                n = Xl("section"),
-                e = Xl("div"),
-                i = Xl("span"),
+                n = createElement("section"),
+                e = createElement("div"),
+                i = createElement("span"),
                 i.textContent = "搜索历史",
-                r = _l(),
-                o = Xl("span"),
+                r = createSpacer(),
+                o = createElement("span"),
                 o.textContent = "清除记录",
-                s = _l(),
-                u = Xl("div");
+                s = createSpacer(),
+                u = createElement("div");
                 for (let t = 0; t < f.length; t += 1)
                     f[t].c();
-                Dl(o, "class", "right button svelte-1pln1xx"),
-                Dl(e, "class", "title svelte-1pln1xx"),
-                Dl(u, "class", "queries svelte-1pln1xx"),
-                Dl(n, "class", "svelte-1pln1xx")
+                setOrRemoveAttribute(o, "class", "right button svelte-1pln1xx"),
+                setOrRemoveAttribute(e, "class", "title svelte-1pln1xx"),
+                setOrRemoveAttribute(u, "class", "queries svelte-1pln1xx"),
+                setOrRemoveAttribute(n, "class", "svelte-1pln1xx")
             },
             m(l, h) {
-                Ol(l, n, h),
+                insertBefore(l, n, h),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(e, r),
@@ -12258,12 +12282,12 @@
         }
         return {
             c() {
-                n = Xl("span"),
-                e = Il(o),
-                Dl(n, "class", "query svelte-1pln1xx")
+                n = createElement("span"),
+                e = createTextNode(o),
+                setOrRemoveAttribute(n, "class", "query svelte-1pln1xx")
             },
             m(t, o) {
-                Ol(t, n, o),
+                insertBefore(t, n, o),
                 Tl(n, e),
                 i || (r = Rl(n, "click", s),
                 i = !0)
@@ -12285,19 +12309,19 @@
             s[n] = Sm(gm(t, o, n));
         return {
             c() {
-                n = Xl("section"),
-                e = Xl("div"),
+                n = createElement("section"),
+                e = createElement("div"),
                 e.textContent = "热门搜索",
-                i = _l(),
-                r = Xl("div");
+                i = createSpacer(),
+                r = createElement("div");
                 for (let t = 0; t < s.length; t += 1)
                     s[t].c();
-                Dl(e, "class", "title svelte-1pln1xx"),
-                Dl(r, "class", "queries svelte-1pln1xx"),
-                Dl(n, "class", "svelte-1pln1xx")
+                setOrRemoveAttribute(e, "class", "title svelte-1pln1xx"),
+                setOrRemoveAttribute(r, "class", "queries svelte-1pln1xx"),
+                setOrRemoveAttribute(n, "class", "svelte-1pln1xx")
             },
             m(t, o) {
-                Ol(t, n, o),
+                insertBefore(t, n, o),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r);
@@ -12332,12 +12356,12 @@
         }
         return {
             c() {
-                n = Xl("span"),
-                e = Il(o),
-                Dl(n, "class", "query svelte-1pln1xx")
+                n = createElement("span"),
+                e = createTextNode(o),
+                setOrRemoveAttribute(n, "class", "query svelte-1pln1xx")
             },
             m(t, o) {
-                Ol(t, n, o),
+                insertBefore(t, n, o),
                 Tl(n, e),
                 i || (r = Rl(n, "click", s),
                 i = !0)
@@ -12358,15 +12382,15 @@
         return {
             c() {
                 i && i.c(),
-                n = _l(),
+                n = createSpacer(),
                 r && r.c(),
                 e = Ml()
             },
             m(t, o) {
                 i && i.m(t, o),
-                Ol(t, n, o),
+                insertBefore(t, n, o),
                 r && r.m(t, o),
-                Ol(t, e, o)
+                insertBefore(t, e, o)
             },
             p(t, [o]) {
                 t[0].length ? i ? i.p(t, o) : (i = wm(t),
@@ -12392,7 +12416,7 @@
         let i;
         addEventListener(t, instrumentStateManager, (t => e(4, i = t)));
         const r = cm()
-          , o = rf();
+          , o = createEventDispatcher();
         let s = r.getHistoryQueries()
           , u = [];
         function c(t) {
@@ -12424,12 +12448,12 @@
         e.$on("search", t[2]),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                Dl(n, "class", "query-container svelte-k55a1y")
+                setOrRemoveAttribute(n, "class", "query-container svelte-k55a1y")
             },
             m(t, r) {
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 Bf(e, n, null),
                 i = !0
             },
@@ -12498,7 +12522,7 @@
             },
             m(t, e) {
                 s[n].m(t, e),
-                Ol(t, i, e),
+                insertBefore(t, i, e),
                 r = !0
             },
             p(t, [r]) {
@@ -12552,18 +12576,18 @@
             })
         }
     }
-    function Mm(t) {
+    function createSearchResultsFragment(t) {
         let n, e, i, r;
         return {
             c() {
-                n = Xl("button"),
-                e = Il(""),
+                n = createElement("button"),
+                e = createTextNode(""),
                 n.disabled = t[2],
-                Dl(n, "type", "button"),
-                Dl(n, "class", "cancel yoopu3-icon svelte-4q4jwj")
+                setOrRemoveAttribute(n, "type", "button"),
+                setOrRemoveAttribute(n, "class", "cancel yoopu3-icon svelte-4q4jwj")
             },
             m(o, s) {
-                Ol(o, n, s),
+                insertBefore(o, n, s),
                 Tl(n, e),
                 i || (r = Rl(n, "click", t[6]),
                 i = !0)
@@ -12578,65 +12602,65 @@
             }
         }
     }
-    function Rm(t) {
-        let n, e, i, r, o, s, u, c = t[0] && Mm(t);
+    function renderSearchForm(t) {
+        let formElement, iconElement, i, r, o, s, u, searchResultsFragment = t[0] && createSearchResultsFragment(t);
         return {
             c() {
-                n = Xl("form"),
-                e = Xl("i"),
-                e.textContent = "",
-                i = _l(),
-                r = Xl("input"),
-                o = _l(),
-                c && c.c(),
-                Dl(e, "class", "icon yoopu3-icon svelte-4q4jwj"),
-                Dl(r, "class", "search-input svelte-4q4jwj"),
-                Dl(r, "type", "text"),
+                formElement = createElement("form"),
+                iconElement = createElement("i"),
+                iconElement.textContent = "",
+                i = createSpacer(),
+                r = createElement("input"),
+                o = createSpacer(),
+                searchResultsFragment && searchResultsFragment.c(),
+                setOrRemoveAttribute(iconElement, "class", "icon yoopu3-icon svelte-4q4jwj"),
+                setOrRemoveAttribute(r, "class", "search-input svelte-4q4jwj"),
+                setOrRemoveAttribute(r, "type", "text"),
                 r.disabled = t[2],
-                Dl(r, "placeholder", t[1]),
-                Dl(r, "autocomplete", "off"),
-                Dl(n, "class", "search-wrapper svelte-4q4jwj"),
-                Ll(n, "white", t[3])
+                setOrRemoveAttribute(r, "placeholder", t[1]),
+                setOrRemoveAttribute(r, "autocomplete", "off"),
+                setOrRemoveAttribute(formElement, "class", "search-wrapper svelte-4q4jwj"),
+                Ll(formElement, "white", t[3])
             },
             m(a, l) {
-                Ol(a, n, l),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
+                insertBefore(a, formElement, l),
+                Tl(formElement, iconElement),
+                Tl(formElement, i),
+                Tl(formElement, r),
                 t[11](r),
                 $l(r, t[0]),
-                Tl(n, o),
-                c && c.m(n, null),
-                s || (u = [Rl(r, "input", t[12]), Rl(r, "focus", t[8]), Rl(r, "blur", t[9]), Rl(r, "input", t[10]), Rl(n, "submit", t[5])],
+                Tl(formElement, o),
+                searchResultsFragment && searchResultsFragment.m(formElement, null),
+                s || (u = [Rl(r, "input", t[12]), Rl(r, "focus", t[8]), Rl(r, "blur", t[9]), Rl(r, "input", t[10]), Rl(formElement, "submit", t[5])],
                 s = !0)
             },
             p(t, [e]) {
                 4 & e && (r.disabled = t[2]),
-                2 & e && Dl(r, "placeholder", t[1]),
+                2 & e && setOrRemoveAttribute(r, "placeholder", t[1]),
                 1 & e && r.value !== t[0] && $l(r, t[0]),
-                t[0] ? c ? c.p(t, e) : (c = Mm(t),
-                c.c(),
-                c.m(n, null)) : c && (c.d(1),
-                c = null),
-                8 & e && Ll(n, "white", t[3])
+                t[0] ? searchResultsFragment ? searchResultsFragment.p(t, e) : (searchResultsFragment = createSearchResultsFragment(t),
+                searchResultsFragment.c(),
+                searchResultsFragment.m(formElement, null)) : searchResultsFragment && (searchResultsFragment.d(1),
+                searchResultsFragment = null),
+                8 & e && Ll(formElement, "white", t[3])
             },
             i: defaultStart,
             o: defaultStart,
             d(e) {
-                e && Cl(n),
+                e && Cl(formElement),
                 t[11](null),
-                c && c.d(),
+                searchResultsFragment && searchResultsFragment.d(),
                 s = !1,
                 ul(u)
             }
         }
     }
-    function Dm(t, n, e) {
+    function manageSearchFormState(t, n, e) {
         let {query: i=""} = n
           , {placeholder: r=""} = n
           , {disabled: o=!1} = n
           , {white: s=!1} = n;
-        const u = rf();
+        const u = createEventDispatcher();
         let c;
         return t.$$set = t => {
             "query"in t && e(0, i = t.query),
@@ -12682,10 +12706,10 @@
         }
         ]
     }
-    class jm extends Component {
+    class SearchFormComponent extends Component {
         constructor(t) {
             super(),
-            initializeComponent(this, t, Dm, Rm, areValuesDifferent, {
+            initializeComponent(this, t, manageSearchFormState, renderSearchForm, areValuesDifferent, {
                 query: 0,
                 placeholder: 1,
                 disabled: 2,
@@ -12697,19 +12721,19 @@
             return this.$$.ctx[7]
         }
     }
-    function Bm(t) {
+    function initializeSearchFormComponent(t) {
         let n, e, i, r, o, s, u;
-        function c(n) {
+        function handleQueryChange(n) {
             t[6](n)
         }
-        let a = {
+        let searchComponentProps = {
             placeholder: "搜索歌曲或艺人"
         };
-        return void 0 !== t[0] && (a.query = t[0]),
-        e = new jm({
-            props: a
+        return void 0 !== t[0] && (searchComponentProps.query = t[0]),
+        e = new SearchFormComponent({
+            props: searchComponentProps
         }),
-        af.push(( () => Df(e, "query", c))),
+        af.push(( () => Df(e, "query", handleQueryChange))),
         e.$on("focus", t[4]),
         e.$on("blur", t[5]),
         e.$on("search", t[7]),
@@ -12721,18 +12745,18 @@
         s.$on("search", t[8]),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                r = _l(),
-                o = Xl("div"),
+                r = createSpacer(),
+                o = createElement("div"),
                 jf(s.$$.fragment),
-                Dl(o, "class", "panel svelte-y4hgxl"),
+                setOrRemoveAttribute(o, "class", "panel svelte-y4hgxl"),
                 Ll(o, "show", t[1]),
                 Ll(o, "unclickable", t[2]),
-                Dl(n, "class", "container svelte-y4hgxl")
+                setOrRemoveAttribute(n, "class", "container svelte-y4hgxl")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Bf(e, n, null),
                 Tl(n, r),
                 Tl(n, o),
@@ -12768,44 +12792,90 @@
             }
         }
     }
-    function Pm(t, n, e) {
-        let i = String(getInstrumentFromHash().q || "")
-          , r = !1
-          , o = !0;
-        function s(t) {
-            e(0, i = t),
-            location.href = "/explore#q=" + encodeURIComponent(t)
+    function SearchFormState(component, props, setState) {
+        let query = String(getInstrumentFromHash().q || "");
+        let isFocused = false;
+        let isEnabled = true;
+    
+        /**
+         * Handles the query change event.
+         * @param {string} newQuery - The new query value.
+         */
+        function handleQueryChange(newQuery) {
+            setState(0, query = newQuery);
+            location.href = "/explore#q=" + encodeURIComponent(newQuery);
         }
-        return [i, r, o, s, function() {
-            e(1, r = !0),
-            e(2, o = !1)
+    
+        /**
+         * Handles the focus event.
+         */
+        function handleFocus() {
+            console.log("focus");
+            setState(1, isFocused = true);
+            setState(2, isEnabled = false);
         }
-        , async function() {
-            e(1, r = !1),
-            await delay(200),
-            e(2, o = !r)
+    
+        /**
+         * Handles the blur event.
+         */
+        async function handleBlur() {
+            console.log("blur");
+            setState(1, isFocused = false);
+            await delay(200);
+            setState(2, isEnabled = !isFocused);
         }
-        , function(t) {
-            i = t,
-            e(0, i)
+    
+        /**
+         * Updates the query state.
+         * @param {string} newQuery - The new query value.
+         */
+        function updateQuery(newQuery) {
+            query = newQuery;
+            setState(0, query);
         }
-        , () => s(i), t => s(t.detail.query)]
-    }
-    class qm extends Component {
+    
+        /**
+         * Submits the search form with the current query.
+         */
+        function submitSearchForm() {
+            handleQueryChange(query);
+        }
+    
+        /**
+         * Submits the search form with the specified query.
+         * @param {Object} event - The event containing the query detail.
+         */
+        function submitSearchFormWithQuery(event) {
+            handleQueryChange(event.detail.query);
+        }
+    
+        return [
+            query,
+            isFocused,
+            isEnabled,
+            handleQueryChange,
+            handleFocus,
+            handleBlur,
+            updateQuery,
+            submitSearchForm,
+            submitSearchFormWithQuery
+        ];
+    }    
+    class FooterComponent extends Component {
         constructor(t) {
             super(),
-            initializeComponent(this, t, Pm, Bm, areValuesDifferent, {})
+            initializeComponent(this, t, SearchFormState, initializeSearchFormComponent, areValuesDifferent, {})
         }
     }
     function $m(t) {
         let n;
         return {
             c() {
-                n = Xl("div"),
-                Dl(n, "class", "svg-container svelte-jr7qzq")
+                n = createElement("div"),
+                setOrRemoveAttribute(n, "class", "svg-container svelte-jr7qzq")
             },
             m(e, i) {
-                Ol(e, n, i),
+                insertBefore(e, n, i),
                 t[4](n)
             },
             p: defaultStart,
@@ -12879,25 +12949,25 @@
         }),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("a"),
-                i = Xl("span"),
+                n = createElement("div"),
+                e = createElement("a"),
+                i = createElement("span"),
                 i.textContent = "",
-                r = _l(),
-                s = Xl("div"),
+                r = createSpacer(),
+                s = createElement("div"),
                 jf(u.$$.fragment),
-                c = _l(),
-                a = Xl("span"),
+                c = createSpacer(),
+                a = createElement("span"),
                 a.textContent = "随身的曲谱书",
-                Dl(i, "class", "yoopu3-icon svelte-dhvbeg"),
-                Dl(s, "class", "name svelte-dhvbeg"),
-                Dl(e, "href", "/"),
-                Dl(e, "class", "logo svelte-dhvbeg"),
-                Dl(a, "class", "slogan-text svelte-dhvbeg"),
-                Dl(n, "class", "logo-container svelte-dhvbeg")
+                setOrRemoveAttribute(i, "class", "yoopu3-icon svelte-dhvbeg"),
+                setOrRemoveAttribute(s, "class", "name svelte-dhvbeg"),
+                setOrRemoveAttribute(e, "href", "/"),
+                setOrRemoveAttribute(e, "class", "logo svelte-dhvbeg"),
+                setOrRemoveAttribute(a, "class", "slogan-text svelte-dhvbeg"),
+                setOrRemoveAttribute(n, "class", "logo-container svelte-dhvbeg")
             },
             m(t, o) {
-                Ol(t, n, o),
+                insertBefore(t, n, o),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(e, r),
@@ -12922,7 +12992,7 @@
             }
         }
     }
-    class Gm extends Component {
+    class HeaderComponent extends Component {
         constructor(t) {
             super(),
             initializeComponent(this, t, null, Lm, areValuesDifferent, {})
@@ -12932,13 +13002,13 @@
         let n;
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.innerHTML = '<div class="mover svelte-bmkbx9"></div>',
-                Dl(n, "class", "loader svelte-bmkbx9"),
+                setOrRemoveAttribute(n, "class", "loader svelte-bmkbx9"),
                 Ll(n, "above", t[0])
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p(t, [e]) {
                 1 & e && Ll(n, "above", t[0])
@@ -12972,12 +13042,12 @@
         let n, e;
         return {
             c() {
-                n = Xl("div"),
-                e = Il(t[2]),
-                Dl(n, "class", "title svelte-ezjm8c")
+                n = createElement("div"),
+                e = createTextNode(t[2]),
+                setOrRemoveAttribute(n, "class", "title svelte-ezjm8c")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, n) {
@@ -12992,17 +13062,17 @@
         let n, e;
         return {
             c() {
-                n = Xl("div"),
-                Dl(n, "class", "arrow svelte-ezjm8c"),
-                Dl(n, "style", e = t[10].arrow),
-                Dl(n, "position", t[8])
+                n = createElement("div"),
+                setOrRemoveAttribute(n, "class", "arrow svelte-ezjm8c"),
+                setOrRemoveAttribute(n, "style", e = t[10].arrow),
+                setOrRemoveAttribute(n, "position", t[8])
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p(t, i) {
-                1024 & i && e !== (e = t[10].arrow) && Dl(n, "style", e),
-                256 & i && Dl(n, "position", t[8])
+                1024 & i && e !== (e = t[10].arrow) && setOrRemoveAttribute(n, "style", e),
+                256 & i && setOrRemoveAttribute(n, "position", t[8])
             },
             d(t) {
                 t && Cl(n)
@@ -13019,28 +13089,28 @@
         let y = t[1] && Ym(t);
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
                 d && d.c(),
-                i = _l(),
-                r = Xl("div"),
-                o = Xl("div"),
+                i = createSpacer(),
+                r = createElement("div"),
+                o = createElement("div"),
                 v && v.c(),
-                s = _l(),
+                s = createSpacer(),
                 m && m.c(),
-                u = _l(),
+                u = createSpacer(),
                 y && y.c(),
-                Dl(e, "class", "anchor"),
-                Dl(o, "class", "content svelte-ezjm8c"),
+                setOrRemoveAttribute(e, "class", "anchor"),
+                setOrRemoveAttribute(o, "class", "content svelte-ezjm8c"),
                 Ll(o, "no-padding", !t[4]),
-                Dl(r, "class", "wrapper svelte-ezjm8c"),
-                Dl(r, "style", c = t[10].wrapper),
+                setOrRemoveAttribute(r, "class", "wrapper svelte-ezjm8c"),
+                setOrRemoveAttribute(r, "style", c = t[10].wrapper),
                 Ll(r, "theme", t[3]),
                 Ll(r, "show", t[0]),
-                Dl(n, "class", "popover svelte-ezjm8c")
+                setOrRemoveAttribute(n, "class", "popover svelte-ezjm8c")
             },
             m(c, h) {
-                Ol(c, n, h),
+                insertBefore(c, n, h),
                 Tl(n, e),
                 d && d.m(e, null),
                 t[16](e),
@@ -13069,7 +13139,7 @@
                 y.m(o, null)) : y && (y.d(1),
                 y = null),
                 16 & n && Ll(o, "no-padding", !t[4]),
-                (!a || 1024 & n && c !== (c = t[10].wrapper)) && Dl(r, "style", c),
+                (!a || 1024 & n && c !== (c = t[10].wrapper)) && setOrRemoveAttribute(r, "style", c),
                 8 & n && Ll(r, "theme", t[3]),
                 1 & n && Ll(r, "show", t[0])
             },
@@ -13225,16 +13295,16 @@
         let n, e;
         return {
             c() {
-                n = Xl("img"),
-                Dl(n, "class", "hat svelte-1a9wei7"),
-                n.src !== (e = t[4]) && Dl(n, "src", e),
-                Dl(n, "alt", "hat")
+                n = createElement("img"),
+                setOrRemoveAttribute(n, "class", "hat svelte-1a9wei7"),
+                n.src !== (e = t[4]) && setOrRemoveAttribute(n, "src", e),
+                setOrRemoveAttribute(n, "alt", "hat")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p(t, i) {
-                16 & i && n.src !== (e = t[4]) && Dl(n, "src", e)
+                16 & i && n.src !== (e = t[4]) && setOrRemoveAttribute(n, "src", e)
             },
             d(t) {
                 t && Cl(n)
@@ -13245,16 +13315,16 @@
         let n, e;
         return {
             c() {
-                n = Xl("img"),
-                Dl(n, "class", "badge svelte-1a9wei7"),
-                n.src !== (e = t[5]) && Dl(n, "src", e),
-                Dl(n, "alt", "badge")
+                n = createElement("img"),
+                setOrRemoveAttribute(n, "class", "badge svelte-1a9wei7"),
+                n.src !== (e = t[5]) && setOrRemoveAttribute(n, "src", e),
+                setOrRemoveAttribute(n, "alt", "badge")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p(t, i) {
-                32 & i && n.src !== (e = t[5]) && Dl(n, "src", e)
+                32 & i && n.src !== (e = t[5]) && setOrRemoveAttribute(n, "src", e)
             },
             d(t) {
                 t && Cl(n)
@@ -13265,23 +13335,23 @@
         let n, e, i, r, o, s, u, c, a, l = t[4] && sy(t), f = t[5] && uy(t);
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("img"),
-                r = _l(),
+                n = createElement("div"),
+                e = createElement("img"),
+                r = createSpacer(),
                 l && l.c(),
-                o = _l(),
+                o = createSpacer(),
                 f && f.c(),
-                Dl(e, "class", "avatar svelte-1a9wei7"),
-                e.src !== (i = t[3]) && Dl(e, "src", i),
-                Dl(e, "alt", "avatar"),
-                Dl(n, "class", "container svelte-1a9wei7"),
-                Dl(n, "size", t[1]),
-                Dl(n, "gender", s = t[0].gender),
-                Dl(n, "ladder", u = t[0].ladder),
+                setOrRemoveAttribute(e, "class", "avatar svelte-1a9wei7"),
+                e.src !== (i = t[3]) && setOrRemoveAttribute(e, "src", i),
+                setOrRemoveAttribute(e, "alt", "avatar"),
+                setOrRemoveAttribute(n, "class", "container svelte-1a9wei7"),
+                setOrRemoveAttribute(n, "size", t[1]),
+                setOrRemoveAttribute(n, "gender", s = t[0].gender),
+                setOrRemoveAttribute(n, "ladder", u = t[0].ladder),
                 Ll(n, "link", t[2])
             },
             m(i, s) {
-                Ol(i, n, s),
+                insertBefore(i, n, s),
                 Tl(n, e),
                 Tl(n, r),
                 l && l.m(n, null),
@@ -13291,7 +13361,7 @@
                 c = !0)
             },
             p(t, [r]) {
-                8 & r && e.src !== (i = t[3]) && Dl(e, "src", i),
+                8 & r && e.src !== (i = t[3]) && setOrRemoveAttribute(e, "src", i),
                 t[4] ? l ? l.p(t, r) : (l = sy(t),
                 l.c(),
                 l.m(n, o)) : l && (l.d(1),
@@ -13300,9 +13370,9 @@
                 f.c(),
                 f.m(n, null)) : f && (f.d(1),
                 f = null),
-                2 & r && Dl(n, "size", t[1]),
-                1 & r && s !== (s = t[0].gender) && Dl(n, "gender", s),
-                1 & r && u !== (u = t[0].ladder) && Dl(n, "ladder", u),
+                2 & r && setOrRemoveAttribute(n, "size", t[1]),
+                1 & r && s !== (s = t[0].gender) && setOrRemoveAttribute(n, "gender", s),
+                1 & r && u !== (u = t[0].ladder) && setOrRemoveAttribute(n, "ladder", u),
                 4 & r && Ll(n, "link", t[2])
             },
             i: defaultStart,
@@ -13361,18 +13431,18 @@
         let n, e, i, r, o, s, u, c = tt[t[5]] + "";
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("i"),
+                n = createElement("div"),
+                e = createElement("i"),
                 e.textContent = "",
-                i = _l(),
-                r = Xl("span"),
-                o = Il(c),
-                Dl(e, "class", "yoopu3-icon svelte-tg1f35"),
-                Dl(r, "class", "label svelte-tg1f35"),
-                Dl(n, "class", "instrument-selection svelte-tg1f35")
+                i = createSpacer(),
+                r = createElement("span"),
+                o = createTextNode(c),
+                setOrRemoveAttribute(e, "class", "yoopu3-icon svelte-tg1f35"),
+                setOrRemoveAttribute(r, "class", "label svelte-tg1f35"),
+                setOrRemoveAttribute(n, "class", "instrument-selection svelte-tg1f35")
             },
             m(c, a) {
-                Ol(c, n, a),
+                insertBefore(c, n, a),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -13394,13 +13464,13 @@
         let n;
         return {
             c() {
-                n = Xl("a"),
+                n = createElement("a"),
                 n.textContent = "登录",
-                Dl(n, "class", "login-button svelte-tg1f35"),
-                Dl(n, "href", "/start")
+                setOrRemoveAttribute(n, "class", "login-button svelte-tg1f35"),
+                setOrRemoveAttribute(n, "href", "/start")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p: defaultStart,
             i: defaultStart,
@@ -13462,16 +13532,16 @@
         }),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
                 e.textContent = `${t[6].displayName}`,
-                i = _l(),
+                i = createSpacer(),
                 jf(r.$$.fragment),
-                Dl(e, "class", "display-name svelte-tg1f35"),
-                Dl(n, "class", "user-info svelte-tg1f35")
+                setOrRemoveAttribute(e, "class", "display-name svelte-tg1f35"),
+                setOrRemoveAttribute(n, "class", "user-info svelte-tg1f35")
             },
             m(t, s) {
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 Tl(n, e),
                 Tl(n, i),
                 Bf(r, n, null),
@@ -13496,13 +13566,13 @@
         let n;
         return {
             c() {
-                n = Xl("a"),
+                n = createElement("a"),
                 n.innerHTML = '<span class="icon yoopu3-icon svelte-tg1f35"></span> \n                <span>管理员工具</span>',
-                Dl(n, "class", "action clickable svelte-tg1f35"),
-                Dl(n, "href", "/internal")
+                setOrRemoveAttribute(n, "class", "action clickable svelte-tg1f35"),
+                setOrRemoveAttribute(n, "href", "/internal")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -13513,32 +13583,32 @@
         let n, e, i, r, o, s, u, c, a, l, f, h, d = t[7] && py();
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("a"),
+                n = createElement("div"),
+                e = createElement("a"),
                 e.innerHTML = '<span class="icon yoopu3-icon svelte-tg1f35"></span> \n              <span>用户中心</span>',
-                i = _l(),
-                r = Xl("a"),
-                o = Xl("span"),
+                i = createSpacer(),
+                r = createElement("a"),
+                o = createElement("span"),
                 o.textContent = "",
-                s = _l(),
-                u = Xl("span"),
+                s = createSpacer(),
+                u = createElement("span"),
                 u.textContent = "我的个人页",
-                c = _l(),
-                a = Xl("div"),
+                c = createSpacer(),
+                a = createElement("div"),
                 a.innerHTML = '<span class="icon yoopu3-icon svelte-tg1f35"></span> \n              <span>黑夜模式</span>',
-                l = _l(),
+                l = createSpacer(),
                 d && d.c(),
-                Dl(e, "class", "action clickable svelte-tg1f35"),
-                Dl(e, "href", "/setting"),
-                Dl(o, "class", "icon yoopu3-icon svelte-tg1f35"),
-                Dl(r, "class", "action clickable svelte-tg1f35"),
-                Dl(r, "href", "/user#code=" + t[6].userCode),
-                Dl(a, "class", "action clickable svelte-tg1f35"),
-                Dl(n, "slot", "content"),
-                Dl(n, "class", "user-panel svelte-tg1f35")
+                setOrRemoveAttribute(e, "class", "action clickable svelte-tg1f35"),
+                setOrRemoveAttribute(e, "href", "/setting"),
+                setOrRemoveAttribute(o, "class", "icon yoopu3-icon svelte-tg1f35"),
+                setOrRemoveAttribute(r, "class", "action clickable svelte-tg1f35"),
+                setOrRemoveAttribute(r, "href", "/user#code=" + t[6].userCode),
+                setOrRemoveAttribute(a, "class", "action clickable svelte-tg1f35"),
+                setOrRemoveAttribute(n, "slot", "content"),
+                setOrRemoveAttribute(n, "class", "user-panel svelte-tg1f35")
             },
             m(v, p) {
-                Ol(v, n, p),
+                insertBefore(v, n, p),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -13561,7 +13631,8 @@
             }
         }
     }
-    function yy(t) {
+    function renderSelectInstrumentMenu(t) {
+        console.log("renderSelectInstrumentMenu", t);
         let n, e, i;
         function r(n) {
             t[11](n)
@@ -13570,7 +13641,7 @@
             user: t[6]
         };
         return void 0 !== t[5] && (o.instrument = t[5]),
-        n = new Zp({
+        n = new SelectInstrumentMenuComponent({
             props: o
         }),
         af.push(( () => Df(n, "instrument", r))),
@@ -13603,128 +13674,131 @@
             }
         }
     }
-    function gy(t) {
-        let n, e, i, r, o, s, u, c, a, l, f, h, d, v, p, m, y, g, b, w, x, k, S, E, T, O;
-        i = new Gm({}),
-        s = new qm({});
-        let C = t[5] && !t[1] && fy(t);
-        const A = [dy, hy]
-          , X = [];
-        function I(t, n) {
+    function renderMainView(ctx) {
+        let n, e, header, r, o, footer, u, c, a, componentIndex, selectInstrumentMenuComponent, h, d, v, modalComponent, m, y, g, b, w, x, k, S, E, T, O;
+        header = new HeaderComponent({}),
+        footer = new FooterComponent({});
+        let selectInstrumentMenuFragment = ctx[5] && !ctx[1] && fy(ctx);
+        const componentFactories = [dy, hy]
+          , componentInstances = [];
+        function determineComponentIndex(t, n) {
             return t[6] ? 0 : t[0] ? 1 : -1
         }
-        function _(n) {
-            t[13](n)
+        function handleModalOpenChange(n) {
+            ctx[13](n)
         }
-        ~(l = I(t)) && (f = X[l] = A[l](t)),
+        componentIndex = determineComponentIndex(ctx);
+        if(componentIndex !== -1) {
+            selectInstrumentMenuComponent = componentInstances[componentIndex] = componentFactories[componentIndex](ctx);
+        }
         d = new Vm({});
-        let M = {
-            noButtons: !0,
-            cancelButtonText: t[5] ? "" : void 0,
+        let modalProps = {
+            noButtons: true,
+            cancelButtonText: ctx[5] ? "" : undefined,
             $$slots: {
-                default: [yy]
+                default: [renderSelectInstrumentMenu]
             },
             $$scope: {
-                ctx: t
+                ctx: ctx
             }
         };
         function R(n) {
-            t[14](n)
+            ctx[14](n)
         }
-        void 0 !== t[2] && (M.open = t[2]),
-        p = new Hd({
-            props: M
+        void 0 !== ctx[2] && (modalProps.open = ctx[2]),
+        modalComponent = new ModalComponent({
+            props: modalProps
         }),
-        af.push(( () => Df(p, "open", _)));
+        af.push(( () => Df(modalComponent, "open", handleModalOpenChange)));
         let D = {};
-        return void 0 !== t[3] && (D.open = t[3]),
+        return void 0 !== ctx[3] && (D.open = ctx[3]),
         g = new Jp({
             props: D
         }),
         af.push(( () => Df(g, "open", R))),
         x = new av({
             props: {
-                open: t[6] && t[6].isBanned
+                open: ctx[6] && ctx[6].isBanned
             }
         }),
         S = new $p({
             props: {
-                open: !location.href.includes(yi) && t[6] && !t[6].isBanned && t[6].userSessionCount > vt,
-                cell: t[4]
+                open: !location.href.includes(yi) && ctx[6] && !ctx[6].isBanned && ctx[6].userSessionCount > vt,
+                cell: ctx[4]
             }
         }),
         {
             c() {
-                n = Xl("header"),
-                e = Xl("div"),
-                jf(i.$$.fragment),
-                r = _l(),
-                o = Xl("div"),
-                jf(s.$$.fragment),
-                u = _l(),
-                C && C.c(),
-                c = _l(),
-                a = Xl("div"),
-                f && f.c(),
-                h = _l(),
+                n = createElement("header"),
+                e = createElement("div"),
+                jf(header.$$.fragment),
+                r = createSpacer(),
+                o = createElement("div"),
+                jf(footer.$$.fragment),
+                u = createSpacer(),
+                selectInstrumentMenuFragment && selectInstrumentMenuFragment.c(),
+                c = createSpacer(),
+                a = createElement("div"),
+                selectInstrumentMenuComponent && selectInstrumentMenuComponent.c(),
+                h = createSpacer(),
                 jf(d.$$.fragment),
-                v = _l(),
-                jf(p.$$.fragment),
-                y = _l(),
+                v = createSpacer(),
+                jf(modalComponent.$$.fragment),
+                y = createSpacer(),
                 jf(g.$$.fragment),
-                w = _l(),
+                w = createSpacer(),
                 jf(x.$$.fragment),
-                k = _l(),
+                k = createSpacer(),
                 jf(S.$$.fragment),
-                Dl(o, "class", "search-container svelte-tg1f35"),
-                Dl(a, "class", "user-container svelte-tg1f35"),
-                Dl(e, "class", "dt-top-navigation svelte-tg1f35"),
-                Dl(n, "class", "svelte-tg1f35")
+                setOrRemoveAttribute(o, "class", "search-container svelte-tg1f35"),
+                setOrRemoveAttribute(a, "class", "user-container svelte-tg1f35"),
+                setOrRemoveAttribute(e, "class", "dt-top-navigation svelte-tg1f35"),
+                setOrRemoveAttribute(n, "class", "svelte-tg1f35")
             },
             m(f, m) {
-                Ol(f, n, m),
+                insertBefore(f, n, m),
                 Tl(n, e),
-                Bf(i, e, null),
+                Bf(header, e, null),
                 Tl(e, r),
                 Tl(e, o),
-                Bf(s, o, null),
+                Bf(footer, o, null),
                 Tl(e, u),
-                C && C.m(e, null),
+                selectInstrumentMenuFragment && selectInstrumentMenuFragment.m(e, null),
                 Tl(e, c),
                 Tl(e, a),
-                ~l && X[l].m(a, null),
+                ~componentIndex && componentInstances[componentIndex].m(a, null),
                 Tl(n, h),
                 Bf(d, n, null),
-                Ol(f, v, m),
-                Bf(p, f, m),
-                Ol(f, y, m),
+                insertBefore(f, v, m),
+                Bf(modalComponent, f, m),
+                insertBefore(f, y, m),
                 Bf(g, f, m),
-                Ol(f, w, m),
+                insertBefore(f, w, m),
                 Bf(x, f, m),
-                Ol(f, k, m),
+                insertBefore(f, k, m),
                 Bf(S, f, m),
                 E = !0,
-                T || (O = Rl(o, "focus", t[8], !0),
+                T || (O = Rl(o, "focus", ctx[8], !0),
                 T = !0)
             },
             p(t, [n]) {
-                t[5] && !t[1] ? C ? C.p(t, n) : (C = fy(t),
-                C.c(),
-                C.m(e, c)) : C && (C.d(1),
-                C = null);
-                let i = l;
-                l = I(t),
-                l === i ? ~l && X[l].p(t, n) : (f && (Of(),
-                Xf(X[i], 1, 1, ( () => {
-                    X[i] = null
+                t[5] && !t[1] ? selectInstrumentMenuFragment ? selectInstrumentMenuFragment.p(t, n) : (selectInstrumentMenuFragment = fy(t),
+                selectInstrumentMenuFragment.c(),
+                selectInstrumentMenuFragment.m(e, c)) : selectInstrumentMenuFragment && (selectInstrumentMenuFragment.d(1),
+                selectInstrumentMenuFragment = null);
+                let i = componentIndex;
+                componentIndex = determineComponentIndex(t),
+                componentIndex === i ? ~componentIndex && componentInstances[componentIndex].p(t, n) : (selectInstrumentMenuComponent && (Of(),
+                Xf(componentInstances[i], 1, 1, ( () => {
+                    componentInstances[i] = null
                 }
                 )),
                 Cf()),
-                ~l ? (f = X[l],
-                f ? f.p(t, n) : (f = X[l] = A[l](t),
-                f.c()),
-                Af(f, 1),
-                f.m(a, null)) : f = null);
+                ~componentIndex ? (selectInstrumentMenuComponent = componentInstances[componentIndex],
+                selectInstrumentMenuComponent ? selectInstrumentMenuComponent.p(t, n) : (selectInstrumentMenuComponent = componentInstances[componentIndex] = componentFactories[componentIndex](t),
+                selectInstrumentMenuComponent.c()),
+                Af(selectInstrumentMenuComponent, 1),
+                selectInstrumentMenuComponent.m(a, null)) : selectInstrumentMenuComponent = null);
                 const r = {};
                 32 & n && (r.cancelButtonText = t[5] ? "" : void 0),
                 131108 & n && (r.$$scope = {
@@ -13734,7 +13808,7 @@
                 !m && 4 & n && (m = !0,
                 r.open = t[2],
                 mf(( () => m = !1))),
-                p.$set(r);
+                modalComponent.$set(r);
                 const o = {};
                 !b && 8 & n && (b = !0,
                 o.open = t[3],
@@ -13745,22 +13819,22 @@
                 S.$set(s)
             },
             i(t) {
-                E || (Af(i.$$.fragment, t),
-                Af(s.$$.fragment, t),
-                Af(f),
+                E || (Af(header.$$.fragment, t),
+                Af(footer.$$.fragment, t),
+                Af(selectInstrumentMenuComponent),
                 Af(d.$$.fragment, t),
-                Af(p.$$.fragment, t),
+                Af(modalComponent.$$.fragment, t),
                 Af(g.$$.fragment, t),
                 Af(x.$$.fragment, t),
                 Af(S.$$.fragment, t),
                 E = !0)
             },
             o(t) {
-                Xf(i.$$.fragment, t),
-                Xf(s.$$.fragment, t),
-                Xf(f),
+                Xf(header.$$.fragment, t),
+                Xf(footer.$$.fragment, t),
+                Xf(selectInstrumentMenuComponent),
                 Xf(d.$$.fragment, t),
-                Xf(p.$$.fragment, t),
+                Xf(modalComponent.$$.fragment, t),
                 Xf(g.$$.fragment, t),
                 Xf(x.$$.fragment, t),
                 Xf(S.$$.fragment, t),
@@ -13768,13 +13842,13 @@
             },
             d(t) {
                 t && Cl(n),
-                Pf(i),
-                Pf(s),
-                C && C.d(),
-                ~l && X[l].d(),
+                Pf(header),
+                Pf(footer),
+                selectInstrumentMenuFragment && selectInstrumentMenuFragment.d(),
+                ~componentIndex && componentInstances[componentIndex].d(),
                 Pf(d),
                 t && Cl(v),
-                Pf(p, t),
+                Pf(modalComponent, t),
                 t && Cl(y),
                 Pf(g, t),
                 t && Cl(w),
@@ -13786,44 +13860,44 @@
             }
         }
     }
-    function by(t, n, e) {
-        let i;
-        addEventListener(t, instrumentStateManager, (t => e(5, i = t)));
-        let {allowLogin: r} = n
-          , {hideInstrumentSelection: o} = n;
-        const s = Ua()
-          , u = s && kt(s.role, ht.EDITOR);
-        let c, a, l;
-        r && !i && (c = !0);
-        return t.$$set = t => {
-            "allowLogin"in t && e(0, r = t.allowLogin),
-            "hideInstrumentSelection"in t && e(1, o = t.hideInstrumentSelection)
+    function manageMainViewState(component, props, setState) {
+        let instrumentState;
+        addEventListener(component, instrumentStateManager, (t => setState(5, instrumentState = t)));
+        let {allowLogin} = props
+          , {hideInstrumentSelection} = props;
+        const userInfo = getUserInfo()
+          , isEditor = userInfo && checkUserRole(userInfo.role, ht.EDITOR);
+        let showLoginPrompt, showInstrumentSelection, userCell;
+        allowLogin && !instrumentState && (showLoginPrompt = !0);
+        return component.$$set = newProps => {
+            "allowLogin"in newProps && setState(0, allowLogin = newProps.allowLogin),
+            "hideInstrumentSelection" in newProps && setState(1, hideInstrumentSelection = newProps.hideInstrumentSelection)
         }
         ,
-        e(4, l = s && s.cell),
-        s && s.email,
-        [r, o, c, a, l, i, s, u, function(t) {
-            i || (t.stopPropagation(),
-            e(2, c = !0))
+        setState(4, userCell = userInfo && userInfo.cell),
+        userInfo && userInfo.email,
+        [allowLogin, hideInstrumentSelection, showLoginPrompt, showInstrumentSelection, userCell, instrumentState, userInfo, isEditor, function(t) {
+            instrumentState || (t.stopPropagation(),
+            setState(2, showLoginPrompt = !0))
         }
-        , () => e(2, c = !0), () => e(3, a = !0), function(t) {
-            i = t,
-            instrumentStateManager.set(i)
+        , () => setState(2, showLoginPrompt = !0), () => setState(3, showInstrumentSelection = !0), function(t) {
+            instrumentState = t,
+            instrumentStateManager.set(instrumentState)
         }
-        , () => e(2, c = !1), function(t) {
-            c = t,
-            e(2, c)
+        , () => setState(2, showLoginPrompt = !1), function(t) {
+            showLoginPrompt = t,
+            setState(2, showLoginPrompt)
         }
         , function(t) {
-            a = t,
-            e(3, a)
+            showInstrumentSelection = t,
+            setState(3, showInstrumentSelection)
         }
         ]
     }
     class wy extends Component {
         constructor(t) {
             super(),
-            initializeComponent(this, t, by, gy, areValuesDifferent, {
+            initializeComponent(this, t, manageMainViewState, renderMainView, areValuesDifferent, {
                 allowLogin: 0,
                 hideInstrumentSelection: 1
             })
@@ -13838,12 +13912,12 @@
         let n, e, i = t[1] + "";
         return {
             c() {
-                n = Xl("span"),
-                e = Il(i),
-                Dl(n, "class", "tag svelte-hq7tw6")
+                n = createElement("span"),
+                e = createTextNode(i),
+                setOrRemoveAttribute(n, "class", "tag svelte-hq7tw6")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, n) {
@@ -13860,13 +13934,13 @@
             i[n] = ky(xy(t, e, n));
         return {
             c() {
-                n = Xl("div");
+                n = createElement("div");
                 for (let t = 0; t < i.length; t += 1)
                     i[t].c();
-                Dl(n, "class", "sheet-tags svelte-hq7tw6")
+                setOrRemoveAttribute(n, "class", "sheet-tags svelte-hq7tw6")
             },
             m(t, e) {
-                Ol(t, n, e);
+                insertBefore(t, n, e);
                 for (let t = 0; t < i.length; t += 1)
                     i[t].m(n, null)
             },
@@ -13918,32 +13992,32 @@
         }),
         {
             c() {
-                n = Xl("div"),
-                r = Xl("div"),
+                n = createElement("div"),
+                r = createElement("div"),
                 jf(o.$$.fragment),
-                s = _l(),
-                u = Xl("div"),
-                c = Il(t[0]),
-                a = Il("是会员特权"),
-                l = _l(),
-                f = Xl("div"),
-                h = Il(t[0]),
-                d = Il("是会员特权哦。会员还有其他高级功能，去看看吧"),
-                Dl(r, "class", "hero-image svelte-12f0qbi"),
-                Dl(n, "class", "hero-wrapper svelte-12f0qbi"),
-                Dl(u, "title", ""),
-                Dl(f, "description", "")
+                s = createSpacer(),
+                u = createElement("div"),
+                c = createTextNode(t[0]),
+                a = createTextNode("是会员特权"),
+                l = createSpacer(),
+                f = createElement("div"),
+                h = createTextNode(t[0]),
+                d = createTextNode("是会员特权哦。会员还有其他高级功能，去看看吧"),
+                setOrRemoveAttribute(r, "class", "hero-image svelte-12f0qbi"),
+                setOrRemoveAttribute(n, "class", "hero-wrapper svelte-12f0qbi"),
+                setOrRemoveAttribute(u, "title", ""),
+                setOrRemoveAttribute(f, "description", "")
             },
             m(t, e) {
-                Ol(t, n, e),
+                insertBefore(t, n, e),
                 Tl(n, r),
                 Bf(o, r, null),
-                Ol(t, s, e),
-                Ol(t, u, e),
+                insertBefore(t, s, e),
+                insertBefore(t, u, e),
                 Tl(u, c),
                 Tl(u, a),
-                Ol(t, l, e),
-                Ol(t, f, e),
+                insertBefore(t, l, e),
+                insertBefore(t, f, e),
                 Tl(f, h),
                 Tl(f, d),
                 v = !0
@@ -13990,7 +14064,7 @@
             }
         };
         return void 0 !== t[1] && (o.open = t[1]),
-        n = new Hd({
+        n = new ModalComponent({
             props: o
         }),
         af.push(( () => Df(n, "open", r))),
@@ -14033,7 +14107,7 @@
     async function _y(t, n, e) {
         if (n === Rd.bda.name)
             return !0;
-        if (!Ua()) {
+        if (!getUserInfo()) {
             if (n)
                 await ev(`${e}功能`, `使用${e}功能请前往应用商店下载《有谱么》APP`, {
                     okButtonText: "知道了"
@@ -14049,7 +14123,7 @@
             }
             return !1
         }
-        return !!tl(Ua()) || (n ? await ev(`${e}功能`, `使用${e}功能请前往应用商店下载《有谱么》APP`, {
+        return !!tl(getUserInfo()) || (n ? await ev(`${e}功能`, `使用${e}功能请前往应用商店下载《有谱么》APP`, {
             okButtonText: "知道了"
         }) : await My(e),
         !1)
@@ -14107,12 +14181,12 @@
         let n;
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.textContent = "",
-                Dl(n, "class", "yoopu3-icon svelte-1aown71")
+                setOrRemoveAttribute(n, "class", "yoopu3-icon svelte-1aown71")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -14125,19 +14199,19 @@
             i[n] = Fy(By(t, e, n));
         return {
             c() {
-                n = Xl("div");
+                n = createElement("div");
                 for (let t = 0; t < 6; t += 1)
                     i[t].c();
-                Dl(n, "class", "fg svelte-1aown71"),
-                Dl(n, "style", t[6])
+                setOrRemoveAttribute(n, "class", "fg svelte-1aown71"),
+                setOrRemoveAttribute(n, "style", t[6])
             },
             m(t, e) {
-                Ol(t, n, e);
+                insertBefore(t, n, e);
                 for (let t = 0; t < 6; t += 1)
                     i[t].m(n, null)
             },
             p(t, e) {
-                64 & e && Dl(n, "style", t[6])
+                64 & e && setOrRemoveAttribute(n, "style", t[6])
             },
             d(t) {
                 t && Cl(n),
@@ -14149,12 +14223,12 @@
         let n;
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.textContent = "",
-                Dl(n, "class", "yoopu3-icon svelte-1aown71")
+                setOrRemoveAttribute(n, "class", "yoopu3-icon svelte-1aown71")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -14176,34 +14250,34 @@
         let E = t[1] && $y(t);
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("audio"),
-                o = _l(),
-                s = Xl("button"),
-                u = Il(w),
-                a = _l(),
-                l = Xl("div"),
-                f = Xl("div");
+                n = createElement("div"),
+                e = createElement("audio"),
+                o = createSpacer(),
+                s = createElement("button"),
+                u = createTextNode(w),
+                a = createSpacer(),
+                l = createElement("div"),
+                f = createElement("div");
                 for (let t = 0; t < 6; t += 1)
                     S[t].c();
-                h = _l(),
+                h = createSpacer(),
                 E && E.c(),
-                d = _l(),
-                v = Xl("div"),
-                p = Il(t[3]),
-                e.src !== (i = t[0]) && Dl(e, "src", i),
+                d = createSpacer(),
+                v = createElement("div"),
+                p = createTextNode(t[3]),
+                e.src !== (i = t[0]) && setOrRemoveAttribute(e, "src", i),
                 void 0 === t[1] && pf(( () => t[9].call(e))),
                 void 0 === t[5] && pf(( () => t[12].call(e))),
                 void 0 === t[5] && pf(( () => t[13].call(e))),
                 s.disabled = c = !t[1],
-                Dl(s, "class", "play-button yoopu3-icon svelte-1aown71"),
-                Dl(f, "class", "bg svelte-1aown71"),
-                Dl(l, "class", "progress-bar svelte-1aown71"),
-                Dl(v, "class", "time-display svelte-1aown71"),
-                Dl(n, "class", "audio-player svelte-1aown71")
+                setOrRemoveAttribute(s, "class", "play-button yoopu3-icon svelte-1aown71"),
+                setOrRemoveAttribute(f, "class", "bg svelte-1aown71"),
+                setOrRemoveAttribute(l, "class", "progress-bar svelte-1aown71"),
+                setOrRemoveAttribute(v, "class", "time-display svelte-1aown71"),
+                setOrRemoveAttribute(n, "class", "audio-player svelte-1aown71")
             },
             m(i, r) {
-                Ol(i, n, r),
+                insertBefore(i, n, r),
                 Tl(n, e),
                 Tl(n, o),
                 Tl(n, s),
@@ -14223,7 +14297,7 @@
                 m = !0)
             },
             p(t, [n]) {
-                1 & n && e.src !== (i = t[0]) && Dl(e, "src", i),
+                1 & n && e.src !== (i = t[0]) && setOrRemoveAttribute(e, "src", i),
                 !g && 4 & n && !isNaN(t[2]) && (e.currentTime = t[2]),
                 g = !1,
                 16 & n && b !== (b = t[4]) && e[b ? "pause" : "play"](),
@@ -18358,11 +18432,11 @@
         let n, e;
         return {
             c() {
-                n = Xl("span"),
-                e = Il(t[2])
+                n = createElement("span"),
+                e = createTextNode(t[2])
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, n) {
@@ -18380,20 +18454,20 @@
           , a = c || Zy(t);
         return {
             c() {
-                n = Xl("label"),
-                e = Xl("input"),
-                i = _l(),
+                n = createElement("label"),
+                e = createElement("input"),
+                i = createSpacer(),
                 a && a.c(),
-                Dl(e, "accept", t[0]),
-                Dl(e, "capture", t[1]),
-                Dl(e, "id", t[4]),
+                setOrRemoveAttribute(e, "accept", t[0]),
+                setOrRemoveAttribute(e, "capture", t[1]),
+                setOrRemoveAttribute(e, "id", t[4]),
                 Fl(e, "display", "none"),
-                Dl(e, "type", "file"),
-                Dl(n, "for", t[4]),
-                Dl(n, "class", "svelte-10x1v2p")
+                setOrRemoveAttribute(e, "type", "file"),
+                setOrRemoveAttribute(n, "for", t[4]),
+                setOrRemoveAttribute(n, "class", "svelte-10x1v2p")
             },
             m(u, c) {
-                Ol(u, n, c),
+                insertBefore(u, n, c),
                 Tl(n, e),
                 Tl(n, i),
                 a && a.m(n, null),
@@ -18402,8 +18476,8 @@
                 o = !0)
             },
             p(t, [n]) {
-                (!r || 1 & n) && Dl(e, "accept", t[0]),
-                (!r || 2 & n) && Dl(e, "capture", t[1]),
+                (!r || 1 & n) && setOrRemoveAttribute(e, "accept", t[0]),
+                (!r || 2 & n) && setOrRemoveAttribute(e, "capture", t[1]),
                 c ? c.p && 512 & n && ml(c, u, t, t[9], n, null, null) : a && a.p && 4 & n && a.p(t, n)
             },
             i(t) {
@@ -18475,23 +18549,23 @@
         let n, e, i, r, o;
         return {
             c() {
-                n = Xl("span"),
-                e = Il(t[2]),
-                i = _l(),
-                r = Xl("div"),
-                Dl(n, "class", "text svelte-1p894og"),
-                Dl(r, "class", "progress svelte-1p894og"),
-                Dl(r, "style", o = `width: ${t[1] + "%"};`)
+                n = createElement("span"),
+                e = createTextNode(t[2]),
+                i = createSpacer(),
+                r = createElement("div"),
+                setOrRemoveAttribute(n, "class", "text svelte-1p894og"),
+                setOrRemoveAttribute(r, "class", "progress svelte-1p894og"),
+                setOrRemoveAttribute(r, "style", o = `width: ${t[1] + "%"};`)
             },
             m(t, o) {
-                Ol(t, n, o),
+                insertBefore(t, n, o),
                 Tl(n, e),
-                Ol(t, i, o),
-                Ol(t, r, o)
+                insertBefore(t, i, o),
+                insertBefore(t, r, o)
             },
             p(t, n) {
                 4 & n && ql(e, t[2]),
-                2 & n && o !== (o = `width: ${t[1] + "%"};`) && Dl(r, "style", o)
+                2 & n && o !== (o = `width: ${t[1] + "%"};`) && setOrRemoveAttribute(r, "style", o)
             },
             d(t) {
                 t && Cl(n),
@@ -18575,16 +18649,16 @@
         let n, e, i, r;
         return {
             c() {
-                n = Xl("span"),
+                n = createElement("span"),
                 n.textContent = "/",
-                e = _l(),
-                i = Xl("span"),
-                r = Il(t[2])
+                e = createSpacer(),
+                i = createElement("span"),
+                r = createTextNode(t[2])
             },
             m(t, o) {
-                Ol(t, n, o),
-                Ol(t, e, o),
-                Ol(t, i, o),
+                insertBefore(t, n, o),
+                insertBefore(t, e, o),
+                insertBefore(t, i, o),
                 Tl(i, r)
             },
             p(t, n) {
@@ -18601,25 +18675,25 @@
         let n, e, i, r, o, s, u, c, a, l = t[2] !== 1 / 0 && ug(t);
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("textarea"),
-                i = _l(),
-                r = Xl("div"),
-                o = Xl("span"),
-                s = Il(t[7]),
-                u = _l(),
+                n = createElement("div"),
+                e = createElement("textarea"),
+                i = createSpacer(),
+                r = createElement("div"),
+                o = createElement("span"),
+                s = createTextNode(t[7]),
+                u = createSpacer(),
                 l && l.c(),
-                Dl(e, "placeholder", t[3]),
-                Dl(e, "rows", t[4]),
-                Dl(e, "class", "svelte-nz7dk6"),
-                Dl(r, "class", "count svelte-nz7dk6"),
+                setOrRemoveAttribute(e, "placeholder", t[3]),
+                setOrRemoveAttribute(e, "rows", t[4]),
+                setOrRemoveAttribute(e, "class", "svelte-nz7dk6"),
+                setOrRemoveAttribute(r, "class", "count svelte-nz7dk6"),
                 Ll(r, "warn", t[1]),
-                Dl(n, "class", "text-input svelte-nz7dk6"),
-                Dl(n, "resize", t[6]),
+                setOrRemoveAttribute(n, "class", "text-input svelte-nz7dk6"),
+                setOrRemoveAttribute(n, "resize", t[6]),
                 Ll(n, "gray", t[5])
             },
             m(f, h) {
-                Ol(f, n, h),
+                insertBefore(f, n, h),
                 Tl(n, e),
                 $l(e, t[0]),
                 Tl(n, i),
@@ -18632,8 +18706,8 @@
                 c = !0)
             },
             p(t, [i]) {
-                8 & i && Dl(e, "placeholder", t[3]),
-                16 & i && Dl(e, "rows", t[4]),
+                8 & i && setOrRemoveAttribute(e, "placeholder", t[3]),
+                16 & i && setOrRemoveAttribute(e, "rows", t[4]),
                 1 & i && $l(e, t[0]),
                 128 & i && ql(s, t[7]),
                 t[2] !== 1 / 0 ? l ? l.p(t, i) : (l = ug(t),
@@ -18641,7 +18715,7 @@
                 l.m(r, null)) : l && (l.d(1),
                 l = null),
                 2 & i && Ll(r, "warn", t[1]),
-                64 & i && Dl(n, "resize", t[6]),
+                64 & i && setOrRemoveAttribute(n, "resize", t[6]),
                 32 & i && Ll(n, "gray", t[5])
             },
             i: defaultStart,
@@ -18699,15 +18773,15 @@
         let n, e;
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
                 e.innerHTML = '<div class="select-file-button svelte-1smze6b"><i class="yoopu3-icon svelte-1smze6b"></i> \n              <span class="svelte-1smze6b">上传示范音频</span></div>',
-                Dl(e, "class", "content svelte-1smze6b"),
+                setOrRemoveAttribute(e, "class", "content svelte-1smze6b"),
                 Ll(e, "error", t[2]),
-                Dl(n, "class", "cell no-border svelte-1smze6b")
+                setOrRemoveAttribute(n, "class", "cell no-border svelte-1smze6b")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, n) {
@@ -18722,12 +18796,12 @@
         let n;
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.innerHTML = '<div class="title svelte-1smze6b"><span class="svelte-1smze6b">选择录音\n              <small class="svelte-1smze6b">支持常用音频格式，如mp3, wav, m4a, aac</small></span></div> \n          <div class="content svelte-1smze6b"><span class="re-select-file-button svelte-1smze6b">重新选择</span></div>',
-                Dl(n, "class", "cell no-border arrow svelte-1smze6b")
+                setOrRemoveAttribute(n, "class", "cell no-border arrow svelte-1smze6b")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p: defaultStart,
             d(t) {
@@ -18749,7 +18823,7 @@
             },
             m(t, e) {
                 r.m(t, e),
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p(t, o) {
                 i === (i = e(t)) && r ? r.p(t, o) : (r.d(1),
@@ -18767,11 +18841,11 @@
         let n;
         return {
             c() {
-                n = Xl("div"),
-                Dl(n, "class", "glass svelte-1smze6b")
+                n = createElement("div"),
+                setOrRemoveAttribute(n, "class", "glass svelte-1smze6b")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -18839,51 +18913,51 @@
         let B = t[5] && vg();
         return {
             c() {
-                n = Xl("main"),
-                e = Xl("section"),
+                n = createElement("main"),
+                e = createElement("section"),
                 jf(i.$$.fragment),
-                s = _l(),
-                u = Xl("div"),
-                c = Xl("div"),
+                s = createSpacer(),
+                u = createElement("div"),
+                c = createElement("div"),
                 jf(a.$$.fragment),
-                l = _l(),
-                f = Xl("div"),
-                h = Xl("div"),
+                l = createSpacer(),
+                f = createElement("div"),
+                h = createElement("div"),
                 jf(d.$$.fragment),
-                m = _l(),
-                y = Xl("div"),
-                g = Xl("div"),
+                m = createSpacer(),
+                y = createElement("div"),
+                g = createElement("div"),
                 g.innerHTML = '<i class="yoopu3-icon svelte-1smze6b"></i> \n        <span class="svelte-1smze6b">所属曲谱：</span>',
-                b = _l(),
-                w = Xl("div"),
-                x = Il(t[0]),
-                k = _l(),
-                S = Xl("section"),
+                b = createSpacer(),
+                w = createElement("div"),
+                x = createTextNode(t[0]),
+                k = createSpacer(),
+                S = createElement("section"),
                 S.innerHTML = '<h3 class="svelte-1smze6b">上传音频注意事项：</h3> \n    <ol class="svelte-1smze6b"><li class="svelte-1smze6b">所有录音需人工审核后方可上线。</li> \n      <li class="svelte-1smze6b">录音是对该曲谱的示范，需严格遵照曲谱演奏。</li> \n      <li class="svelte-1smze6b">禁止内嵌任何与示范无关的内容，包括但不限于广告、自我介绍、教学。</li> \n      <li class="svelte-1smze6b">音频开始不可有超过3秒以上的空白，音频音量和环境噪音需控制在合理范围。</li> \n      <li class="svelte-1smze6b">禁止上传侵权内容，如歌曲的原音。</li></ol>',
-                E = _l(),
-                T = Xl("div"),
-                O = Xl("div"),
+                E = createSpacer(),
+                T = createElement("div"),
+                O = createElement("div"),
                 jf(C.$$.fragment),
-                A = _l(),
+                A = createSpacer(),
                 B && B.c(),
-                Dl(c, "class", "content svelte-1smze6b"),
-                Dl(u, "class", "cell no-border svelte-1smze6b"),
+                setOrRemoveAttribute(c, "class", "content svelte-1smze6b"),
+                setOrRemoveAttribute(u, "class", "cell no-border svelte-1smze6b"),
                 Ll(u, "hide", !t[4]),
-                Dl(h, "class", "content title-input-wrap svelte-1smze6b"),
+                setOrRemoveAttribute(h, "class", "content title-input-wrap svelte-1smze6b"),
                 Ll(h, "error", t[3]),
-                Dl(f, "class", "cell no-border svelte-1smze6b"),
-                Dl(g, "class", "title svelte-1smze6b"),
-                Dl(w, "class", "content svelte-1smze6b"),
-                Dl(y, "class", "cell sheet-title svelte-1smze6b"),
-                Dl(e, "class", "svelte-1smze6b"),
-                Dl(S, "class", "rule svelte-1smze6b"),
-                Dl(O, "class", "blank-wings svelte-1smze6b"),
-                Dl(T, "class", "fixed-bottom svelte-1smze6b"),
+                setOrRemoveAttribute(f, "class", "cell no-border svelte-1smze6b"),
+                setOrRemoveAttribute(g, "class", "title svelte-1smze6b"),
+                setOrRemoveAttribute(w, "class", "content svelte-1smze6b"),
+                setOrRemoveAttribute(y, "class", "cell sheet-title svelte-1smze6b"),
+                setOrRemoveAttribute(e, "class", "svelte-1smze6b"),
+                setOrRemoveAttribute(S, "class", "rule svelte-1smze6b"),
+                setOrRemoveAttribute(O, "class", "blank-wings svelte-1smze6b"),
+                setOrRemoveAttribute(T, "class", "fixed-bottom svelte-1smze6b"),
                 Ll(T, "uploading", t[5]),
-                Dl(n, "class", "page-audio-upload")
+                setOrRemoveAttribute(n, "class", "page-audio-upload")
             },
             m(t, r) {
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 Tl(n, e),
                 Bf(i, e, null),
                 Tl(e, s),
@@ -19066,27 +19140,27 @@
         let v = t[3] && wg(t);
         return {
             c() {
-                n = Xl("section"),
-                e = Xl("div"),
+                n = createElement("section"),
+                e = createElement("div"),
                 e.textContent = "示范音频",
-                i = _l(),
-                r = Xl("div"),
+                i = createSpacer(),
+                r = createElement("div"),
                 jf(o.$$.fragment),
-                s = _l(),
-                u = Xl("div"),
-                c = Xl("span"),
-                a = Il(d),
-                l = Il("次播放"),
-                f = _l(),
+                s = createSpacer(),
+                u = createElement("div"),
+                c = createElement("span"),
+                a = createTextNode(d),
+                l = createTextNode("次播放"),
+                f = createSpacer(),
                 v && v.c(),
-                Dl(e, "class", "title svelte-1c6yezu"),
-                Dl(r, "class", "audio-wrapper svelte-1c6yezu"),
-                Dl(c, "class", "stats svelte-1c6yezu"),
-                Dl(u, "class", "info svelte-1c6yezu"),
-                Dl(n, "class", "audio svelte-1c6yezu")
+                setOrRemoveAttribute(e, "class", "title svelte-1c6yezu"),
+                setOrRemoveAttribute(r, "class", "audio-wrapper svelte-1c6yezu"),
+                setOrRemoveAttribute(c, "class", "stats svelte-1c6yezu"),
+                setOrRemoveAttribute(u, "class", "info svelte-1c6yezu"),
+                setOrRemoveAttribute(n, "class", "audio svelte-1c6yezu")
             },
             m(t, d) {
-                Ol(t, n, d),
+                insertBefore(t, n, d),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -19131,12 +19205,12 @@
           , r = i(t);
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 r.c(),
-                Dl(n, "class", "button-panel svelte-1c6yezu")
+                setOrRemoveAttribute(n, "class", "button-panel svelte-1c6yezu")
             },
             m(t, e) {
-                Ol(t, n, e),
+                insertBefore(t, n, e),
                 r.m(n, null)
             },
             p(t, o) {
@@ -19155,12 +19229,12 @@
         let n, e, i;
         return {
             c() {
-                n = Xl("button"),
+                n = createElement("button"),
                 n.textContent = "上传示范音频",
-                Dl(n, "class", "preferred svelte-1c6yezu")
+                setOrRemoveAttribute(n, "class", "preferred svelte-1c6yezu")
             },
             m(r, o) {
-                Ol(r, n, o),
+                insertBefore(r, n, o),
                 e || (i = Rl(n, "click", t[7]),
                 e = !0)
             },
@@ -19176,18 +19250,18 @@
         let n, e, i, r, o;
         return {
             c() {
-                n = Xl("button"),
+                n = createElement("button"),
                 n.textContent = "重新上传",
-                e = _l(),
-                i = Xl("button"),
+                e = createSpacer(),
+                i = createElement("button"),
                 i.textContent = "删除",
-                Dl(n, "class", "preferred svelte-1c6yezu"),
-                Dl(i, "class", "svelte-1c6yezu")
+                setOrRemoveAttribute(n, "class", "preferred svelte-1c6yezu"),
+                setOrRemoveAttribute(i, "class", "svelte-1c6yezu")
             },
             m(s, u) {
-                Ol(s, n, u),
-                Ol(s, e, u),
-                Ol(s, i, u),
+                insertBefore(s, n, u),
+                insertBefore(s, e, u),
+                insertBefore(s, i, u),
                 r || (o = [Rl(n, "click", t[6]), Rl(i, "click", t[5])],
                 r = !0)
             },
@@ -19255,19 +19329,19 @@
             }
         };
         return void 0 !== t[2] && (u.open = t[2]),
-        e = new Hd({
+        e = new ModalComponent({
             props: u
         }),
         af.push(( () => Df(e, "open", s))),
         {
             c() {
                 o && o.c(),
-                n = _l(),
+                n = createSpacer(),
                 jf(e.$$.fragment)
             },
             m(t, i) {
                 o && o.m(t, i),
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Bf(e, t, i),
                 r = !0
             },
@@ -19350,10 +19424,10 @@
         let n;
         return {
             c() {
-                n = Xl("span")
+                n = createElement("span")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -19367,17 +19441,17 @@
           , u = s || Cg();
         return {
             c() {
-                n = Xl("button"),
+                n = createElement("button"),
                 u && u.c(),
                 n.disabled = t[1],
-                Dl(n, "size", t[2]),
-                Dl(n, "theme", t[3]),
-                Dl(n, "type", "button"),
-                Dl(n, "class", "svelte-14csrjh"),
+                setOrRemoveAttribute(n, "size", t[2]),
+                setOrRemoveAttribute(n, "theme", t[3]),
+                setOrRemoveAttribute(n, "type", "button"),
+                setOrRemoveAttribute(n, "class", "svelte-14csrjh"),
                 Ll(n, "block", t[0])
             },
             m(o, s) {
-                Ol(o, n, s),
+                insertBefore(o, n, s),
                 u && u.m(n, null),
                 e = !0,
                 i || (r = Rl(n, "click", t[6]),
@@ -19386,8 +19460,8 @@
             p(t, [i]) {
                 s && s.p && 16 & i && ml(s, o, t, t[4], i, null, null),
                 (!e || 2 & i) && (n.disabled = t[1]),
-                (!e || 4 & i) && Dl(n, "size", t[2]),
-                (!e || 8 & i) && Dl(n, "theme", t[3]),
+                (!e || 4 & i) && setOrRemoveAttribute(n, "size", t[2]),
+                (!e || 8 & i) && setOrRemoveAttribute(n, "theme", t[3]),
                 1 & i && Ll(n, "block", t[0])
             },
             i(t) {
@@ -19447,12 +19521,12 @@
         i = s[e] = o[e](t),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 i.c(),
-                Dl(n, "class", "button-container svelte-8xk2fn")
+                setOrRemoveAttribute(n, "class", "button-container svelte-8xk2fn")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 s[e].m(n, null),
                 r = !0
             },
@@ -19579,16 +19653,16 @@
         let n, e, i, r = null == t[2] ? "" : "(" + t[2] + ")";
         return {
             c() {
-                n = Xl("i"),
+                n = createElement("i"),
                 n.textContent = "",
-                e = Il("\n          收藏曲谱"),
-                i = Il(r),
-                Dl(n, "class", "yoopu3-icon button-icon pure svelte-8xk2fn")
+                e = createTextNode("\n          收藏曲谱"),
+                i = createTextNode(r),
+                setOrRemoveAttribute(n, "class", "yoopu3-icon button-icon pure svelte-8xk2fn")
             },
             m(t, r) {
-                Ol(t, n, r),
-                Ol(t, e, r),
-                Ol(t, i, r)
+                insertBefore(t, n, r),
+                insertBefore(t, e, r),
+                insertBefore(t, i, r)
             },
             p(t, n) {
                 4 & n && r !== (r = null == t[2] ? "" : "(" + t[2] + ")") && ql(i, r)
@@ -19604,16 +19678,16 @@
         let n, e, i, r = null == t[2] ? "" : "(" + t[2] + ")";
         return {
             c() {
-                n = Xl("i"),
+                n = createElement("i"),
                 n.textContent = "",
-                e = Il("\n          取消收藏"),
-                i = Il(r),
-                Dl(n, "class", "yoopu3-icon button-icon svelte-8xk2fn")
+                e = createTextNode("\n          取消收藏"),
+                i = createTextNode(r),
+                setOrRemoveAttribute(n, "class", "yoopu3-icon button-icon svelte-8xk2fn")
             },
             m(t, r) {
-                Ol(t, n, r),
-                Ol(t, e, r),
-                Ol(t, i, r)
+                insertBefore(t, n, r),
+                insertBefore(t, e, r),
+                insertBefore(t, i, r)
             },
             p(t, n) {
                 4 & n && r !== (r = null == t[2] ? "" : "(" + t[2] + ")") && ql(i, r)
@@ -19629,14 +19703,14 @@
         let n, e;
         return {
             c() {
-                n = Xl("i"),
+                n = createElement("i"),
                 n.textContent = "",
-                e = Il("\n      打印曲谱"),
-                Dl(n, "class", "yoopu3-icon button-icon svelte-8xk2fn")
+                e = createTextNode("\n      打印曲谱"),
+                setOrRemoveAttribute(n, "class", "yoopu3-icon button-icon svelte-8xk2fn")
             },
             m(t, i) {
-                Ol(t, n, i),
-                Ol(t, e, i)
+                insertBefore(t, n, i),
+                insertBefore(t, e, i)
             },
             d(t) {
                 t && Cl(n),
@@ -19668,16 +19742,16 @@
         return ~(o = l(t)) && (s = a[o] = c[o](t)),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
                 jf(i.$$.fragment),
-                r = _l(),
+                r = createSpacer(),
                 s && s.c(),
-                Dl(e, "class", "button-container svelte-8xk2fn"),
-                Dl(n, "class", "button-group svelte-8xk2fn")
+                setOrRemoveAttribute(e, "class", "button-container svelte-8xk2fn"),
+                setOrRemoveAttribute(n, "class", "button-group svelte-8xk2fn")
             },
             m(t, s) {
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 Tl(n, e),
                 Bf(i, e, null),
                 Tl(n, r),
@@ -19726,14 +19800,14 @@
         let n, e;
         return {
             c() {
-                n = Xl("i"),
+                n = createElement("i"),
                 n.textContent = "",
-                e = Il("\n          编辑曲谱"),
-                Dl(n, "class", "yoopu3-icon button-icon svelte-8xk2fn")
+                e = createTextNode("\n          编辑曲谱"),
+                setOrRemoveAttribute(n, "class", "yoopu3-icon button-icon svelte-8xk2fn")
             },
             m(t, i) {
-                Ol(t, n, i),
-                Ol(t, e, i)
+                insertBefore(t, n, i),
+                insertBefore(t, e, i)
             },
             d(t) {
                 t && Cl(n),
@@ -19759,12 +19833,12 @@
         e.$on("click", t[5]),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                Dl(n, "class", "button-container svelte-8xk2fn")
+                setOrRemoveAttribute(n, "class", "button-container svelte-8xk2fn")
             },
             m(t, r) {
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 Bf(e, n, null),
                 i = !0
             },
@@ -19808,12 +19882,12 @@
         e.$on("click", t[6]),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                Dl(n, "class", "button-container svelte-8xk2fn")
+                setOrRemoveAttribute(n, "class", "button-container svelte-8xk2fn")
             },
             m(t, r) {
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 Bf(e, n, null),
                 i = !0
             },
@@ -19843,14 +19917,14 @@
         let n, e;
         return {
             c() {
-                n = Xl("i"),
+                n = createElement("i"),
                 n.textContent = "",
-                e = Il("\n            删除曲谱"),
-                Dl(n, "class", "yoopu3-icon button-icon svelte-8xk2fn")
+                e = createTextNode("\n            删除曲谱"),
+                setOrRemoveAttribute(n, "class", "yoopu3-icon button-icon svelte-8xk2fn")
             },
             m(t, i) {
-                Ol(t, n, i),
-                Ol(t, e, i)
+                insertBefore(t, n, i),
+                insertBefore(t, e, i)
             },
             d(t) {
                 t && Cl(n),
@@ -19862,14 +19936,14 @@
         let n, e;
         return {
             c() {
-                n = Xl("i"),
+                n = createElement("i"),
                 n.textContent = "",
-                e = Il("\n            放弃修改"),
-                Dl(n, "class", "yoopu3-icon button-icon svelte-8xk2fn")
+                e = createTextNode("\n            放弃修改"),
+                setOrRemoveAttribute(n, "class", "yoopu3-icon button-icon svelte-8xk2fn")
             },
             m(t, i) {
-                Ol(t, n, i),
-                Ol(t, e, i)
+                insertBefore(t, n, i),
+                insertBefore(t, e, i)
             },
             d(t) {
                 t && Cl(n),
@@ -19896,18 +19970,18 @@
         let c = (t[3] || t[0].format === nt.XHE) && Pg(t);
         return {
             c() {
-                n = Xl("section"),
+                n = createElement("section"),
                 u && u.c(),
-                e = _l(),
-                i = Xl("div"),
+                e = createSpacer(),
+                i = createElement("div"),
                 jf(r.$$.fragment),
-                o = _l(),
+                o = createSpacer(),
                 c && c.c(),
-                Dl(i, "class", "button-container svelte-8xk2fn"),
-                Dl(n, "class", "control svelte-8xk2fn")
+                setOrRemoveAttribute(i, "class", "button-container svelte-8xk2fn"),
+                setOrRemoveAttribute(n, "class", "control svelte-8xk2fn")
             },
             m(t, a) {
-                Ol(t, n, a),
+                insertBefore(t, n, a),
                 u && u.m(n, null),
                 Tl(n, e),
                 Tl(n, i),
@@ -19968,7 +20042,7 @@
         let {sheet: i} = n
           , {user: r} = n
           , {isOwned: o, isFavorite: s, favoritesDisplay: u} = i;
-        const c = rf();
+        const c = createEventDispatcher();
         return t.$$set = t => {
             "sheet"in t && e(0, i = t.sheet),
             "user"in t && e(10, r = t.user)
@@ -20028,27 +20102,27 @@
         let n, e, i, r, o, s, u, c, a, l;
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Xl("div"),
-                r = _l(),
-                o = Xl("div"),
-                s = _l(),
-                u = Xl("div"),
-                c = Xl("div"),
-                Dl(i, "class", "barBg svelte-1kv0zx8"),
-                Dl(o, "class", "barFg svelte-1kv0zx8"),
-                Dl(o, "style", t[3]),
-                Dl(e, "class", "container svelte-1kv0zx8"),
-                Dl(c, "class", "thumb svelte-1kv0zx8"),
-                Dl(u, "class", "thumb-wrapper svelte-1kv0zx8"),
-                Dl(u, "style", t[4]),
-                Dl(n, "style", t[2]),
-                Dl(n, "class", "slider svelte-1kv0zx8"),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createElement("div"),
+                r = createSpacer(),
+                o = createElement("div"),
+                s = createSpacer(),
+                u = createElement("div"),
+                c = createElement("div"),
+                setOrRemoveAttribute(i, "class", "barBg svelte-1kv0zx8"),
+                setOrRemoveAttribute(o, "class", "barFg svelte-1kv0zx8"),
+                setOrRemoveAttribute(o, "style", t[3]),
+                setOrRemoveAttribute(e, "class", "container svelte-1kv0zx8"),
+                setOrRemoveAttribute(c, "class", "thumb svelte-1kv0zx8"),
+                setOrRemoveAttribute(u, "class", "thumb-wrapper svelte-1kv0zx8"),
+                setOrRemoveAttribute(u, "style", t[4]),
+                setOrRemoveAttribute(n, "style", t[2]),
+                setOrRemoveAttribute(n, "class", "slider svelte-1kv0zx8"),
                 Ll(n, "disabled", t[0])
             },
             m(f, h) {
-                Ol(f, n, h),
+                insertBefore(f, n, h),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(e, r),
@@ -20061,9 +20135,9 @@
                 a = !0)
             },
             p(t, [e]) {
-                8 & e && Dl(o, "style", t[3]),
-                16 & e && Dl(u, "style", t[4]),
-                4 & e && Dl(n, "style", t[2]),
+                8 & e && setOrRemoveAttribute(o, "style", t[3]),
+                16 & e && setOrRemoveAttribute(u, "style", t[4]),
+                4 & e && setOrRemoveAttribute(n, "style", t[2]),
                 1 & e && Ll(n, "disabled", t[0])
             },
             i: defaultStart,
@@ -20083,7 +20157,7 @@
           , {disabled: s=!1} = n
           , {color: u} = n
           , {value: c=m(.5)} = n;
-        const a = rf();
+        const a = createEventDispatcher();
         let l, f, h, d, v;
         function p() {
             const t = 100 * Vg((c - i) / (r - i), 0, 1);
@@ -20170,12 +20244,12 @@
         let n, e;
         return {
             c() {
-                n = Xl("span"),
-                e = Il(t[2]),
-                Dl(n, "class", "icon text-icon svelte-1nic1eu")
+                n = createElement("span"),
+                e = createTextNode(t[2]),
+                setOrRemoveAttribute(n, "class", "icon text-icon svelte-1nic1eu")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, n) {
@@ -20190,12 +20264,12 @@
         let n, e;
         return {
             c() {
-                n = Xl("span"),
-                e = Il(t[1]),
-                Dl(n, "class", "icon yoopu3-icon svelte-1nic1eu")
+                n = createElement("span"),
+                e = createTextNode(t[1]),
+                setOrRemoveAttribute(n, "class", "icon yoopu3-icon svelte-1nic1eu")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, n) {
@@ -20210,12 +20284,12 @@
         let n, e;
         return {
             c() {
-                n = Xl("span"),
-                e = Il(t[3]),
-                Dl(n, "class", "text svelte-1nic1eu")
+                n = createElement("span"),
+                e = createTextNode(t[3]),
+                setOrRemoveAttribute(n, "class", "text svelte-1nic1eu")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, n) {
@@ -20236,17 +20310,17 @@
           , c = t[3] && Zg(t);
         return {
             c() {
-                n = Xl("button"),
+                n = createElement("button"),
                 u.c(),
-                e = _l(),
+                e = createSpacer(),
                 c && c.c(),
                 n.disabled = t[0],
-                Dl(n, "class", "svelte-1nic1eu"),
+                setOrRemoveAttribute(n, "class", "svelte-1nic1eu"),
                 Ll(n, "primary", t[4]),
                 Ll(n, "accent", t[5])
             },
             m(o, s) {
-                Ol(o, n, s),
+                insertBefore(o, n, s),
                 u.m(n, null),
                 Tl(n, e),
                 c && c.m(n, null),
@@ -20341,7 +20415,7 @@
         const p = ku + "/font/ypz/yp-v1.ypz"
           , m = ku + "/js/oggdec.js"
           , y = i
-          , g = rf()
+          , g = createEventDispatcher()
           , b = async function(t) {
             const n = va.YPZ_PREFIX + t;
             let e = await ma(n);
@@ -20529,22 +20603,22 @@
         let n, e, i;
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                Dl(e, "class", "bgColor svelte-jql7sv"),
-                Dl(n, "class", "barFg rangeStart svelte-jql7sv"),
-                Dl(n, "style", i = Td({
+                n = createElement("div"),
+                e = createElement("div"),
+                setOrRemoveAttribute(e, "class", "bgColor svelte-jql7sv"),
+                setOrRemoveAttribute(n, "class", "barFg rangeStart svelte-jql7sv"),
+                setOrRemoveAttribute(n, "style", i = Td({
                     width: t[7](t[14], t[2])
                 }))
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, e) {
                 4 & e && i !== (i = Td({
                     width: t[7](t[14], t[2])
-                })) && Dl(n, "style", i)
+                })) && setOrRemoveAttribute(n, "style", i)
             },
             d(t) {
                 t && Cl(n)
@@ -20558,14 +20632,14 @@
         }
         return {
             c() {
-                n = Xl("div"),
-                e = Il(u),
-                i = _l(),
-                Dl(n, "class", "section svelte-jql7sv"),
-                Dl(n, "style", r = `width:${t[17] / (1 / t[6].length) * 100}%`)
+                n = createElement("div"),
+                e = createTextNode(u),
+                i = createSpacer(),
+                setOrRemoveAttribute(n, "class", "section svelte-jql7sv"),
+                setOrRemoveAttribute(n, "style", r = `width:${t[17] / (1 / t[6].length) * 100}%`)
             },
             m(t, r) {
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 Tl(n, e),
                 Tl(n, i),
                 o || (s = Rl(n, "click", c),
@@ -20574,7 +20648,7 @@
             p(i, o) {
                 t = i,
                 64 & o && u !== (u = t[15] + "") && ql(e, u),
-                64 & o && r !== (r = `width:${t[17] / (1 / t[6].length) * 100}%`) && Dl(n, "style", r)
+                64 & o && r !== (r = `width:${t[17] / (1 / t[6].length) * 100}%`) && setOrRemoveAttribute(n, "style", r)
             },
             d(t) {
                 t && Cl(n),
@@ -20589,34 +20663,34 @@
             p[n] = fb(ab(t, v, n));
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = _l(),
-                r = Xl("div"),
-                o = Xl("div"),
-                s = _l(),
-                u = Xl("div"),
-                a = _l(),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createSpacer(),
+                r = createElement("div"),
+                o = createElement("div"),
+                s = createSpacer(),
+                u = createElement("div"),
+                a = createSpacer(),
                 d && d.c(),
-                l = _l(),
-                f = Xl("div");
+                l = createSpacer(),
+                f = createElement("div");
                 for (let t = 0; t < p.length; t += 1)
                     p[t].c();
-                h = _l(),
-                Dl(e, "class", "barBg svelte-jql7sv"),
-                Dl(o, "class", "bgColor svelte-jql7sv"),
-                Dl(u, "class", "accentColor svelte-jql7sv"),
-                Dl(r, "class", "barFg svelte-jql7sv"),
-                Dl(r, "style", c = Td({
+                h = createSpacer(),
+                setOrRemoveAttribute(e, "class", "barBg svelte-jql7sv"),
+                setOrRemoveAttribute(o, "class", "bgColor svelte-jql7sv"),
+                setOrRemoveAttribute(u, "class", "accentColor svelte-jql7sv"),
+                setOrRemoveAttribute(r, "class", "barFg svelte-jql7sv"),
+                setOrRemoveAttribute(r, "style", c = Td({
                     width: t[7](t[14], t[1])
                 })),
-                Dl(f, "class", "sections svelte-jql7sv"),
-                Dl(n, "class", "container svelte-jql7sv"),
+                setOrRemoveAttribute(f, "class", "sections svelte-jql7sv"),
+                setOrRemoveAttribute(n, "class", "container svelte-jql7sv"),
                 Ll(n, "disabled", t[0]),
                 Ll(n, "desktop", t[4])
             },
             m(t, c) {
-                Ol(t, n, c),
+                insertBefore(t, n, c),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -20634,7 +20708,7 @@
             p(t, e) {
                 if (2 & e && c !== (c = Td({
                     width: t[7](t[14], t[1])
-                })) && Dl(r, "style", c),
+                })) && setOrRemoveAttribute(r, "style", c),
                 t[3] ? d ? d.p(t, e) : (d = lb(t),
                 d.c(),
                 d.m(n, l)) : d && (d.d(1),
@@ -20675,7 +20749,7 @@
             m(t, e) {
                 for (let n = 0; n < i.length; n += 1)
                     i[n].m(t, e);
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p(t, [r]) {
                 if (479 & r) {
@@ -20719,7 +20793,7 @@
           , {rangeMode: u=!1} = n
           , {desktop: c=!1} = n
           , {horizontal: a=!1} = n;
-        const l = rf();
+        const l = createEventDispatcher();
         let f;
         function h(t, n) {
             i || l("change", {
@@ -20827,7 +20901,7 @@
     }
     function gb(t, n, e) {
         let i, {currentTime: r=0} = n, {totalTime: o=0} = n, {player: s} = n, {desktop: u=!1} = n, {horizontal: c=!1} = n;
-        const a = rf()
+        const a = createEventDispatcher()
           , l = mt(( () => {
             const t = s.playbackSpeed
               , n = o * t;
@@ -20970,10 +21044,10 @@
         let n;
         return {
             c() {
-                n = Il("")
+                n = createTextNode("")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -20984,10 +21058,10 @@
         let n;
         return {
             c() {
-                n = Il("")
+                n = createTextNode("")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -21015,24 +21089,24 @@
           , b = g(t);
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Il(t[2]),
-                r = _l(),
-                o = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createTextNode(t[2]),
+                r = createSpacer(),
+                o = createElement("div"),
                 jf(s.$$.fragment),
-                c = _l(),
-                a = Xl("div"),
-                l = Xl("span"),
+                c = createSpacer(),
+                a = createElement("div"),
+                l = createElement("span"),
                 b.c(),
-                Dl(e, "class", "name svelte-a29d7k"),
-                Dl(o, "class", "content svelte-a29d7k"),
-                Dl(l, "class", "icon yoopu3-icon svelte-a29d7k"),
-                Dl(a, "class", "extend svelte-a29d7k"),
-                Dl(n, "class", f = yl(t[3] ? "track-inline" : "track") + " svelte-a29d7k")
+                setOrRemoveAttribute(e, "class", "name svelte-a29d7k"),
+                setOrRemoveAttribute(o, "class", "content svelte-a29d7k"),
+                setOrRemoveAttribute(l, "class", "icon yoopu3-icon svelte-a29d7k"),
+                setOrRemoveAttribute(a, "class", "extend svelte-a29d7k"),
+                setOrRemoveAttribute(n, "class", f = yl(t[3] ? "track-inline" : "track") + " svelte-a29d7k")
             },
             m(u, f) {
-                Ol(u, n, f),
+                insertBefore(u, n, f),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(n, r),
@@ -21058,7 +21132,7 @@
                 b = g(t),
                 b && (b.c(),
                 b.m(l, null))),
-                (!h || 8 & e && f !== (f = yl(t[3] ? "track-inline" : "track") + " svelte-a29d7k")) && Dl(n, "class", f)
+                (!h || 8 & e && f !== (f = yl(t[3] ? "track-inline" : "track") + " svelte-a29d7k")) && setOrRemoveAttribute(n, "class", f)
             },
             i(t) {
                 h || (Af(s.$$.fragment, t),
@@ -21229,40 +21303,40 @@
         v.$on("click", t[31]),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                i = _l(),
-                r = Xl("div"),
+                i = createSpacer(),
+                r = createElement("div"),
                 jf(o.$$.fragment),
-                s = _l(),
-                u = Xl("div"),
+                s = createSpacer(),
+                u = createElement("div"),
                 jf(c.$$.fragment),
-                a = _l(),
-                l = Xl("div"),
+                a = createSpacer(),
+                l = createElement("div"),
                 jf(f.$$.fragment),
-                h = _l(),
-                d = Xl("div"),
+                h = createSpacer(),
+                d = createElement("div"),
                 jf(v.$$.fragment),
-                Dl(n, "class", "button-item svelte-uqhx9v"),
-                Dl(r, "class", "button-item svelte-uqhx9v"),
-                Dl(u, "class", "button-item svelte-uqhx9v"),
-                Dl(l, "class", "button-item svelte-uqhx9v"),
-                Dl(d, "class", "button-item svelte-uqhx9v")
+                setOrRemoveAttribute(n, "class", "button-item svelte-uqhx9v"),
+                setOrRemoveAttribute(r, "class", "button-item svelte-uqhx9v"),
+                setOrRemoveAttribute(u, "class", "button-item svelte-uqhx9v"),
+                setOrRemoveAttribute(l, "class", "button-item svelte-uqhx9v"),
+                setOrRemoveAttribute(d, "class", "button-item svelte-uqhx9v")
             },
             m(t, m) {
-                Ol(t, n, m),
+                insertBefore(t, n, m),
                 Bf(e, n, null),
-                Ol(t, i, m),
-                Ol(t, r, m),
+                insertBefore(t, i, m),
+                insertBefore(t, r, m),
                 Bf(o, r, null),
-                Ol(t, s, m),
-                Ol(t, u, m),
+                insertBefore(t, s, m),
+                insertBefore(t, u, m),
                 Bf(c, u, null),
-                Ol(t, a, m),
-                Ol(t, l, m),
+                insertBefore(t, a, m),
+                insertBefore(t, l, m),
                 Bf(f, l, null),
-                Ol(t, h, m),
-                Ol(t, d, m),
+                insertBefore(t, h, m),
+                insertBefore(t, d, m),
                 Bf(v, d, null),
                 p = !0
             },
@@ -21313,16 +21387,16 @@
         let n, e, i, r, o;
         return {
             c() {
-                n = Xl("span"),
-                e = Il("已练习 "),
-                i = Xl("strong"),
-                r = Il(t[19]),
-                o = Il(" 分钟"),
-                Dl(i, "class", "svelte-uqhx9v"),
-                Dl(n, "class", "time-display svelte-uqhx9v")
+                n = createElement("span"),
+                e = createTextNode("已练习 "),
+                i = createElement("strong"),
+                r = createTextNode(t[19]),
+                o = createTextNode(" 分钟"),
+                setOrRemoveAttribute(i, "class", "svelte-uqhx9v"),
+                setOrRemoveAttribute(n, "class", "time-display svelte-uqhx9v")
             },
             m(t, s) {
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(i, r),
@@ -21352,12 +21426,12 @@
         e.$on("click", t[32]),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                Dl(n, "class", "jian-button")
+                setOrRemoveAttribute(n, "class", "jian-button")
             },
             m(t, r) {
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 Bf(e, n, null),
                 i = !0
             },
@@ -21387,10 +21461,10 @@
         let n;
         return {
             c() {
-                n = Il("显示简谱")
+                n = createTextNode("显示简谱")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -21401,10 +21475,10 @@
         let n;
         return {
             c() {
-                n = Il("显示全谱")
+                n = createTextNode("显示全谱")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -21425,7 +21499,7 @@
             },
             m(t, e) {
                 r.m(t, e),
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p(t, o) {
                 i !== (i = e(t)) && (r.d(1),
@@ -21443,12 +21517,12 @@
         let n;
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.innerHTML = '<div class="text svelte-uqhx9v">准 备</div>',
-                Dl(n, "class", "counting-in svelte-uqhx9v")
+                setOrRemoveAttribute(n, "class", "counting-in svelte-uqhx9v")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -21473,48 +21547,48 @@
         af.push(( () => Df(s, "value", k))),
         {
             c() {
-                n = Xl("div"),
-                e = Il("拍速 "),
-                i = Il(t[9]),
-                r = Xl("sub"),
+                n = createElement("div"),
+                e = createTextNode("拍速 "),
+                i = createTextNode(t[9]),
+                r = createElement("sub"),
                 r.textContent = "BPM",
-                o = _l(),
+                o = createSpacer(),
                 jf(s.$$.fragment),
-                c = _l(),
-                a = Xl("div"),
-                l = Xl("span"),
-                f = Il("原拍速"),
-                h = Il(x),
-                d = Il("BPM"),
-                v = _l(),
-                p = Xl("span"),
+                c = createSpacer(),
+                a = createElement("div"),
+                l = createElement("span"),
+                f = createTextNode("原拍速"),
+                h = createTextNode(x),
+                d = createTextNode("BPM"),
+                v = createSpacer(),
+                p = createElement("span"),
                 p.textContent = "重置",
-                m = _l(),
-                y = Xl("br"),
-                Dl(r, "class", "svelte-uqhx9v"),
-                Dl(n, "title", ""),
-                Dl(n, "class", "svelte-uqhx9v"),
-                Dl(l, "class", "label svelte-uqhx9v"),
-                Dl(p, "class", "clickable-text svelte-uqhx9v"),
-                Dl(a, "class", "original-bpm svelte-uqhx9v")
+                m = createSpacer(),
+                y = createElement("br"),
+                setOrRemoveAttribute(r, "class", "svelte-uqhx9v"),
+                setOrRemoveAttribute(n, "title", ""),
+                setOrRemoveAttribute(n, "class", "svelte-uqhx9v"),
+                setOrRemoveAttribute(l, "class", "label svelte-uqhx9v"),
+                setOrRemoveAttribute(p, "class", "clickable-text svelte-uqhx9v"),
+                setOrRemoveAttribute(a, "class", "original-bpm svelte-uqhx9v")
             },
             m(u, x) {
-                Ol(u, n, x),
+                insertBefore(u, n, x),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
-                Ol(u, o, x),
+                insertBefore(u, o, x),
                 Bf(s, u, x),
-                Ol(u, c, x),
-                Ol(u, a, x),
+                insertBefore(u, c, x),
+                insertBefore(u, a, x),
                 Tl(a, l),
                 Tl(l, f),
                 Tl(l, h),
                 Tl(l, d),
                 Tl(a, v),
                 Tl(a, p),
-                Ol(u, m, x),
-                Ol(u, y, x),
+                insertBefore(u, m, x),
+                insertBefore(u, y, x),
                 g = !0,
                 b || (w = Rl(p, "click", t[35]),
                 b = !0)
@@ -21628,29 +21702,29 @@
         af.push(( () => Df(o, "volume", p))),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.textContent = "音轨",
-                e = _l(),
-                i = Xl("div");
+                e = createSpacer(),
+                i = createElement("div");
                 for (let t = 0; t < h.length; t += 1)
                     h[t].c();
-                r = _l(),
+                r = createSpacer(),
                 jf(o.$$.fragment),
-                c = _l(),
-                a = Xl("br"),
-                Dl(n, "title", ""),
-                Dl(i, "class", "track-control-panel")
+                c = createSpacer(),
+                a = createElement("br"),
+                setOrRemoveAttribute(n, "title", ""),
+                setOrRemoveAttribute(i, "class", "track-control-panel")
             },
             m(t, s) {
-                Ol(t, n, s),
-                Ol(t, e, s),
-                Ol(t, i, s);
+                insertBefore(t, n, s),
+                insertBefore(t, e, s),
+                insertBefore(t, i, s);
                 for (let t = 0; t < h.length; t += 1)
                     h[t].m(i, null);
                 Tl(i, r),
                 Bf(o, i, null),
-                Ol(t, c, s),
-                Ol(t, a, s),
+                insertBefore(t, c, s),
+                insertBefore(t, a, s),
                 l = !0
             },
             p(t, n) {
@@ -21744,7 +21818,7 @@
             t[42](n)
         }
         void 0 !== t[17] && (q.open = t[17]),
-        E = new Hd({
+        E = new ModalComponent({
             props: q
         }),
         af.push(( () => Df(E, "open", P)));
@@ -21759,55 +21833,55 @@
             }
         };
         return void 0 !== t[18] && (F.open = t[18]),
-        C = new Hd({
+        C = new ModalComponent({
             props: F
         }),
         af.push(( () => Df(C, "open", $))),
         {
             c() {
                 M && M.c(),
-                n = _l(),
-                e = Xl("div"),
-                i = Xl("div"),
+                n = createSpacer(),
+                e = createElement("div"),
+                i = createElement("div"),
                 jf(r.$$.fragment),
-                o = _l(),
-                s = Xl("div"),
-                u = Xl("div"),
+                o = createSpacer(),
+                s = createElement("div"),
+                u = createElement("div"),
                 R && R.c(),
-                c = _l(),
-                a = Xl("div"),
+                c = createSpacer(),
+                a = createElement("div"),
                 D && D.c(),
-                l = _l(),
-                f = Xl("div"),
-                h = Xl("span"),
-                d = Il(I),
-                v = _l(),
-                p = Xl("span"),
+                l = createSpacer(),
+                f = createElement("div"),
+                h = createElement("span"),
+                d = createTextNode(I),
+                v = createSpacer(),
+                p = createElement("span"),
                 p.textContent = "/",
-                m = _l(),
-                y = Xl("span"),
-                g = Il(_),
-                b = _l(),
+                m = createSpacer(),
+                y = createElement("span"),
+                g = createTextNode(_),
+                b = createSpacer(),
                 j && j.c(),
-                w = _l(),
+                w = createSpacer(),
                 jf(x.$$.fragment),
-                k = _l(),
+                k = createSpacer(),
                 B && B.c(),
-                S = _l(),
+                S = createSpacer(),
                 jf(E.$$.fragment),
-                O = _l(),
+                O = createSpacer(),
                 jf(C.$$.fragment),
-                Dl(i, "class", "slider svelte-uqhx9v"),
-                Dl(u, "class", "buttons svelte-uqhx9v"),
-                Dl(f, "class", "time svelte-uqhx9v"),
-                Dl(a, "class", "right-buttons svelte-uqhx9v"),
-                Dl(s, "class", "player-panel svelte-uqhx9v"),
-                Dl(e, "class", "panel svelte-uqhx9v")
+                setOrRemoveAttribute(i, "class", "slider svelte-uqhx9v"),
+                setOrRemoveAttribute(u, "class", "buttons svelte-uqhx9v"),
+                setOrRemoveAttribute(f, "class", "time svelte-uqhx9v"),
+                setOrRemoveAttribute(a, "class", "right-buttons svelte-uqhx9v"),
+                setOrRemoveAttribute(s, "class", "player-panel svelte-uqhx9v"),
+                setOrRemoveAttribute(e, "class", "panel svelte-uqhx9v")
             },
             m(t, T) {
                 M && M.m(t, T),
-                Ol(t, n, T),
-                Ol(t, e, T),
+                insertBefore(t, n, T),
+                insertBefore(t, e, T),
                 Tl(e, i),
                 Bf(r, i, null),
                 Tl(e, o),
@@ -21832,9 +21906,9 @@
                 Bf(x, a, null),
                 Tl(e, k),
                 B && B.m(e, null),
-                Ol(t, S, T),
+                insertBefore(t, S, T),
                 Bf(E, t, T),
-                Ol(t, O, T),
+                insertBefore(t, O, T),
                 Bf(C, t, T),
                 X = !0
             },
@@ -22084,14 +22158,14 @@
         let n, e, i;
         return {
             c() {
-                n = Xl("span"),
+                n = createElement("span"),
                 n.innerHTML = '<span class="switch svelte-1y6q73r"></span>',
-                Dl(n, "class", "container svelte-1y6q73r"),
+                setOrRemoveAttribute(n, "class", "container svelte-1y6q73r"),
                 Ll(n, "on", t[0]),
                 Ll(n, "disabled", t[1])
             },
             m(r, o) {
-                Ol(r, n, o),
+                insertBefore(r, n, o),
                 e || (i = Rl(n, "click", t[2]),
                 e = !0)
             },
@@ -22139,12 +22213,12 @@
         let n, e, i = t[7].icon + "";
         return {
             c() {
-                n = Xl("span"),
-                e = Il(i),
-                Dl(n, "class", "icon yoopu3-icon svelte-xwwv1z")
+                n = createElement("span"),
+                e = createTextNode(i),
+                setOrRemoveAttribute(n, "class", "icon yoopu3-icon svelte-xwwv1z")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, n) {
@@ -22159,12 +22233,12 @@
         let n, e, i = t[7].title + "";
         return {
             c() {
-                n = Xl("span"),
-                e = Il(i),
-                Dl(n, "class", "title svelte-xwwv1z")
+                n = createElement("span"),
+                e = createTextNode(i),
+                setOrRemoveAttribute(n, "class", "title svelte-xwwv1z")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, n) {
@@ -22182,17 +22256,17 @@
         }
         return {
             c() {
-                n = Xl("button"),
+                n = createElement("button"),
                 s && s.c(),
-                e = _l(),
+                e = createSpacer(),
                 u && u.c(),
-                i = _l(),
-                Dl(n, "class", "option svelte-xwwv1z"),
+                i = createSpacer(),
+                setOrRemoveAttribute(n, "class", "option svelte-xwwv1z"),
                 n.disabled = t[5],
                 Ll(n, "selected", t[7].value == t[0])
             },
             m(t, a) {
-                Ol(t, n, a),
+                insertBefore(t, n, a),
                 s && s.m(n, null),
                 Tl(n, e),
                 u && u.m(n, null),
@@ -22227,16 +22301,16 @@
             i[n] = Kb(Vb(t, e, n));
         return {
             c() {
-                n = Xl("div");
+                n = createElement("div");
                 for (let t = 0; t < i.length; t += 1)
                     i[t].c();
-                Dl(n, "class", "toggle-button svelte-xwwv1z"),
+                setOrRemoveAttribute(n, "class", "toggle-button svelte-xwwv1z"),
                 Ll(n, "white", t[2]),
                 Ll(n, "gray", t[3]),
                 Ll(n, "small", "small" == t[4])
             },
             m(t, e) {
-                Ol(t, n, e);
+                insertBefore(t, n, e);
                 for (let t = 0; t < i.length; t += 1)
                     i[t].m(n, null)
             },
@@ -22545,7 +22619,7 @@
             },
             m(t, r) {
                 i && i.m(t, r),
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 e = !0
             },
             p(t, [e]) {
@@ -22580,7 +22654,7 @@
           , {scrollValue: o=0} = n
           , {desktop: s=!1} = n
           , {horizontal: u=!1} = n;
-        const c = rf();
+        const c = createEventDispatcher();
         let a, l, f, h, d, v = [], p = {};
         return t.$$set = t => {
             "element"in t && e(6, i = t.element),
@@ -22707,39 +22781,39 @@
         af.push(( () => Df(b, "value", O))),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Xl("div"),
-                r = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createElement("div"),
+                r = createElement("div"),
                 r.textContent = "滚屏",
-                o = _l(),
+                o = createSpacer(),
                 jf(s.$$.fragment),
-                c = _l(),
-                a = Xl("div"),
-                l = Xl("div"),
-                f = Xl("lable"),
+                c = createSpacer(),
+                a = createElement("div"),
+                l = createElement("div"),
+                f = createElement("lable"),
                 f.textContent = "速度",
-                h = _l(),
-                d = Xl("span"),
-                v = Il(t[1]),
-                p = _l(),
-                m = Xl("button"),
+                h = createSpacer(),
+                d = createElement("span"),
+                v = createTextNode(t[1]),
+                p = createSpacer(),
+                m = createElement("button"),
                 m.innerHTML = "<span>重置</span>",
-                y = _l(),
-                g = Xl("div"),
+                y = createSpacer(),
+                g = createElement("div"),
                 jf(b.$$.fragment),
-                Dl(r, "class", "title svelte-d7ea7e"),
-                Dl(i, "class", "title-line svelte-d7ea7e"),
-                Dl(e, "class", "row-title svelte-d7ea7e"),
-                Dl(l, "class", "tempo"),
-                Dl(m, "class", "button-reset svelte-d7ea7e"),
-                Dl(a, "class", "row svelte-d7ea7e"),
-                Dl(g, "class", "row-slider svelte-d7ea7e"),
-                Dl(n, "class", "tempo-setting svelte-d7ea7e"),
-                Dl(n, "slot", "content")
+                setOrRemoveAttribute(r, "class", "title svelte-d7ea7e"),
+                setOrRemoveAttribute(i, "class", "title-line svelte-d7ea7e"),
+                setOrRemoveAttribute(e, "class", "row-title svelte-d7ea7e"),
+                setOrRemoveAttribute(l, "class", "tempo"),
+                setOrRemoveAttribute(m, "class", "button-reset svelte-d7ea7e"),
+                setOrRemoveAttribute(a, "class", "row svelte-d7ea7e"),
+                setOrRemoveAttribute(g, "class", "row-slider svelte-d7ea7e"),
+                setOrRemoveAttribute(n, "class", "tempo-setting svelte-d7ea7e"),
+                setOrRemoveAttribute(n, "slot", "content")
             },
             m(u, w) {
-                Ol(u, n, w),
+                insertBefore(u, n, w),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(i, r),
@@ -22869,51 +22943,51 @@
         af.push(( () => Df(C, "selected", B))),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Xl("div"),
-                r = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createElement("div"),
+                r = createElement("div"),
                 r.textContent = "节奏音",
-                o = _l(),
+                o = createSpacer(),
                 jf(s.$$.fragment),
-                c = _l(),
-                a = Xl("div"),
-                l = Xl("div"),
-                f = Xl("lable"),
+                c = createSpacer(),
+                a = createElement("div"),
+                l = createElement("div"),
+                f = createElement("lable"),
                 f.textContent = "拍速",
-                h = _l(),
-                d = Xl("span"),
-                v = Il(t[0]),
-                p = _l(),
-                m = Xl("sub"),
+                h = createSpacer(),
+                d = createElement("span"),
+                v = createTextNode(t[0]),
+                p = createSpacer(),
+                m = createElement("sub"),
                 m.textContent = "BPM",
-                y = _l(),
-                g = Xl("button"),
+                y = createSpacer(),
+                g = createElement("button"),
                 g.innerHTML = "<span>重置</span>",
-                b = _l(),
-                w = Xl("div"),
+                b = createSpacer(),
+                w = createElement("div"),
                 jf(x.$$.fragment),
-                S = _l(),
-                E = Xl("div"),
-                T = Xl("div"),
+                S = createSpacer(),
+                E = createElement("div"),
+                T = createElement("div"),
                 T.textContent = "节奏",
-                O = _l(),
+                O = createSpacer(),
                 jf(C.$$.fragment),
-                Dl(r, "class", "title svelte-d7ea7e"),
-                Dl(i, "class", "title-line svelte-d7ea7e"),
-                Dl(e, "class", "row-title svelte-d7ea7e"),
-                Dl(m, "class", "svelte-d7ea7e"),
-                Dl(l, "class", "tempo svelte-d7ea7e"),
-                Dl(g, "class", "button-reset svelte-d7ea7e"),
-                Dl(a, "class", "row svelte-d7ea7e"),
-                Dl(w, "class", "row-slider svelte-d7ea7e"),
-                Dl(T, "class", "label svelte-d7ea7e"),
-                Dl(E, "class", "row svelte-d7ea7e"),
-                Dl(n, "class", "drum-setting svelte-d7ea7e"),
-                Dl(n, "slot", "content")
+                setOrRemoveAttribute(r, "class", "title svelte-d7ea7e"),
+                setOrRemoveAttribute(i, "class", "title-line svelte-d7ea7e"),
+                setOrRemoveAttribute(e, "class", "row-title svelte-d7ea7e"),
+                setOrRemoveAttribute(m, "class", "svelte-d7ea7e"),
+                setOrRemoveAttribute(l, "class", "tempo svelte-d7ea7e"),
+                setOrRemoveAttribute(g, "class", "button-reset svelte-d7ea7e"),
+                setOrRemoveAttribute(a, "class", "row svelte-d7ea7e"),
+                setOrRemoveAttribute(w, "class", "row-slider svelte-d7ea7e"),
+                setOrRemoveAttribute(T, "class", "label svelte-d7ea7e"),
+                setOrRemoveAttribute(E, "class", "row svelte-d7ea7e"),
+                setOrRemoveAttribute(n, "class", "drum-setting svelte-d7ea7e"),
+                setOrRemoveAttribute(n, "slot", "content")
             },
             m(u, k) {
-                Ol(u, n, k),
+                insertBefore(u, n, k),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(i, r),
@@ -22988,16 +23062,16 @@
         let n, e, i, r, o;
         return {
             c() {
-                n = Xl("span"),
-                e = Il("已练习 "),
-                i = Xl("strong"),
-                r = Il(t[10]),
-                o = Il(" 分钟"),
-                Dl(i, "class", "svelte-d7ea7e"),
-                Dl(n, "class", "time-display svelte-d7ea7e")
+                n = createElement("span"),
+                e = createTextNode("已练习 "),
+                i = createElement("strong"),
+                r = createTextNode(t[10]),
+                o = createTextNode(" 分钟"),
+                setOrRemoveAttribute(i, "class", "svelte-d7ea7e"),
+                setOrRemoveAttribute(n, "class", "time-display svelte-d7ea7e")
             },
             m(t, s) {
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(i, r),
@@ -23062,37 +23136,37 @@
         y.$on("click", t[28]),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                i = _l(),
-                r = Xl("div"),
-                o = Xl("div"),
-                s = Xl("div"),
+                i = createSpacer(),
+                r = createElement("div"),
+                o = createElement("div"),
+                s = createElement("div"),
                 jf(u.$$.fragment),
-                c = _l(),
-                a = Xl("div"),
+                c = createSpacer(),
+                a = createElement("div"),
                 jf(l.$$.fragment),
-                f = _l(),
-                h = Xl("div"),
+                f = createSpacer(),
+                h = createElement("div"),
                 jf(d.$$.fragment),
-                v = _l(),
-                p = Xl("div"),
+                v = createSpacer(),
+                p = createElement("div"),
                 b && b.c(),
-                m = _l(),
+                m = createSpacer(),
                 jf(y.$$.fragment),
-                Dl(n, "class", "progress-bar svelte-d7ea7e"),
-                Dl(s, "class", "button-item svelte-d7ea7e"),
-                Dl(a, "class", "button-item svelte-d7ea7e"),
-                Dl(h, "class", "button-item svelte-d7ea7e"),
-                Dl(o, "class", "buttons svelte-d7ea7e"),
-                Dl(p, "class", "right-buttons svelte-d7ea7e"),
-                Dl(r, "class", "player-panel svelte-d7ea7e")
+                setOrRemoveAttribute(n, "class", "progress-bar svelte-d7ea7e"),
+                setOrRemoveAttribute(s, "class", "button-item svelte-d7ea7e"),
+                setOrRemoveAttribute(a, "class", "button-item svelte-d7ea7e"),
+                setOrRemoveAttribute(h, "class", "button-item svelte-d7ea7e"),
+                setOrRemoveAttribute(o, "class", "buttons svelte-d7ea7e"),
+                setOrRemoveAttribute(p, "class", "right-buttons svelte-d7ea7e"),
+                setOrRemoveAttribute(r, "class", "player-panel svelte-d7ea7e")
             },
             m(t, w) {
-                Ol(t, n, w),
+                insertBefore(t, n, w),
                 Bf(e, n, null),
-                Ol(t, i, w),
-                Ol(t, r, w),
+                insertBefore(t, i, w),
+                insertBefore(t, r, w),
                 Tl(r, o),
                 Tl(o, s),
                 Bf(u, s, null),
@@ -23168,7 +23242,7 @@
     const xw = 8;
     function kw(t, n, e) {
         let i;
-        const r = rf();
+        const r = createEventDispatcher();
         let {scrollElement: o} = n
           , {tempo: s} = n
           , {chordStyle: u} = n
@@ -23296,21 +23370,21 @@
         let n, e, i, r, o, s, u, c, a, l, f;
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("button"),
-                i = Il(""),
-                o = _l(),
-                s = Xl("button"),
-                u = Il(""),
-                Dl(e, "class", "decrButton yoopu3-icon svelte-17wzcw"),
+                n = createElement("div"),
+                e = createElement("button"),
+                i = createTextNode(""),
+                o = createSpacer(),
+                s = createElement("button"),
+                u = createTextNode(""),
+                setOrRemoveAttribute(e, "class", "decrButton yoopu3-icon svelte-17wzcw"),
                 e.disabled = r = t[3] || t[0] == t[1],
-                Dl(s, "class", "incrButton yoopu3-icon svelte-17wzcw"),
+                setOrRemoveAttribute(s, "class", "incrButton yoopu3-icon svelte-17wzcw"),
                 s.disabled = c = t[3] || t[0] == t[2],
-                Dl(n, "class", "container svelte-17wzcw"),
-                Dl(n, "disabled", a = t[3] || void 0)
+                setOrRemoveAttribute(n, "class", "container svelte-17wzcw"),
+                setOrRemoveAttribute(n, "disabled", a = t[3] || void 0)
             },
             m(r, c) {
-                Ol(r, n, c),
+                insertBefore(r, n, c),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(n, o),
@@ -23322,7 +23396,7 @@
             p(t, [i]) {
                 11 & i && r !== (r = t[3] || t[0] == t[1]) && (e.disabled = r),
                 13 & i && c !== (c = t[3] || t[0] == t[2]) && (s.disabled = c),
-                8 & i && a !== (a = t[3] || void 0) && Dl(n, "disabled", a)
+                8 & i && a !== (a = t[3] || void 0) && setOrRemoveAttribute(n, "disabled", a)
             },
             i: defaultStart,
             o: defaultStart,
@@ -23373,12 +23447,12 @@
         let n, e;
         return {
             c() {
-                n = Xl("span"),
-                e = Il(t[2]),
-                Dl(n, "class", "label svelte-1ogpr75")
+                n = createElement("span"),
+                e = createTextNode(t[2]),
+                setOrRemoveAttribute(n, "class", "label svelte-1ogpr75")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, n) {
@@ -23393,13 +23467,13 @@
         let n, e, i, r = t[7].title + "";
         return {
             c() {
-                n = Xl("option"),
-                e = Il(r),
+                n = createElement("option"),
+                e = createTextNode(r),
                 n.__value = i = t[7].value,
                 n.value = n.__value
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, o) {
@@ -23418,20 +23492,20 @@
             c[n] = Xw(Cw(t, u, n));
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 s && s.c(),
-                e = _l(),
-                i = Xl("select");
+                e = createSpacer(),
+                i = createElement("select");
                 for (let t = 0; t < c.length; t += 1)
                     c[t].c();
                 i.disabled = t[4],
-                Dl(i, "class", "svelte-1ogpr75"),
+                setOrRemoveAttribute(i, "class", "svelte-1ogpr75"),
                 void 0 === t[0] && pf(( () => t[6].call(i))),
-                Dl(n, "class", "dropdown-menu svelte-1ogpr75"),
+                setOrRemoveAttribute(n, "class", "dropdown-menu svelte-1ogpr75"),
                 Ll(n, "required", t[3])
             },
             m(u, a) {
-                Ol(u, n, a),
+                insertBefore(u, n, a),
                 s && s.m(n, null),
                 Tl(n, e),
                 Tl(n, i);
@@ -23576,39 +23650,39 @@
         af.push(( () => Df(v, "selected", x))),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Il(y),
-                r = _l(),
-                o = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createTextNode(y),
+                r = createSpacer(),
+                o = createElement("div"),
                 jf(s.$$.fragment),
-                c = _l(),
+                c = createSpacer(),
                 w && w.c(),
-                a = _l(),
-                l = Xl("div"),
-                f = Xl("div"),
+                a = createSpacer(),
+                l = createElement("div"),
+                f = createElement("div"),
                 f.textContent = "变调夹",
-                h = _l(),
-                d = Xl("div"),
+                h = createSpacer(),
+                d = createElement("div"),
                 jf(v.$$.fragment),
-                Dl(e, "class", "label svelte-1oxe6vs"),
-                Dl(o, "class", "content svelte-1oxe6vs"),
-                Dl(n, "class", "row svelte-1oxe6vs"),
-                Dl(f, "class", "label svelte-1oxe6vs"),
-                Dl(d, "class", "content svelte-1oxe6vs"),
-                Dl(l, "class", "row svelte-1oxe6vs")
+                setOrRemoveAttribute(e, "class", "label svelte-1oxe6vs"),
+                setOrRemoveAttribute(o, "class", "content svelte-1oxe6vs"),
+                setOrRemoveAttribute(n, "class", "row svelte-1oxe6vs"),
+                setOrRemoveAttribute(f, "class", "label svelte-1oxe6vs"),
+                setOrRemoveAttribute(d, "class", "content svelte-1oxe6vs"),
+                setOrRemoveAttribute(l, "class", "row svelte-1oxe6vs")
             },
             m(t, u) {
-                Ol(t, n, u),
+                insertBefore(t, n, u),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(n, r),
                 Tl(n, o),
                 Bf(s, o, null),
-                Ol(t, c, u),
+                insertBefore(t, c, u),
                 w && w.m(t, u),
-                Ol(t, a, u),
-                Ol(t, l, u),
+                insertBefore(t, a, u),
+                insertBefore(t, l, u),
                 Tl(l, f),
                 Tl(l, h),
                 Tl(l, d),
@@ -23689,38 +23763,38 @@
         af.push(( () => Df(m, "value", S))),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Il(b),
-                r = _l(),
-                o = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createTextNode(b),
+                r = createSpacer(),
+                o = createElement("div"),
                 jf(s.$$.fragment),
-                c = _l(),
-                a = Xl("div"),
-                l = Xl("div"),
-                f = Il("移调: "),
-                h = Il(t[10]),
-                d = _l(),
+                c = createSpacer(),
+                a = createElement("div"),
+                l = createElement("div"),
+                f = createTextNode("移调: "),
+                h = createTextNode(t[10]),
+                d = createSpacer(),
                 k && k.c(),
-                v = _l(),
-                p = Xl("div"),
+                v = createSpacer(),
+                p = createElement("div"),
                 jf(m.$$.fragment),
-                Dl(e, "class", "label svelte-1oxe6vs"),
-                Dl(o, "class", "content svelte-1oxe6vs"),
-                Dl(n, "class", "row svelte-1oxe6vs"),
-                Dl(l, "class", "label svelte-1oxe6vs"),
-                Dl(p, "class", "content svelte-1oxe6vs"),
-                Dl(a, "class", "row svelte-1oxe6vs")
+                setOrRemoveAttribute(e, "class", "label svelte-1oxe6vs"),
+                setOrRemoveAttribute(o, "class", "content svelte-1oxe6vs"),
+                setOrRemoveAttribute(n, "class", "row svelte-1oxe6vs"),
+                setOrRemoveAttribute(l, "class", "label svelte-1oxe6vs"),
+                setOrRemoveAttribute(p, "class", "content svelte-1oxe6vs"),
+                setOrRemoveAttribute(a, "class", "row svelte-1oxe6vs")
             },
             m(t, u) {
-                Ol(t, n, u),
+                insertBefore(t, n, u),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(n, r),
                 Tl(n, o),
                 Bf(s, o, null),
-                Ol(t, c, u),
-                Ol(t, a, u),
+                insertBefore(t, c, u),
+                insertBefore(t, a, u),
                 Tl(a, l),
                 Tl(l, f),
                 Tl(l, h),
@@ -23785,18 +23859,18 @@
         af.push(( () => Df(s, "selected", l))),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Il(a),
-                r = _l(),
-                o = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createTextNode(a),
+                r = createSpacer(),
+                o = createElement("div"),
                 jf(s.$$.fragment),
-                Dl(e, "class", "label svelte-1oxe6vs"),
-                Dl(o, "class", "content svelte-1oxe6vs"),
-                Dl(n, "class", "row svelte-1oxe6vs")
+                setOrRemoveAttribute(e, "class", "label svelte-1oxe6vs"),
+                setOrRemoveAttribute(o, "class", "content svelte-1oxe6vs"),
+                setOrRemoveAttribute(n, "class", "row svelte-1oxe6vs")
             },
             m(t, u) {
-                Ol(t, n, u),
+                insertBefore(t, n, u),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(n, r),
@@ -23830,12 +23904,12 @@
         let n, e, i;
         return {
             c() {
-                n = Xl("span"),
+                n = createElement("span"),
                 n.textContent = "重置",
-                Dl(n, "class", "bottom clickable svelte-1oxe6vs")
+                setOrRemoveAttribute(n, "class", "bottom clickable svelte-1oxe6vs")
             },
             m(r, o) {
-                Ol(r, n, o),
+                insertBefore(r, n, o),
                 e || (i = Rl(n, "click", t[15]),
                 e = !0)
             },
@@ -23860,18 +23934,18 @@
         af.push(( () => Df(o, "on", c))),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
                 e.textContent = "黑键高亮显示",
-                i = _l(),
-                r = Xl("div"),
+                i = createSpacer(),
+                r = createElement("div"),
                 jf(o.$$.fragment),
-                Dl(e, "class", "label svelte-1oxe6vs"),
-                Dl(r, "class", "content svelte-1oxe6vs"),
-                Dl(n, "class", "row svelte-1oxe6vs")
+                setOrRemoveAttribute(e, "class", "label svelte-1oxe6vs"),
+                setOrRemoveAttribute(r, "class", "content svelte-1oxe6vs"),
+                setOrRemoveAttribute(n, "class", "row svelte-1oxe6vs")
             },
             m(t, s) {
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -23932,36 +24006,36 @@
         af.push(( () => Df(w, "on", I))),
         {
             c() {
-                n = Xl("section"),
+                n = createElement("section"),
                 r && r.c(),
-                o = _l(),
-                s = Xl("div"),
-                u = Xl("div"),
-                c = Il("缩放: "),
-                a = Il(S),
-                l = _l(),
-                f = Xl("div"),
+                o = createSpacer(),
+                s = createElement("div"),
+                u = createElement("div"),
+                c = createTextNode("缩放: "),
+                a = createTextNode(S),
+                l = createSpacer(),
+                f = createElement("div"),
                 jf(h.$$.fragment),
-                v = _l(),
+                v = createSpacer(),
                 X && X.c(),
-                p = _l(),
-                m = Xl("div"),
-                y = Xl("div"),
+                p = createSpacer(),
+                m = createElement("div"),
+                y = createElement("div"),
                 y.textContent = "省略部分小节号",
-                g = _l(),
-                b = Xl("div"),
+                g = createSpacer(),
+                b = createElement("div"),
                 jf(w.$$.fragment),
-                Dl(u, "class", "label svelte-1oxe6vs"),
-                Dl(f, "class", "content svelte-1oxe6vs"),
-                Dl(s, "class", "row svelte-1oxe6vs"),
-                Dl(y, "class", "label svelte-1oxe6vs"),
-                Dl(b, "class", "content svelte-1oxe6vs"),
-                Dl(m, "class", "row svelte-1oxe6vs"),
-                Dl(n, "class", "svelte-1oxe6vs"),
+                setOrRemoveAttribute(u, "class", "label svelte-1oxe6vs"),
+                setOrRemoveAttribute(f, "class", "content svelte-1oxe6vs"),
+                setOrRemoveAttribute(s, "class", "row svelte-1oxe6vs"),
+                setOrRemoveAttribute(y, "class", "label svelte-1oxe6vs"),
+                setOrRemoveAttribute(b, "class", "content svelte-1oxe6vs"),
+                setOrRemoveAttribute(m, "class", "row svelte-1oxe6vs"),
+                setOrRemoveAttribute(n, "class", "svelte-1oxe6vs"),
                 Ll(n, "themeColor", t[11])
             },
             m(t, e) {
-                Ol(t, n, e),
+                insertBefore(t, n, e),
                 ~i && T[i].m(n, null),
                 Tl(n, o),
                 Tl(n, s),
@@ -24149,18 +24223,18 @@
         let n, e, i;
         return {
             c() {
-                n = Xl("a"),
-                e = Il("详情"),
-                Dl(n, "target", "_blank"),
-                Dl(n, "href", i = t[13].docUrl),
-                Dl(n, "class", "svelte-p1ieql")
+                n = createElement("a"),
+                e = createTextNode("详情"),
+                setOrRemoveAttribute(n, "target", "_blank"),
+                setOrRemoveAttribute(n, "href", i = t[13].docUrl),
+                setOrRemoveAttribute(n, "class", "svelte-p1ieql")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, e) {
-                1 & e && i !== (i = t[13].docUrl) && Dl(n, "href", i)
+                1 & e && i !== (i = t[13].docUrl) && setOrRemoveAttribute(n, "href", i)
             },
             d(t) {
                 t && Cl(n)
@@ -24175,25 +24249,25 @@
         let d = t[13].docUrl && Kw(t);
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("input"),
-                r = _l(),
-                o = Xl("label"),
-                s = Il(f),
-                u = _l(),
+                n = createElement("div"),
+                e = createElement("input"),
+                r = createSpacer(),
+                o = createElement("label"),
+                s = createTextNode(f),
+                u = createSpacer(),
                 d && d.c(),
-                c = _l(),
-                Dl(e, "type", "checkbox"),
-                Dl(e, "name", "suggestion"),
+                c = createSpacer(),
+                setOrRemoveAttribute(e, "type", "checkbox"),
+                setOrRemoveAttribute(e, "name", "suggestion"),
                 e.checked = i = t[1] === t[13],
-                Dl(e, "class", "svelte-p1ieql"),
-                Dl(o, "class", "svelte-p1ieql"),
-                Dl(n, "class", "suggestion svelte-p1ieql"),
+                setOrRemoveAttribute(e, "class", "svelte-p1ieql"),
+                setOrRemoveAttribute(o, "class", "svelte-p1ieql"),
+                setOrRemoveAttribute(n, "class", "suggestion svelte-p1ieql"),
                 Ll(n, "warning", t[13].isWarning),
                 Ll(n, "error", !t[13].isWarning)
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e),
                 Tl(n, r),
                 Tl(n, o),
@@ -24229,13 +24303,13 @@
             i[n] = Zw(Ww(t, e, n));
         return {
             c() {
-                n = Xl("div");
+                n = createElement("div");
                 for (let t = 0; t < i.length; t += 1)
                     i[t].c();
-                Dl(n, "class", "errors")
+                setOrRemoveAttribute(n, "class", "errors")
             },
             m(t, e) {
-                Ol(t, n, e);
+                insertBefore(t, n, e);
                 for (let t = 0; t < i.length; t += 1)
                     i[t].m(n, null)
             },
@@ -24264,25 +24338,25 @@
         let n, e, i, r, o, s = t[10] + "";
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Il(s),
-                r = _l(),
-                Dl(e, "class", "message svelte-p1ieql"),
-                Dl(n, "class", "bar svelte-p1ieql"),
-                Dl(n, "style", o = `top:${t[9].y}px;left:${t[9].x}px;width:${t[9].w}px;height:${t[9].h + 20}px;`),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createTextNode(s),
+                r = createSpacer(),
+                setOrRemoveAttribute(e, "class", "message svelte-p1ieql"),
+                setOrRemoveAttribute(n, "class", "bar svelte-p1ieql"),
+                setOrRemoveAttribute(n, "style", o = `top:${t[9].y}px;left:${t[9].x}px;width:${t[9].w}px;height:${t[9].h + 20}px;`),
                 Ll(n, "warning-bar", t[1].isWarning),
                 Ll(n, "error-bar", !t[1].isWarning)
             },
             m(t, o) {
-                Ol(t, n, o),
+                insertBefore(t, n, o),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(n, r)
             },
             p(t, e) {
                 4 & e && s !== (s = t[10] + "") && ql(i, s),
-                4 & e && o !== (o = `top:${t[9].y}px;left:${t[9].x}px;width:${t[9].w}px;height:${t[9].h + 20}px;`) && Dl(n, "style", o),
+                4 & e && o !== (o = `top:${t[9].y}px;left:${t[9].x}px;width:${t[9].w}px;height:${t[9].h + 20}px;`) && setOrRemoveAttribute(n, "style", o),
                 2 & e && Ll(n, "warning-bar", t[1].isWarning),
                 2 & e && Ll(n, "error-bar", !t[1].isWarning)
             },
@@ -24298,17 +24372,17 @@
         let s = t[1] && Qw(t);
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div");
+                n = createElement("div"),
+                e = createElement("div");
                 for (let t = 0; t < o.length; t += 1)
                     o[t].c();
-                i = _l(),
+                i = createSpacer(),
                 s && s.c(),
-                Dl(e, "class", "suggestions svelte-p1ieql"),
-                Dl(n, "class", "nier-error-highlighter svelte-p1ieql")
+                setOrRemoveAttribute(e, "class", "suggestions svelte-p1ieql"),
+                setOrRemoveAttribute(n, "class", "nier-error-highlighter svelte-p1ieql")
             },
             m(t, r) {
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 Tl(n, e);
                 for (let t = 0; t < o.length; t += 1)
                     o[t].m(e, null);
@@ -24408,12 +24482,12 @@
         let n, e;
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.textContent = "玩命加载中...",
-                Dl(n, "class", "placeholder svelte-l5lp34")
+                setOrRemoveAttribute(n, "class", "placeholder svelte-l5lp34")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             i(t) {
                 e || pf(( () => {
@@ -24434,12 +24508,12 @@
         let n, e;
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.textContent = "抱歉，本六线谱不支持您的系统。请尝试其他谱子。安卓用户请升级到安卓7.0以上。",
-                Dl(n, "class", "placeholder svelte-l5lp34")
+                setOrRemoveAttribute(n, "class", "placeholder svelte-l5lp34")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             i(t) {
                 e || pf(( () => {
@@ -24495,32 +24569,32 @@
         let n, e, i, r, o, s, u, c = t[8] && t[7] && rx(), a = !t[8] && ox(), l = t[4] && t[0] && sx(t);
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = _l(),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createSpacer(),
                 c && c.c(),
-                r = _l(),
+                r = createSpacer(),
                 a && a.c(),
-                o = _l(),
+                o = createSpacer(),
                 l && l.c(),
                 s = Ml(),
-                Dl(e, "class", "sheet svelte-l5lp34"),
-                Dl(n, "class", "nier-sheet svelte-l5lp34"),
+                setOrRemoveAttribute(e, "class", "sheet svelte-l5lp34"),
+                setOrRemoveAttribute(n, "class", "nier-sheet svelte-l5lp34"),
                 Ll(n, "horizontal", t[3]),
                 Ll(n, "fullSize", t[2] || t[1]),
                 Ll(n, "loading", t[7])
             },
             m(f, h) {
-                Ol(f, n, h),
+                insertBefore(f, n, h),
                 Tl(n, e),
                 t[23](e),
-                Ol(f, i, h),
+                insertBefore(f, i, h),
                 c && c.m(f, h),
-                Ol(f, r, h),
+                insertBefore(f, r, h),
                 a && a.m(f, h),
-                Ol(f, o, h),
+                insertBefore(f, o, h),
                 l && l.m(f, h),
-                Ol(f, s, h),
+                insertBefore(f, s, h),
                 u = !0
             },
             p(t, e) {
@@ -24604,7 +24678,7 @@
             const t = x(navigator.userAgent);
             return t && "Android" === t.family && t.major < 7
         }()
-          , A = rf();
+          , A = createEventDispatcher();
         let X, I, M = !1, R = u && (u.scoreUrlV4 || u.score);
         function D() {
             !M && I && u && (u.scoreUrlV4 || u.score) && (M = !0,
@@ -24878,76 +24952,76 @@
         let n, e, i, r, o, s, u, c, a, l, f, h, d, v, p, m, y, g, b, w, x, k, S, E, T, O, C, A, X, I, _, M, R, D, j, B, P, q, $, F = (t[2].title || "未命名") + "", N = (t[2].artist || "未知艺人") + "", z = (t[2].author || t[2].owner.displayName) + "", L = (t[2].timeSignature || "未知") + "", G = (t[5] || "未知") + "", U = (t[8] || "未知") + "", H = (t[2].key || "未知") + "";
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Il(F),
-                r = _l(),
-                o = Xl("div"),
-                s = Xl("div"),
-                u = Xl("span"),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createTextNode(F),
+                r = createSpacer(),
+                o = createElement("div"),
+                s = createElement("div"),
+                u = createElement("span"),
                 u.textContent = "唱:",
-                c = Xl("span"),
-                a = Il(N),
-                l = _l(),
-                f = Xl("div"),
-                h = Xl("span"),
+                c = createElement("span"),
+                a = createTextNode(N),
+                l = createSpacer(),
+                f = createElement("div"),
+                h = createElement("span"),
                 h.textContent = "编:",
-                d = Xl("span"),
-                v = Il(z),
-                p = _l(),
-                m = Xl("div"),
-                y = Xl("div"),
-                g = Xl("span"),
+                d = createElement("span"),
+                v = createTextNode(z),
+                p = createSpacer(),
+                m = createElement("div"),
+                y = createElement("div"),
+                g = createElement("span"),
                 g.textContent = "拍号",
-                b = _l(),
-                w = Xl("span"),
-                x = Il(L),
-                k = _l(),
-                S = Xl("div"),
-                E = Xl("span"),
+                b = createSpacer(),
+                w = createElement("span"),
+                x = createTextNode(L),
+                k = createSpacer(),
+                S = createElement("div"),
+                E = createElement("span"),
                 E.textContent = "拍速",
-                T = _l(),
-                O = Xl("span"),
-                C = Il(G),
-                A = _l(),
-                X = Xl("div"),
-                I = Xl("span"),
+                T = createSpacer(),
+                O = createElement("span"),
+                C = createTextNode(G),
+                A = createSpacer(),
+                X = createElement("div"),
+                I = createElement("span"),
                 I.textContent = "选调",
-                _ = _l(),
-                M = Xl("span"),
-                R = Il(U),
-                D = _l(),
-                j = Xl("div"),
-                B = Xl("span"),
+                _ = createSpacer(),
+                M = createElement("span"),
+                R = createTextNode(U),
+                D = createSpacer(),
+                j = createElement("div"),
+                B = createElement("span"),
                 B.textContent = "原唱调",
-                P = _l(),
-                q = Xl("span"),
-                $ = Il(H),
-                Dl(e, "class", "xhe-title svelte-k98ekn"),
-                Dl(u, "class", "label svelte-k98ekn"),
-                Dl(c, "class", "text svelte-k98ekn"),
-                Dl(s, "class", "item svelte-k98ekn"),
-                Dl(h, "class", "label svelte-k98ekn"),
-                Dl(d, "class", "text svelte-k98ekn"),
-                Dl(f, "class", "item svelte-k98ekn"),
-                Dl(o, "class", "xhe-info svelte-k98ekn"),
-                Dl(g, "class", "label svelte-k98ekn"),
-                Dl(w, "class", "value svelte-k98ekn"),
-                Dl(y, "class", "col svelte-k98ekn"),
-                Dl(E, "class", "label svelte-k98ekn"),
-                Dl(O, "class", "value svelte-k98ekn"),
-                Dl(S, "class", "col svelte-k98ekn"),
-                Dl(I, "class", "label svelte-k98ekn"),
-                Dl(M, "class", "value svelte-k98ekn"),
-                Dl(X, "class", "col bottom svelte-k98ekn"),
-                Dl(B, "class", "label svelte-k98ekn"),
-                Dl(q, "class", "value svelte-k98ekn"),
-                Dl(j, "class", "col bottom svelte-k98ekn"),
-                Dl(m, "class", "xhe-meta svelte-k98ekn"),
-                Dl(n, "class", "xhe-header svelte-k98ekn")
+                P = createSpacer(),
+                q = createElement("span"),
+                $ = createTextNode(H),
+                setOrRemoveAttribute(e, "class", "xhe-title svelte-k98ekn"),
+                setOrRemoveAttribute(u, "class", "label svelte-k98ekn"),
+                setOrRemoveAttribute(c, "class", "text svelte-k98ekn"),
+                setOrRemoveAttribute(s, "class", "item svelte-k98ekn"),
+                setOrRemoveAttribute(h, "class", "label svelte-k98ekn"),
+                setOrRemoveAttribute(d, "class", "text svelte-k98ekn"),
+                setOrRemoveAttribute(f, "class", "item svelte-k98ekn"),
+                setOrRemoveAttribute(o, "class", "xhe-info svelte-k98ekn"),
+                setOrRemoveAttribute(g, "class", "label svelte-k98ekn"),
+                setOrRemoveAttribute(w, "class", "value svelte-k98ekn"),
+                setOrRemoveAttribute(y, "class", "col svelte-k98ekn"),
+                setOrRemoveAttribute(E, "class", "label svelte-k98ekn"),
+                setOrRemoveAttribute(O, "class", "value svelte-k98ekn"),
+                setOrRemoveAttribute(S, "class", "col svelte-k98ekn"),
+                setOrRemoveAttribute(I, "class", "label svelte-k98ekn"),
+                setOrRemoveAttribute(M, "class", "value svelte-k98ekn"),
+                setOrRemoveAttribute(X, "class", "col bottom svelte-k98ekn"),
+                setOrRemoveAttribute(B, "class", "label svelte-k98ekn"),
+                setOrRemoveAttribute(q, "class", "value svelte-k98ekn"),
+                setOrRemoveAttribute(j, "class", "col bottom svelte-k98ekn"),
+                setOrRemoveAttribute(m, "class", "xhe-meta svelte-k98ekn"),
+                setOrRemoveAttribute(n, "class", "xhe-header svelte-k98ekn")
             },
             m(t, F) {
-                Ol(t, n, F),
+                insertBefore(t, n, F),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(n, r),
@@ -25007,12 +25081,12 @@
             i[n] = bx(mx(t, e, n));
         return {
             c() {
-                n = Xl("div");
+                n = createElement("div");
                 for (let t = 0; t < i.length; t += 1)
                     i[t].c()
             },
             m(t, e) {
-                Ol(t, n, e);
+                insertBefore(t, n, e);
                 for (let t = 0; t < i.length; t += 1)
                     i[t].m(n, null)
             },
@@ -25041,7 +25115,7 @@
         let n, e, i;
         return {
             c() {
-                n = Xl("hexi-chord"),
+                n = createElement("hexi-chord"),
                 jl(n, "name", e = t[28]),
                 jl(n, "size", "normal"),
                 jl(n, "instrument", t[3]),
@@ -25049,7 +25123,7 @@
                 jl(n, "dark", i = t[12] ? "" : null)
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p(t, r) {
                 8192 & r && e !== (e = t[28]) && jl(n, "name", e),
@@ -25066,29 +25140,29 @@
         let n, e, i, r, o, s, u, c, a, l, f, h = (t[2].key || "?") + "", d = t[2].timeSignature + "";
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("span"),
+                n = createElement("div"),
+                e = createElement("span"),
                 e.textContent = "原唱调",
-                i = _l(),
-                r = Xl("span"),
-                o = Il("1="),
-                s = Il(h),
-                u = _l(),
-                c = Xl("span"),
+                i = createSpacer(),
+                r = createElement("span"),
+                o = createTextNode("1="),
+                s = createTextNode(h),
+                u = createSpacer(),
+                c = createElement("span"),
                 c.textContent = "拍号",
-                a = _l(),
-                l = Xl("span"),
-                f = Il(d),
-                Dl(e, "class", "label svelte-k98ekn"),
-                Dl(r, "class", "value svelte-k98ekn"),
-                Dl(c, "class", "label svelte-k98ekn"),
+                a = createSpacer(),
+                l = createElement("span"),
+                f = createTextNode(d),
+                setOrRemoveAttribute(e, "class", "label svelte-k98ekn"),
+                setOrRemoveAttribute(r, "class", "value svelte-k98ekn"),
+                setOrRemoveAttribute(c, "class", "label svelte-k98ekn"),
                 Ll(c, "hide", !t[2].timeSignature),
-                Dl(l, "class", "value svelte-k98ekn"),
+                setOrRemoveAttribute(l, "class", "value svelte-k98ekn"),
                 Ll(l, "hide", !t[2].timeSignature),
-                Dl(n, "class", "xhe-header svelte-k98ekn")
+                setOrRemoveAttribute(n, "class", "xhe-header svelte-k98ekn")
             },
             m(t, h) {
-                Ol(t, n, h),
+                insertBefore(t, n, h),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -25115,21 +25189,21 @@
         let n, e, i, r, o, s = !t[6] && yx(t), u = t[4] === rt.REGULAR && !t[10] && !t[7] && gx(t), c = t[6] && !t[7] && wx(t);
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 s && s.c(),
-                e = _l(),
+                e = createSpacer(),
                 u && u.c(),
-                i = _l(),
+                i = createSpacer(),
                 c && c.c(),
-                r = _l(),
-                o = Xl("div"),
-                Dl(o, "class", "xhe-body svelte-k98ekn"),
-                Dl(n, "class", "xhe-sheet svelte-k98ekn"),
-                Dl(n, "columns", t[9]),
+                r = createSpacer(),
+                o = createElement("div"),
+                setOrRemoveAttribute(o, "class", "xhe-body svelte-k98ekn"),
+                setOrRemoveAttribute(n, "class", "xhe-sheet svelte-k98ekn"),
+                setOrRemoveAttribute(n, "columns", t[9]),
                 Ll(n, "mobile", t[6])
             },
             m(a, l) {
-                Ol(a, n, l),
+                insertBefore(a, n, l),
                 s && s.m(n, null),
                 Tl(n, e),
                 u && u.m(n, null),
@@ -25153,7 +25227,7 @@
                 c.c(),
                 c.m(n, r)) : c && (c.d(1),
                 c = null),
-                512 & o && Dl(n, "columns", t[9]),
+                512 & o && setOrRemoveAttribute(n, "columns", t[9]),
                 64 & o && Ll(n, "mobile", t[6])
             },
             i: defaultStart,
@@ -25187,7 +25261,7 @@
           , {columns: y} = n
           , {printable: g} = n
           , {lyricsOnly: b=!1} = n;
-        const w = rf();
+        const w = createEventDispatcher();
         let x, k, S, E = 1, T = [];
         async function O() {
             if (!k)
@@ -25324,13 +25398,13 @@
         let n;
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.textContent = "请点击右下方菜单打印曲谱",
-                Dl(n, "placeholder", ""),
-                Dl(n, "class", "svelte-10d563p")
+                setOrRemoveAttribute(n, "placeholder", ""),
+                setOrRemoveAttribute(n, "class", "svelte-10d563p")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p: defaultStart,
             i: defaultStart,
@@ -25353,21 +25427,21 @@
         return ~(r = h(t, -1)) && (o = f[r] = l[r](t)),
         {
             c() {
-                n = Xl("div");
+                n = createElement("div");
                 for (let t = 0; t < a.length; t += 1)
                     a[t].c();
-                e = _l(),
+                e = createSpacer(),
                 o && o.c(),
                 s = Ml(),
-                Dl(n, "class", "watermark svelte-10d563p")
+                setOrRemoveAttribute(n, "class", "watermark svelte-10d563p")
             },
             m(t, i) {
-                Ol(t, n, i);
+                insertBefore(t, n, i);
                 for (let t = 0; t < a.length; t += 1)
                     a[t].m(n, null);
-                Ol(t, e, i),
+                insertBefore(t, e, i),
                 ~r && f[r].m(t, i),
-                Ol(t, s, i),
+                insertBefore(t, s, i),
                 u = !0
             },
             p(t, e) {
@@ -25419,13 +25493,13 @@
         let n, e, i, r = (t[1].author || "") + "";
         return {
             c() {
-                n = Xl("span"),
-                e = Il(r),
-                i = Il("@有谱么"),
-                Dl(n, "class", "svelte-10d563p")
+                n = createElement("span"),
+                e = createTextNode(r),
+                i = createTextNode("@有谱么"),
+                setOrRemoveAttribute(n, "class", "svelte-10d563p")
             },
             m(t, r) {
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 Tl(n, e),
                 Tl(n, i)
             },
@@ -25456,22 +25530,22 @@
         {
             c() {
                 jf(n.$$.fragment),
-                e = _l(),
-                i = Xl("footer"),
-                r = Xl("div"),
-                o = Xl("div"),
-                s = _l(),
-                u = Xl("div"),
+                e = createSpacer(),
+                i = createElement("footer"),
+                r = createElement("div"),
+                o = createElement("div"),
+                s = createSpacer(),
+                u = createElement("div"),
                 u.textContent = "扫码听示范",
-                Dl(o, "class", "qrcode svelte-10d563p"),
-                Dl(u, "class", "label svelte-10d563p"),
-                Dl(r, "class", "qr-box svelte-10d563p"),
-                Dl(i, "class", "print-sheet-corner svelte-10d563p")
+                setOrRemoveAttribute(o, "class", "qrcode svelte-10d563p"),
+                setOrRemoveAttribute(u, "class", "label svelte-10d563p"),
+                setOrRemoveAttribute(r, "class", "qr-box svelte-10d563p"),
+                setOrRemoveAttribute(i, "class", "print-sheet-corner svelte-10d563p")
             },
             m(a, l) {
                 Bf(n, a, l),
-                Ol(a, e, l),
-                Ol(a, i, l),
+                insertBefore(a, e, l),
+                insertBefore(a, i, l),
                 Tl(i, r),
                 Tl(r, o),
                 o.innerHTML = t[3],
@@ -25565,13 +25639,13 @@
         i = s[e] = o[e](t),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 i.c(),
-                Dl(n, "class", "print-sheet svelte-10d563p"),
+                setOrRemoveAttribute(n, "class", "print-sheet svelte-10d563p"),
                 Ll(n, "printing", t[4])
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 s[e].m(n, null),
                 r = !0
             },
@@ -25663,21 +25737,21 @@
         {
             c() {
                 jf(n.$$.fragment),
-                e = _l(),
-                i = Xl("div"),
-                r = Xl("div"),
-                o = Il(l),
-                s = _l(),
-                u = Xl("div"),
-                c = Il(f),
-                Dl(r, "class", "username svelte-eblaf6"),
-                Dl(u, "class", "stats svelte-eblaf6"),
-                Dl(i, "class", "info svelte-eblaf6")
+                e = createSpacer(),
+                i = createElement("div"),
+                r = createElement("div"),
+                o = createTextNode(l),
+                s = createSpacer(),
+                u = createElement("div"),
+                c = createTextNode(f),
+                setOrRemoveAttribute(r, "class", "username svelte-eblaf6"),
+                setOrRemoveAttribute(u, "class", "stats svelte-eblaf6"),
+                setOrRemoveAttribute(i, "class", "info svelte-eblaf6")
             },
             m(t, l) {
                 Bf(n, t, l),
-                Ol(t, e, l),
-                Ol(t, i, l),
+                insertBefore(t, e, l),
+                insertBefore(t, i, l),
                 Tl(i, r),
                 Tl(r, o),
                 Tl(i, s),
@@ -25711,12 +25785,12 @@
         let n, e, i, r, o = t[0] && Dx(t);
         return {
             c() {
-                n = Xl("section"),
+                n = createElement("section"),
                 o && o.c(),
-                Dl(n, "class", "profile svelte-eblaf6")
+                setOrRemoveAttribute(n, "class", "profile svelte-eblaf6")
             },
             m(s, u) {
-                Ol(s, n, u),
+                insertBefore(s, n, u),
                 o && o.m(n, null),
                 e = !0,
                 i || (r = Rl(n, "click", t[1]),
@@ -25770,57 +25844,57 @@
         let n, e, i, r, o, s, u, c, a, l, f, h, d, v, p, m, y, g, b, w, x, k, S, E, T;
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Xl("span"),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createElement("span"),
                 i.textContent = "人声轨总音符",
-                r = _l(),
-                o = Xl("span"),
+                r = createSpacer(),
+                o = createElement("span"),
                 o.textContent = `${t[3]}个`,
-                s = _l(),
-                u = Xl("div"),
-                c = Xl("span"),
+                s = createSpacer(),
+                u = createElement("div"),
+                c = createElement("span"),
                 c.textContent = "音域",
-                a = _l(),
-                l = Xl("span"),
+                a = createSpacer(),
+                l = createElement("span"),
                 l.textContent = `${t[0](t[2])} - ${t[0](t[1])} (${t[2]}\n      - ${t[1]})`,
-                f = _l(),
-                h = Xl("div"),
-                d = Xl("span"),
+                f = createSpacer(),
+                h = createElement("div"),
+                d = createElement("span"),
                 d.textContent = "跨度",
-                v = _l(),
-                p = Xl("span"),
+                v = createSpacer(),
+                p = createElement("span"),
                 p.textContent = `${t[5]}个半音`,
-                m = _l(),
-                y = Xl("div"),
-                g = Xl("span"),
+                m = createSpacer(),
+                y = createElement("div"),
+                g = createElement("span"),
                 g.textContent = "中位",
-                b = _l(),
-                w = Xl("span"),
+                b = createSpacer(),
+                w = createElement("span"),
                 w.textContent = `${t[0](t[4])}(${t[4]})`,
-                x = _l(),
-                k = Xl("div"),
-                S = Xl("span"),
+                x = createSpacer(),
+                k = createElement("div"),
+                S = createElement("span"),
                 S.textContent = "平均",
-                E = _l(),
-                T = Xl("span"),
+                E = createSpacer(),
+                T = createElement("span"),
                 T.textContent = `${t[0](t[6])}(${t[6]})`,
-                Dl(i, "class", "label"),
-                Dl(e, "class", "item"),
-                Dl(c, "class", "label"),
-                Dl(u, "class", "item"),
-                Dl(d, "class", "label"),
-                Dl(h, "class", "item svelte-9zqwtb"),
+                setOrRemoveAttribute(i, "class", "label"),
+                setOrRemoveAttribute(e, "class", "item"),
+                setOrRemoveAttribute(c, "class", "label"),
+                setOrRemoveAttribute(u, "class", "item"),
+                setOrRemoveAttribute(d, "class", "label"),
+                setOrRemoveAttribute(h, "class", "item svelte-9zqwtb"),
                 Ll(h, "warning", t[7]),
-                Dl(g, "class", "label"),
-                Dl(y, "class", "item"),
-                Dl(S, "class", "label"),
-                Dl(T, "class", "label"),
-                Dl(k, "class", "item"),
-                Dl(n, "class", "vocal-range svelte-9zqwtb")
+                setOrRemoveAttribute(g, "class", "label"),
+                setOrRemoveAttribute(y, "class", "item"),
+                setOrRemoveAttribute(S, "class", "label"),
+                setOrRemoveAttribute(T, "class", "label"),
+                setOrRemoveAttribute(k, "class", "item"),
+                setOrRemoveAttribute(n, "class", "vocal-range svelte-9zqwtb")
             },
             m(t, O) {
-                Ol(t, n, O),
+                insertBefore(t, n, O),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(e, r),
@@ -25938,80 +26012,80 @@
         af.push(( () => Df(P, "selected", K))),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
-                i = Il(F),
-                r = _l(),
-                o = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
+                i = createTextNode(F),
+                r = createSpacer(),
+                o = createElement("div"),
                 jf(s.$$.fragment),
-                c = _l(),
-                a = Xl("div"),
-                l = Xl("div"),
+                c = createSpacer(),
+                a = createElement("div"),
+                l = createElement("div"),
                 l.textContent = "简化和弦",
-                f = _l(),
-                h = Xl("div"),
+                f = createSpacer(),
+                h = createElement("div"),
                 jf(d.$$.fragment),
-                p = _l(),
-                m = Xl("div"),
-                y = Xl("div"),
+                p = createSpacer(),
+                m = createElement("div"),
+                y = createElement("div"),
                 y.textContent = "并行显示",
-                g = _l(),
-                b = Xl("div"),
+                g = createSpacer(),
+                b = createElement("div"),
                 jf(w.$$.fragment),
-                k = _l(),
-                S = Xl("div"),
-                E = Xl("div"),
-                T = Il("移调: "),
-                O = Il(t[7]),
-                C = _l(),
+                k = createSpacer(),
+                S = createElement("div"),
+                E = createElement("div"),
+                T = createTextNode("移调: "),
+                O = createTextNode(t[7]),
+                C = createSpacer(),
                 V && V.c(),
-                A = _l(),
-                X = Xl("div"),
+                A = createSpacer(),
+                X = createElement("div"),
                 jf(I.$$.fragment),
-                M = _l(),
-                R = Xl("div"),
-                D = Xl("div"),
+                M = createSpacer(),
+                R = createElement("div"),
+                D = createElement("div"),
                 D.textContent = "变调夹",
-                j = _l(),
-                B = Xl("div"),
+                j = createSpacer(),
+                B = createElement("div"),
                 jf(P.$$.fragment),
-                Dl(e, "class", "label svelte-u9cqo2"),
-                Dl(o, "class", "content svelte-u9cqo2"),
-                Dl(n, "class", "row svelte-u9cqo2"),
-                Dl(l, "class", "label svelte-u9cqo2"),
-                Dl(h, "class", "content svelte-u9cqo2"),
-                Dl(a, "class", "row svelte-u9cqo2"),
-                Dl(y, "class", "label svelte-u9cqo2"),
-                Dl(b, "class", "content svelte-u9cqo2"),
-                Dl(m, "class", "row svelte-u9cqo2"),
-                Dl(E, "class", "label svelte-u9cqo2"),
-                Dl(X, "class", "content svelte-u9cqo2"),
-                Dl(S, "class", "row svelte-u9cqo2"),
-                Dl(D, "class", "label svelte-u9cqo2"),
-                Dl(B, "class", "content svelte-u9cqo2"),
-                Dl(R, "class", "row svelte-u9cqo2")
+                setOrRemoveAttribute(e, "class", "label svelte-u9cqo2"),
+                setOrRemoveAttribute(o, "class", "content svelte-u9cqo2"),
+                setOrRemoveAttribute(n, "class", "row svelte-u9cqo2"),
+                setOrRemoveAttribute(l, "class", "label svelte-u9cqo2"),
+                setOrRemoveAttribute(h, "class", "content svelte-u9cqo2"),
+                setOrRemoveAttribute(a, "class", "row svelte-u9cqo2"),
+                setOrRemoveAttribute(y, "class", "label svelte-u9cqo2"),
+                setOrRemoveAttribute(b, "class", "content svelte-u9cqo2"),
+                setOrRemoveAttribute(m, "class", "row svelte-u9cqo2"),
+                setOrRemoveAttribute(E, "class", "label svelte-u9cqo2"),
+                setOrRemoveAttribute(X, "class", "content svelte-u9cqo2"),
+                setOrRemoveAttribute(S, "class", "row svelte-u9cqo2"),
+                setOrRemoveAttribute(D, "class", "label svelte-u9cqo2"),
+                setOrRemoveAttribute(B, "class", "content svelte-u9cqo2"),
+                setOrRemoveAttribute(R, "class", "row svelte-u9cqo2")
             },
             m(t, u) {
-                Ol(t, n, u),
+                insertBefore(t, n, u),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(n, r),
                 Tl(n, o),
                 Bf(s, o, null),
-                Ol(t, c, u),
-                Ol(t, a, u),
+                insertBefore(t, c, u),
+                insertBefore(t, a, u),
                 Tl(a, l),
                 Tl(a, f),
                 Tl(a, h),
                 Bf(d, h, null),
-                Ol(t, p, u),
-                Ol(t, m, u),
+                insertBefore(t, p, u),
+                insertBefore(t, m, u),
                 Tl(m, y),
                 Tl(m, g),
                 Tl(m, b),
                 Bf(w, b, null),
-                Ol(t, k, u),
-                Ol(t, S, u),
+                insertBefore(t, k, u),
+                insertBefore(t, S, u),
                 Tl(S, E),
                 Tl(E, T),
                 Tl(E, O),
@@ -26020,8 +26094,8 @@
                 Tl(S, A),
                 Tl(S, X),
                 Bf(I, X, null),
-                Ol(t, M, u),
-                Ol(t, R, u),
+                insertBefore(t, M, u),
+                insertBefore(t, R, u),
                 Tl(R, D),
                 Tl(R, j),
                 Tl(R, B),
@@ -26101,12 +26175,12 @@
         let n, e, i;
         return {
             c() {
-                n = Xl("span"),
+                n = createElement("span"),
                 n.textContent = "重置",
-                Dl(n, "class", "bottom clickable svelte-u9cqo2")
+                setOrRemoveAttribute(n, "class", "bottom clickable svelte-u9cqo2")
             },
             m(r, o) {
-                Ol(r, n, o),
+                insertBefore(r, n, o),
                 e || (i = Rl(n, "click", t[14]),
                 e = !0)
             },
@@ -26135,23 +26209,23 @@
         let p = !t[8] && Nx(t);
         return {
             c() {
-                n = Xl("section"),
-                e = Xl("div"),
-                i = Xl("div"),
-                r = Il("字号: "),
-                o = Il(h),
-                s = _l(),
-                u = Xl("div"),
+                n = createElement("section"),
+                e = createElement("div"),
+                i = createElement("div"),
+                r = createTextNode("字号: "),
+                o = createTextNode(h),
+                s = createSpacer(),
+                u = createElement("div"),
                 jf(c.$$.fragment),
-                l = _l(),
+                l = createSpacer(),
                 p && p.c(),
-                Dl(i, "class", "label svelte-u9cqo2"),
-                Dl(u, "class", "content svelte-u9cqo2"),
-                Dl(e, "class", "row svelte-u9cqo2"),
-                Dl(n, "class", "svelte-u9cqo2")
+                setOrRemoveAttribute(i, "class", "label svelte-u9cqo2"),
+                setOrRemoveAttribute(u, "class", "content svelte-u9cqo2"),
+                setOrRemoveAttribute(e, "class", "row svelte-u9cqo2"),
+                setOrRemoveAttribute(n, "class", "svelte-u9cqo2")
             },
             m(t, a) {
-                Ol(t, n, a),
+                insertBefore(t, n, a),
                 Tl(n, e),
                 Tl(e, i),
                 Tl(i, r),
@@ -26266,12 +26340,12 @@
         let n;
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 n.innerHTML = '<span class="yoopu3-icon svelte-15g1ex"></span>\n          提示：曲谱编辑尚未完成。请在屏幕右下方操作面板选择&quot;编辑曲谱&quot;或者&quot;放弃修改&quot;继续。',
-                Dl(n, "class", "review-panel review-required svelte-15g1ex")
+                setOrRemoveAttribute(n, "class", "review-panel review-required svelte-15g1ex")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             p: defaultStart,
             d(t) {
@@ -26291,7 +26365,7 @@
             },
             m(t, i) {
                 e.m(t, i),
-                Ol(t, n, i)
+                insertBefore(t, n, i)
             },
             p(t, n) {
                 e.p(t, n)
@@ -26311,17 +26385,17 @@
           , u = s(t);
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("span"),
+                n = createElement("div"),
+                e = createElement("span"),
                 e.textContent = "",
-                i = _l(),
+                i = createSpacer(),
                 u.c(),
-                r = Il("\n            请进入编辑页面查看详情"),
-                Dl(e, "class", "yoopu3-icon svelte-15g1ex"),
-                Dl(n, "class", "review-panel review-result svelte-15g1ex")
+                r = createTextNode("\n            请进入编辑页面查看详情"),
+                setOrRemoveAttribute(e, "class", "yoopu3-icon svelte-15g1ex"),
+                setOrRemoveAttribute(n, "class", "review-panel review-result svelte-15g1ex")
             },
             m(t, o) {
-                Ol(t, n, o),
+                insertBefore(t, n, o),
                 Tl(n, e),
                 Tl(n, i),
                 u.m(n, null),
@@ -26348,16 +26422,16 @@
           , s = o(t);
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("span"),
+                n = createElement("div"),
+                e = createElement("span"),
                 e.textContent = "",
-                i = _l(),
+                i = createSpacer(),
                 s.c(),
-                Dl(e, "class", "yoopu3-icon svelte-15g1ex"),
-                Dl(n, "class", "review-panel review-pending svelte-15g1ex")
+                setOrRemoveAttribute(e, "class", "yoopu3-icon svelte-15g1ex"),
+                setOrRemoveAttribute(n, "class", "review-panel review-pending svelte-15g1ex")
             },
             m(t, r) {
-                Ol(t, n, r),
+                insertBefore(t, n, r),
                 Tl(n, e),
                 Tl(n, i),
                 s.m(n, null)
@@ -26378,10 +26452,10 @@
         let n;
         return {
             c() {
-                n = Il("[公开发表的审核未通过]")
+                n = createTextNode("[公开发表的审核未通过]")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -26392,10 +26466,10 @@
         let n;
         return {
             c() {
-                n = Il("[新增修改的审核未通过]")
+                n = createTextNode("[新增修改的审核未通过]")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -26406,10 +26480,10 @@
         let n;
         return {
             c() {
-                n = Il("提示：曲谱已投稿作公开发表，正在等候审核中，等候期间您依旧可以做出修改。")
+                n = createTextNode("提示：曲谱已投稿作公开发表，正在等候审核中，等候期间您依旧可以做出修改。")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -26420,10 +26494,10 @@
         let n;
         return {
             c() {
-                n = Il("提示：曲谱有修改在等候审核中，新修改的内容目前仅自己可见。")
+                n = createTextNode("提示：曲谱有修改在等候审核中，新修改的内容目前仅自己可见。")
             },
             m(t, e) {
-                Ol(t, n, e)
+                insertBefore(t, n, e)
             },
             d(t) {
                 t && Cl(n)
@@ -26434,16 +26508,16 @@
         let n, e, i, r, o = on(t[0].changeSuggestion) + "";
         return {
             c() {
-                n = Xl("div"),
-                e = Xl("span"),
+                n = createElement("div"),
+                e = createElement("span"),
                 e.textContent = "",
-                i = Il("\n          修改建议："),
-                Dl(e, "class", "yoopu3-icon svelte-15g1ex"),
+                i = createTextNode("\n          修改建议："),
+                setOrRemoveAttribute(e, "class", "yoopu3-icon svelte-15g1ex"),
                 r = new Ul(null),
-                Dl(n, "class", "review-panel review-result svelte-15g1ex")
+                setOrRemoveAttribute(n, "class", "review-panel review-result svelte-15g1ex")
             },
             m(t, s) {
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 Tl(n, e),
                 Tl(n, i),
                 r.m(o, n)
@@ -26460,20 +26534,20 @@
         let n, e, i, r, o = t[0].format === nt.XHE && ik(t), s = t[17] && t[18] && rk(t);
         return {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 o && o.c(),
-                e = _l(),
+                e = createSpacer(),
                 s && s.c(),
                 i = Ml(),
-                Dl(n, "class", "sheet-container svelte-15g1ex")
+                setOrRemoveAttribute(n, "class", "sheet-container svelte-15g1ex")
             },
             m(u, c) {
-                Ol(u, n, c),
+                insertBefore(u, n, c),
                 o && o.m(n, null),
                 t[42](n),
-                Ol(u, e, c),
+                insertBefore(u, e, c),
                 s && s.m(u, c),
-                Ol(u, i, c),
+                insertBefore(u, i, c),
                 r = !0
             },
             p(t, e) {
@@ -26561,17 +26635,17 @@
         af.push(( () => Df(o, "tempo", l))),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                r = _l(),
+                r = createSpacer(),
                 jf(o.$$.fragment),
-                Dl(n, "class", "sheet-container svelte-15g1ex"),
-                Dl(n, "id", "nier-scroll-view")
+                setOrRemoveAttribute(n, "class", "sheet-container svelte-15g1ex"),
+                setOrRemoveAttribute(n, "id", "nier-scroll-view")
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Bf(e, n, null),
-                Ol(t, r, i),
+                insertBefore(t, r, i),
                 Bf(o, t, i),
                 u = !0
             },
@@ -26781,16 +26855,16 @@
         }),
         {
             c() {
-                n = Xl("div"),
-                e = Xl("div"),
+                n = createElement("div"),
+                e = createElement("div"),
                 e.textContent = "分类",
-                i = _l(),
+                i = createSpacer(),
                 jf(r.$$.fragment),
-                Dl(e, "class", "section-title svelte-15g1ex"),
-                Dl(n, "class", "section svelte-15g1ex")
+                setOrRemoveAttribute(e, "class", "section-title svelte-15g1ex"),
+                setOrRemoveAttribute(n, "class", "section svelte-15g1ex")
             },
             m(t, s) {
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 Tl(n, e),
                 Tl(n, i),
                 Bf(r, n, null),
@@ -26858,12 +26932,12 @@
         {
             c() {
                 f && f.c(),
-                n = _l(),
+                n = createSpacer(),
                 jf(e.$$.fragment)
             },
             m(t, i) {
                 f && f.m(t, i),
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Bf(e, t, i),
                 a = !0
             },
@@ -27059,15 +27133,15 @@
         return {
             c() {
                 r && r.c(),
-                n = _l(),
+                n = createSpacer(),
                 o && o.c(),
                 e = Ml()
             },
             m(t, s) {
                 r && r.m(t, s),
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 o && o.m(t, s),
-                Ol(t, e, s),
+                insertBefore(t, e, s),
                 i = !0
             },
             p(t, e) {
@@ -27136,14 +27210,14 @@
         let n, e, i, r, o;
         return {
             c() {
-                n = Xl("pre"),
-                e = Il("sheetId="),
-                i = Il(t[2]),
-                r = Il("\nownerId="),
-                o = Il(t[3])
+                n = createElement("pre"),
+                e = createTextNode("sheetId="),
+                i = createTextNode(t[2]),
+                r = createTextNode("\nownerId="),
+                o = createTextNode(t[3])
             },
             m(t, s) {
-                Ol(t, n, s),
+                insertBefore(t, n, s),
                 Tl(n, e),
                 Tl(n, i),
                 Tl(n, r),
@@ -27162,20 +27236,20 @@
         let n, e, i;
         return {
             c() {
-                n = Xl("a"),
-                e = Il("下载源文件"),
-                Dl(n, "href", i = wt(hi, {
+                n = createElement("a"),
+                e = createTextNode("下载源文件"),
+                setOrRemoveAttribute(n, "href", i = wt(hi, {
                     code: t[0].id
                 }))
             },
             m(t, i) {
-                Ol(t, n, i),
+                insertBefore(t, n, i),
                 Tl(n, e)
             },
             p(t, e) {
                 1 & e[0] && i !== (i = wt(hi, {
                     code: t[0].id
-                })) && Dl(n, "href", i)
+                })) && setOrRemoveAttribute(n, "href", i)
             },
             d(t) {
                 t && Cl(n)
@@ -27230,43 +27304,43 @@
         }),
         {
             c() {
-                n = Xl("div"),
+                n = createElement("div"),
                 jf(e.$$.fragment),
-                i = _l(),
-                r = Xl("div"),
-                o = Xl("div"),
+                i = createSpacer(),
+                r = createElement("div"),
+                o = createElement("div"),
                 X && X.c(),
-                s = _l(),
+                s = createSpacer(),
                 I && I.c(),
-                u = _l(),
+                u = createSpacer(),
                 a.c(),
-                l = _l(),
-                f = Xl("div"),
+                l = createSpacer(),
+                f = createElement("div"),
                 R && R.c(),
-                h = _l(),
+                h = createSpacer(),
                 D && D.c(),
-                d = _l(),
+                d = createSpacer(),
                 p.c(),
-                m = _l(),
+                m = createSpacer(),
                 jf(y.$$.fragment),
-                g = _l(),
+                g = createSpacer(),
                 P && P.c(),
-                b = _l(),
+                b = createSpacer(),
                 q && q.c(),
-                w = _l(),
+                w = createSpacer(),
                 jf(x.$$.fragment),
-                k = _l(),
+                k = createSpacer(),
                 jf(S.$$.fragment),
-                E = _l(),
+                E = createSpacer(),
                 jf(T.$$.fragment),
-                Dl(o, "class", "main svelte-15g1ex"),
-                Dl(f, "class", "side svelte-15g1ex"),
-                Dl(r, "class", "layout svelte-15g1ex"),
+                setOrRemoveAttribute(o, "class", "main svelte-15g1ex"),
+                setOrRemoveAttribute(f, "class", "side svelte-15g1ex"),
+                setOrRemoveAttribute(r, "class", "layout svelte-15g1ex"),
                 Ll(r, "nier", t[26]),
-                Dl(n, "class", "no-print")
+                setOrRemoveAttribute(n, "class", "no-print")
             },
             m(t, a) {
-                Ol(t, n, a),
+                insertBefore(t, n, a),
                 Bf(e, n, null),
                 Tl(n, i),
                 Tl(n, r),
@@ -27289,11 +27363,11 @@
                 P && P.m(f, null),
                 Tl(f, b),
                 q && q.m(f, null),
-                Ol(t, w, a),
+                insertBefore(t, w, a),
                 Bf(x, t, a),
-                Ol(t, k, a),
+                insertBefore(t, k, a),
                 Bf(S, t, a),
-                Ol(t, E, a),
+                insertBefore(t, E, a),
                 Bf(T, t, a),
                 O = !0
             },
@@ -27387,7 +27461,7 @@
           , {ownerId: a} = n;
         of("webViewInterface", r),
         of("synd", o);
-        const l = u && kt(u.role, ht.EDITOR)
+        const l = u && checkUserRole(u.role, ht.EDITOR)
           , f = at.includes(s.format)
           , h = Ti(s.id) || s.draftId
           , d = s.isOwned
