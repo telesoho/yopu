@@ -7816,15 +7816,15 @@
         t.addEventListener("fullscreenchange", i),
         t.addEventListener("webkitfullscreenchange", i)
     }
-    const Qf = "WebView"
-      , Zf = infoLogger(Qf)
-      , th = errorLogger(Qf)
-      , nh = {
+    const WebView = "WebView"
+      , webViewLog = infoLogger(WebView)
+      , webViewError = errorLogger(WebView)
+      , ThemeModes = {
         DEFAULT: "default",
         LIGHT: "light",
         DARK: "dark"
     }
-      , eh = {
+      , ScreenOrientations = {
         PORTRAIT: "portrait",
         LANDSCAPE: "landscape"
     }
@@ -7867,12 +7867,12 @@
                 ), !1)
             }
             setTimeout(( () => {
-                this.J("start") || this.K("start") || Zf("webview based app started")
+                this.J("start") || this.K("start") || webViewLog("webview based app started")
             }
             ), 1)
         }
         isSupported(t) {
-            Zf("isSupported", t);
+            webViewLog("isSupported", t);
             let n = this.Y();
             if (n)
                 return n.isSupported ? n.isSupported(t) : !!n[t];
@@ -7887,7 +7887,7 @@
             return "lockScreenOrientation" === t ? ih : 0 !== t.indexOf("request") && (!["openWeComKefu", "setColorMode"].includes(t) && !!this[t])
         }
         isSharingSupported(t) {
-            Zf("isSharingSupported", t);
+            webViewLog("isSharingSupported", t);
             let n = this.Y();
             if (n)
                 return !!n.isSharingSupported && n.isSharingSupported(t);
@@ -7898,7 +7898,7 @@
             return !1
         }
         replacePage(t) {
-            Zf("replacePage", {
+            webViewLog("replacePage", {
                 path: t
             }),
             this.isSupported("replacePage") ? this.K("replacePage", {
@@ -7907,52 +7907,52 @@
             history.go(0)) : Cn.error("请升级到最新版本app")
         }
         keepScreenOn(t) {
-            Zf("keepScreenOn", t),
+            webViewLog("keepScreenOn", t),
             this.J("keepScreenOn", t) || this.K("keepScreenOn", {
                 enable: t
             })
         }
         async lockScreenOrientation(t) {
-            Zf("lockScreenOrientation", t),
+            webViewLog("lockScreenOrientation", t),
             this.J("lockScreenOrientation", t) || this.K("lockScreenOrientation", {
                 orientation: t
-            }) || ih && (t === eh.PORTRAIT ? await Kf() : t === eh.LANDSCAPE && await Jf(),
+            }) || ih && (t === ScreenOrientations.PORTRAIT ? await Kf() : t === ScreenOrientations.LANDSCAPE && await Jf(),
             screen.orientation.lock(t).catch(( () => {}
             )))
         }
         print() {
-            Zf("print"),
+            webViewLog("print"),
             this.J("print") || this.K("print") || print()
         }
         getSystemInfo() {
-            Zf("getSystemInfo");
+            webViewLog("getSystemInfo");
             const t = this.Y();
             return t && t.getSystemInfo ? JSON.parse(t.getSystemInfo()) : this.Z() && this.V.iosNativeData && this.V.iosNativeData.systemInfo || []
         }
         getSourceAppStore() {
-            Zf("getSourceAppStore");
+            webViewLog("getSourceAppStore");
             const t = this.Y();
             return t && t.getSourceAppStore ? t.getSourceAppStore() : null
         }
         openAppStore() {
-            Zf("openAppStore"),
+            webViewLog("openAppStore"),
             this.J("openAppStore", bu) || this.K("openAppStore", {
                 appId: wu
             })
         }
         openWeComKefu(t) {
-            Zf("openWeComKefu");
+            webViewLog("openWeComKefu");
             const n = {
                 url: t
             };
             this.J("openWeComKefu", n) || this.K("openWeComKefu", n)
         }
         shareApp() {
-            Zf("shareApp"),
+            webViewLog("shareApp"),
             this.J("shareApp") || this.K("shareApp") || uh("推荐你琴谱app《有谱么》:" + new URL("/",location.href).href)
         }
         shareObject(t) {
-            if (Zf("shareObject", t),
+            if (webViewLog("shareObject", t),
             this.J("shareObject", t))
                 return;
             if (this.K("shareObject", t))
@@ -7961,7 +7961,7 @@
             uh(n + ` ( ${e} )`)
         }
         shareObjectTo(t) {
-            if (Zf("shareObjectTo", t),
+            if (webViewLog("shareObjectTo", t),
             this.J("shareObjectTo", t))
                 return;
             if (this.K("shareObjectTo", t))
@@ -7970,7 +7970,7 @@
             uh(n + ` ( ${e} )`)
         }
         shareText({subject: t, text: n, url: e, imageSrc: i}) {
-            Zf("shareText");
+            webViewLog("shareText");
             const r = {
                 subject: t,
                 text: n,
@@ -7984,54 +7984,54 @@
             this.J("shareText", o) || this.K("shareText", r) || uh(n + ` ( ${e} )`)
         }
         copyToClipboard(t) {
-            if (Zf("copyToClipboard", t),
+            if (webViewLog("copyToClipboard", t),
             this.isAndroid() && this.isSupported("copyToClipboard"))
                 return this.J("copyToClipboard", t),
                 void Cn.show(rh);
             uh(t)
         }
         requestAuthToken(t) {
-            return Zf("requestAuthToken", t),
+            return webViewLog("requestAuthToken", t),
             this.tt("requestAuthToken", {
                 type: t
             })
         }
         requestWxPay(t) {
-            Zf("requestWxPay", t),
+            webViewLog("requestWxPay", t),
             this.J("requestWxPay", t)
         }
         requestApplePay(t) {
-            Zf("requestApplePay", t),
+            webViewLog("requestApplePay", t),
             this.K("requestApplePay", t)
         }
         requestAppleRestore() {
-            Zf("requestAppleRestore"),
+            webViewLog("requestAppleRestore"),
             this.K("requestAppleRestore")
         }
         requestDeviceToken() {
-            return Zf("requestDeviceToken"),
+            return webViewLog("requestDeviceToken"),
             this.tt("requestDeviceToken")
         }
         requestMuteStatus() {
-            return Zf("requestMuteStatus"),
+            return webViewLog("requestMuteStatus"),
             this.tt("requestMuteStatus")
         }
         showInputKeyboard() {
-            Zf("showInputKeyboard"),
+            webViewLog("showInputKeyboard"),
             this.J("showInputKeyboard")
         }
         setColorMode(t) {
             const n = "setColorMode";
-            Zf(n + ": " + t),
+            webViewLog(n + ": " + t),
             this.J(n, t) || this.K(n, {
                 colorMode: t
             })
         }
         getColorMode() {
-            Zf("getColorMode");
+            webViewLog("getColorMode");
             let t = this.Y();
-            return t ? t.getColorMode ? t.getColorMode() : nh.DEFAULT : (t = this.Z(),
-            t && this.V.iosNativeData && this.V.iosNativeData.colorMode || nh.DEFAULT)
+            return t ? t.getColorMode ? t.getColorMode() : ThemeModes.DEFAULT : (t = this.Z(),
+            t && this.V.iosNativeData && this.V.iosNativeData.colorMode || ThemeModes.DEFAULT)
         }
         setColors(t) {
             const n = "setColors"
@@ -8040,12 +8040,12 @@
                 statusBar: Hf,
                 ...t
             };
-            Zf(n, e),
+            webViewLog(n, e),
             this.J(n, e) || this.K(n, e)
         }
         saveValueIfNotExist(t, n) {
             const e = "saveValueIfNotExist";
-            Zf(e + ": " + t + "=" + n);
+            webViewLog(e + ": " + t + "=" + n);
             const i = {
                 key: t,
                 value: n
@@ -8054,7 +8054,7 @@
         }
         saveValue(t, n) {
             const e = "saveValue";
-            Zf(e + ": " + t + "=" + n);
+            webViewLog(e + ": " + t + "=" + n);
             const i = {
                 key: t,
                 value: n
@@ -8062,17 +8062,17 @@
             this.J(e, i) || this.K(e, i)
         }
         readValue(t) {
-            Zf("readValue: " + t);
+            webViewLog("readValue: " + t);
             let n = this.Y();
             return n ? n.readValue ? n.readValue(t) : null : (n = this.Z(),
             n && this.V.iosNativeData && this.V.iosNativeData.values ? this.V.iosNativeData.values[t] : null)
         }
         exit(t) {
-            Zf("exit"),
+            webViewLog("exit"),
             this.J("exit") || this.K("exit") || xi(t)
         }
         kill() {
-            Zf("kill"),
+            webViewLog("kill"),
             this.isSupported("kill") ? this.J("kill") || this.K("kill") || (location.href = "/") : this.exit(!0)
         }
         onPause(t) {
@@ -8104,7 +8104,7 @@
               , i = new Jt;
             return this.H[e] = i,
             n.messageChannelId = e,
-            this.J(t, n) || this.K(t, n) || Zf(t, n),
+            this.J(t, n) || this.K(t, n) || webViewLog(t, n),
             i.promise
         }
         J(t, n) {
@@ -8115,7 +8115,7 @@
                 try {
                     void 0 === n ? e[t]() : e[t]("object" == typeof n ? JSON.stringify(n) : n)
                 } catch (t) {
-                    th(t)
+                    webViewError(t)
                 }
             return !0
         }
@@ -8144,7 +8144,7 @@
         darkModeState = n ? dh() : vh(ah)
     }
     function fh(t) {
-        const n = t.getColorMode() || nh.DEFAULT
+        const n = t.getColorMode() || ThemeModes.DEFAULT
           , {subscribe: e, set: i} = createState(n);
         return {
             subscribe: e,
@@ -8159,7 +8159,7 @@
         return {
             subscribe: t,
             set: t => {
-                t === nh.DEFAULT ? LocalStorage.removeItem(Ut.MINE_SELECTED_COLOR_MODE) : LocalStorage.setItem(Ut.MINE_SELECTED_COLOR_MODE, t),
+                t === ThemeModes.DEFAULT ? LocalStorage.removeItem(Ut.MINE_SELECTED_COLOR_MODE) : LocalStorage.setItem(Ut.MINE_SELECTED_COLOR_MODE, t),
                 n(t)
             }
         }
@@ -8193,10 +8193,10 @@
         ))
     }
     function ph() {
-        return LocalStorage.getItem(Ut.MINE_SELECTED_COLOR_MODE) || nh.DEFAULT
+        return LocalStorage.getItem(Ut.MINE_SELECTED_COLOR_MODE) || ThemeModes.DEFAULT
     }
     function mh(t, n, e) {
-        t === nh.DEFAULT ? e(n) : t === nh.DARK ? e(!0) : t === nh.LIGHT && e(!1)
+        t === ThemeModes.DEFAULT ? e(n) : t === ThemeModes.DARK ? e(!0) : t === ThemeModes.LIGHT && e(!1)
     }
     function yh() {
         const t = window.matchMedia && window.matchMedia("screen and (prefers-color-scheme: dark)");
@@ -8363,7 +8363,7 @@
         setTimeout(( () => {
             const screenHandler = new ScreenHandler();
             screenHandler.install(self),
-            !allowHorizontalScreen && isMobileDevice() && screenHandler.lockScreenOrientation(eh.PORTRAIT);
+            !allowHorizontalScreen && isMobileDevice() && screenHandler.lockScreenOrientation(ScreenOrientations.PORTRAIT);
             let trackingTasks = [];
             if( !isTrackingDisabled ) {
                 trackingTasks = getTrackingTasks(screenHandler);
@@ -11664,13 +11664,13 @@
           , o = i;
         const s = [{
             title: "自动 (追随系统)",
-            value: nh.DEFAULT
+            value: ThemeModes.DEFAULT
         }, {
             title: "强制开启",
-            value: nh.DARK
+            value: ThemeModes.DARK
         }, {
             title: "强制关闭",
-            value: nh.LIGHT
+            value: ThemeModes.LIGHT
         }];
         return t.$$set = t => {
             "open"in t && e(0, r = t.open)
