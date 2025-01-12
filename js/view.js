@@ -936,18 +936,18 @@
     function gi(t) {
         return "/" + t.join("/")
     }
-    function getInstrumentFromBi(t=location.search) {
-        const n = {}
-          , e = t.substr(1).split("&");
-        for (const t in e)
-            if (e.hasOwnProperty(t)) {
-                const i = e[t]
+    function getInstrumentFromQueryString(queryString=location.search) {
+        const instrumentInfo = {}
+          , queryParams = queryString.substr(1).split("&");
+        for (const param in queryParams)
+            if (queryParams.hasOwnProperty(param)) {
+                const i = queryParams[param]
                   , r = i.indexOf("=");
-                n[i.substr(0, r)] = decodeURIComponent(i.substr(r + 1))
+                instrumentInfo[i.substr(0, r)] = decodeURIComponent(i.substr(r + 1))
             }
-        return n
+        return instrumentInfo
     }
-    function getInstrumentFromWi() {
+    function getInstrumentFromHash() {
         const t = self.location.hash.substr(1).split("&")
           , n = {};
         return t.forEach((t => {
@@ -974,9 +974,14 @@
         instrument) : null
     }
     function getSelectedInstrument() {
-        let instrument = getInstrumentFromBi().instrument || getInstrumentFromWi().instrument;
-        return isValidInstrument(instrument) || (instrument = LocalStorage.getItem(Ut.MINE_SELECTED_INSTRUMENT)),
-        isValidInstrument(instrument) ? instrument : null
+        let instrument = getInstrumentFromQueryString().instrument || getInstrumentFromHash().instrument;
+        // If the instrument is not valid, attempt to get it from local storage
+        if (!isValidInstrument(instrument)) {
+            instrument = LocalStorage.getItem(Ut.MINE_SELECTED_INSTRUMENT);
+        }
+
+        // Return the instrument if it is valid, otherwise return null
+        return isValidInstrument(instrument) ? instrument : null;
     }
     function isValidInstrument(t) {
         return [Z.GUITAR, Z.UKULELE, Z.JIAN, Z.PIANO].includes(t)
@@ -6741,7 +6746,7 @@
     function na(t, n={}) {
         if (window.gtag) {
             const e = {}
-              , i = getInstrumentFromBi();
+              , i = getInstrumentFromQueryString();
             return i.iVersion && (e.iVersion = i.iVersion),
             i.aVersion && (e.aVersion = i.aVersion),
             n.label && (e.event_label = n.label),
@@ -7880,7 +7885,7 @@
             if (n = this.Z(),
             n) {
                 let n = this.V.iosNativeApi;
-                return n || (n = getInstrumentFromBi().api,
+                return n || (n = getInstrumentFromQueryString().api,
                 n = n ? n.split(",") : []),
                 n = n.concat("exit", "openAppStore", "shareApp", "shareText"),
                 n.indexOf(t) >= 0
@@ -8350,7 +8355,7 @@
         return !1
     }
     const applicationLog = infoLogger("Application")
-      , isTrackingDisabled = getInstrumentFromBi()["no-tracking"];
+      , isTrackingDisabled = getInstrumentFromQueryString()["no-tracking"];
     function initializeApplication(t, {errorReporting: errorReporting=true, 
         allowHorizontalScreen: allowHorizontalScreen=false}={}) {
         if (isIE11(navigator.userAgent)) {
@@ -12764,7 +12769,7 @@
         }
     }
     function Pm(t, n, e) {
-        let i = String(getInstrumentFromWi().q || "")
+        let i = String(getInstrumentFromHash().q || "")
           , r = !1
           , o = !0;
         function s(t) {
@@ -25603,7 +25608,7 @@
     const _x = 1200;
     function Mx(t, n, e) {
         const i = sf("webViewInterface")
-          , r = getInstrumentFromBi().iVersion || k(navigator.userAgent) ? void 0 : 2;
+          , r = getInstrumentFromQueryString().iVersion || k(navigator.userAgent) ? void 0 : 2;
         let o, s, u, c, a, l = !1;
         return [o, s, u, c, l, a, r, async function() {
             if (l) {
