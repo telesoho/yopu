@@ -33,7 +33,7 @@
     function S(t) {
         return k(t) || /iphone|ipod|ipad/i.test(t)
     }
-    function E(t) {
+    function isIE11(t) {
         return t && t.indexOf("Trident/7") > 0
     }
     function T(t) {
@@ -484,10 +484,10 @@
             }
         }
     }
-    function zt(t) {
+    function infoLogger(t) {
         return Gt() ? console.log.bind(console, `[${t}]`) : () => {}
     }
-    function Lt(t) {
+    function errorLogger(t) {
         return Gt() ? console.error.bind(console, `[${t}]`) : t => {
             t instanceof Error && self.captureException && self.captureException(t)
         }
@@ -517,7 +517,7 @@
         IOS_DEVICE_TOKEN: "ios-device-token",
         LAST_AUTH_INFO: "last-auth-info"
     }
-      , Ht = zt("Storage")
+      , Ht = infoLogger("Storage")
       , {localStorage: Vt} = window;
     class LocalStorage {
         static setItem(t, n) {
@@ -630,7 +630,7 @@
     }
     const sn = document
       , un = sn.body;
-    function cn(t) {
+    function querySelector(t) {
         return sn.querySelector(t)
     }
     function an(t, n) {
@@ -640,7 +640,7 @@
         const e = t.querySelectorAll(n);
         return Array.prototype.slice.call(e)
     }
-    function fn(t, n, ...e) {
+    function createElement(t, n, ...e) {
         const i = sn.createElement(t);
         if (n)
             for (const t in n)
@@ -668,7 +668,7 @@
             document.documentElement.setAttribute(attributeName, attributeValue);
         }
     }
-    function vn(t, n) {
+    function toggleDarkModeClass(t, n) {
         pn(un, t, n)
     }
     function pn(t, n, e) {
@@ -683,7 +683,7 @@
     function installHandler(t, n) {
         self.customElements.define(t, n)
     }
-    const bn = zt("Toast")
+    const bn = infoLogger("Toast")
       , wn = {
         CENTER: "center",
         BOTTOM: "bottom"
@@ -746,8 +746,8 @@
         o.promise
     }
     function Xn() {
-        let t = cn("#" + kn);
-        return t || (t = fn("div", {
+        let t = querySelector("#" + kn);
+        return t || (t = createElement("div", {
             id: kn
         }),
         t.innerHTML = '\n<div class="message"></div>\n<div class="right">\n  <button action></button>\n</div>\n    ',
@@ -6694,10 +6694,10 @@
         DEV: "dev"
     }
       , Wc = ra()
-      , Jc = zt("Analytics")
+      , Jc = infoLogger("Analytics")
       , Kc = "G-8RWGD73K0X"
       , Yc = "https://152d93ecd1114ccb88aed01c65129fa4@o162748.ingest.sentry.io/1230705";
-    function Qc() {
+    function enableErrorReporting() {
         const t = Yc;
         return Wc !== Vc.DEV && (yu({
             sampleRate: Wc === Vc.PROD ? .1 : 1,
@@ -6714,7 +6714,7 @@
         Jc("Error reporting enabled"),
         !0)
     }
-    function Zc(t) {
+    function getTrackingTasks(t) {
         const n = [];
         return Wc === Vc.PROD && (n.push(ea(Kc, t)),
         !t.hasNative() && T(navigator.userAgent)),
@@ -6875,7 +6875,7 @@
     function wa() {
         return !!window.indexedDB
     }
-    const xa = zt("Event");
+    const xa = infoLogger("Event");
     let ka = null;
     const Sa = {
         SCROLL: "scroll",
@@ -6904,14 +6904,14 @@
         return ka || xa("Passive event not supported."),
         ka
     }
-    function Oa(t, n) {
-        return new Promise(( (e, i) => {
+    function waitForEvent(target, eventType) {
+        return new Promise(( (resolve, reject) => {
             const r = () => {
-                t.removeEventListener(n, r),
-                e()
+                target.removeEventListener(eventType, r),
+                resolve()
             }
             ;
-            t.addEventListener(n, r)
+            target.addEventListener(eventType, r)
         }
         ))
     }
@@ -6930,7 +6930,7 @@
         Ca[t]
     }
     function ja(t) {
-        return Oa(cn(`script[data-name=${t}]`), "load")
+        return waitForEvent(querySelector(`script[data-name=${t}]`), "load")
     }
     function Ba(t) {
         const n = self[t];
@@ -7772,7 +7772,7 @@
         };
     }
     const Hf = "#faf9f9"
-      , Vf = zt("Fullscreen");
+      , Vf = infoLogger("Fullscreen");
     function Wf() {
         const t = document.body;
         return t.requestFullscreen || t.webkitRequestFullscreen
@@ -7802,8 +7802,8 @@
         t.addEventListener("webkitfullscreenchange", i)
     }
     const Qf = "WebView"
-      , Zf = zt(Qf)
-      , th = Lt(Qf)
+      , Zf = infoLogger(Qf)
+      , th = errorLogger(Qf)
       , nh = {
         DEFAULT: "default",
         LIGHT: "light",
@@ -7816,7 +7816,7 @@
       , ih = screen && screen.orientation && screen.orientation.lock
       , rh = "已将分享内容复制到了剪贴板"
       , oh = "剪贴板获取失败，请尝试升级app";
-    class sh {
+    class ScreenHandler {
         constructor() {
             this.j = new St,
             this.$ = new St,
@@ -8122,11 +8122,11 @@
         }
         ))
     }
-    let ch, ah;
-    function lh(t) {
+    let darkModeState, ah;
+    function setupScreenHandler(t) {
         const n = t.isSupported("setColorMode");
         ah = n ? fh(t) : hh(),
-        ch = n ? dh() : vh(ah)
+        darkModeState = n ? dh() : vh(ah)
     }
     function fh(t) {
         const n = t.getColorMode() || nh.DEFAULT
@@ -8195,10 +8195,10 @@
         ] : [!1, null, null]
     }
     const gh = "Fetch"
-      , bh = zt(gh)
+      , bh = infoLogger(gh)
       , wh = self.document;
     let xh = 0;
-    function kh() {
+    function setupKeyboardShortcuts() {
         _t(( ({url: t, init: n, options: e}) => {
             bh("request: " + t),
             e.silent || Sh()
@@ -8231,13 +8231,13 @@
         xh > 0 ? mn(wh.body, "loading") : yn(wh.body, "loading")
     }
     const Oh = "ontouchstart"in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-    function Ch() {
+    function isMobileDevice() {
         return Math.min(screen.height, screen.width) <= 500
     }
     const Ah = {};
-    function Xh(t) {
+    function executeTrackingTask(t) {
         if (!Ah[t]) {
-            const n = fn("script", {
+            const n = createElement("script", {
                 async: "",
                 src: t
             });
@@ -8250,18 +8250,18 @@
         }
         return Ah[t]
     }
-    function Ih(t) {
-        const n = fn("style", {
+    function injectStyle(cssContent) {
+        const n = createElement("style", {
             type: "text/css"
         });
-        n.innerHTML = t,
+        n.innerHTML = cssContent,
         document.head.appendChild(n)
     }
     const _h = "SW"
-      , Mh = zt(_h)
-      , Rh = Lt(_h)
+      , Mh = infoLogger(_h)
+      , Rh = errorLogger(_h)
       , Dh = location.origin + "/";
-    function jh() {
+    function performInitialSetup() {
         if ("https:" === location.protocol && "serviceWorker"in navigator) {
             const t = Ph();
             Mh("SW enabled = " + t),
@@ -8333,45 +8333,46 @@
                 return !0;
         return !1
     }
-    const zh = zt("Application")
-      , Lh = getInstrumentFromBi()["no-tracking"];
-    function Gh(t, {errorReporting: n=!0, allowHorizontalScreen: e=!1}={}) {
-        if (E(navigator.userAgent))
-            return zh("Execuse me? IE11?"),
-            void Hh();
-        n && !Lh && Qc(),
-        jh(),
+    const applicationLog = infoLogger("Application")
+      , isTrackingDisabled = getInstrumentFromBi()["no-tracking"];
+    function initializeApplication(t, {errorReporting: errorReporting=true, 
+        allowHorizontalScreen: allowHorizontalScreen=false}={}) {
+        if (isIE11(navigator.userAgent))
+            return applicationLog("Execuse me? IE11?"),
+            void terminateApplication();
+        errorReporting && !isTrackingDisabled && enableErrorReporting(),
+        performInitialSetup(),
         setTimeout(( () => {
-            const n = new sh;
-            n.install(self),
-            !e && Ch() && n.lockScreenOrientation(eh.PORTRAIT);
-            let i = [];
-            Lh || (i = Zc(n)),
-            Wh().then(( () => {
-                i.forEach((t => {
-                    Xh(t).catch(( () => {}
+            const screenHandler = new ScreenHandler();
+            screenHandler.install(self),
+            !allowHorizontalScreen && isMobileDevice() && screenHandler.lockScreenOrientation(eh.PORTRAIT);
+            let trackingTasks = [];
+            isTrackingDisabled || (trackingTasks = getTrackingTasks(screenHandler)),
+            performTrackingTasks().then(( () => {
+                trackingTasks.forEach((t => {
+                    executeTrackingTask(t).catch(( () => {}
                     ))
                 }
                 )),
-                Jh()
+                finalizeSetup()
             }
             )),
-            Vh(),
-            kh(),
-            lh(n),
-            ch.subscribe((t => {
-                vn("dark", t)
+            setupDarkMode(),
+            setupKeyboardShortcuts(),
+            setupScreenHandler(screenHandler),
+            darkModeState.subscribe((isDarkMode => {
+                toggleDarkModeClass("dark", isDarkMode)
             }
             )),
-            instrumentStateManager.subscribe((t => {
-                setOrRemoveGlobalAttribute("instrument", t)
+            instrumentStateManager.subscribe((instrument => {
+                setOrRemoveGlobalAttribute("instrument", instrument)
             }
             ));
-            const r = cn("#song")
+            const r = querySelector("#song")
               , o = Uh(r);
             o && void 0 !== o.user && (null === o.user ? Ja() : Ya(o.user)),
-            t(n, r, o),
-            zh("Ready!")
+            t(screenHandler, r, o),
+            applicationLog("Ready!")
         }
         ), 1)
     }
@@ -8383,10 +8384,10 @@
         t.style.display = "",
         n
     }
-    function Hh() {
+    function terminateApplication() {
         document.body.innerHTML = '\n<h1 style="text-align: center; color: indianred">有谱么网站不支持IE11，请更新浏览器。</h1>\n<br>\n<h2 style="text-align: center">如果是QQ或360之类的双核浏览器，请切换至"极速模式"</h2>\n    '
     }
-    function Vh() {
+    function setupDarkMode() {
         window.navigator.standalone && window.addEventListener("click", (function(t) {
             const n = t.target.closest("a");
             if (n && n.href && 0 === n.href.indexOf(window.location.origin))
@@ -8396,12 +8397,12 @@
         }
         ), !1)
     }
-    async function Wh() {
+    async function performTrackingTasks() {
         if ("loading" === document.readyState)
-            return Oa(document, "DOMContentLoaded")
+            return waitForEvent(document, "DOMContentLoaded")
     }
-    function Jh() {
-        Ih(`@font-face {\n  font-family: 'iconfont';\n  src: url('${m}') format('woff2'),\n  url('${y}') format('woff'),\n  url('${g}') format('truetype');\n}`)
+    function finalizeSetup() {
+        injectStyle(`@font-face {\n  font-family: 'iconfont';\n  src: url('${m}') format('woff2'),\n  url('${y}') format('woff'),\n  url('${g}') format('truetype');\n}`)
     }
     class Kh extends HTMLElement {
         connectedCallback() {
@@ -8540,7 +8541,7 @@
             this.setAttribute(pd.TEXT_VALUE, "")
         }
     }
-    const yd = Lt("XheRenderer")
+    const yd = errorLogger("XheRenderer")
       , gd = 42
       , bd = 30
       , wd = {
@@ -8666,7 +8667,7 @@
               , o = wd[e];
             if (!o)
                 throw new Error("Unknown type:" + e);
-            const s = fn(o, {
+            const s = createElement(o, {
                 id: this.ot + t
             });
             return Ed(s, {
@@ -8758,10 +8759,10 @@
             t._xheInstalled = true;
         }
     }
-    Lt("Xhe"),
-    Lt("deleteBackwardAt"),
-    Lt("deleteForwardAt"),
-    zt("Xhe/InputManager"),
+    errorLogger("Xhe"),
+    errorLogger("deleteBackwardAt"),
+    errorLogger("deleteForwardAt"),
+    infoLogger("Xhe/InputManager"),
     S(navigator.userAgent);
     var Xd = "undefined" != typeof globalThis ? globalThis : "undefined" != typeof window ? window : "undefined" != typeof global ? global : "undefined" != typeof self ? self : {};
     function Id(t) {
@@ -9310,7 +9311,7 @@
             4 & t.$$.dirty && e(7, s = f === o.CENTER),
             8192 & t.$$.dirty && e(8, u = d),
             16384 & t.$$.dirty && e(9, c = v),
-            1 & t.$$.dirty && vn("lock", a)
+            1 & t.$$.dirty && toggleDarkModeClass("lock", a)
         }
         ,
         [a, l, f, p, m, y, g, s, u, c, b, function() {
@@ -11075,7 +11076,7 @@
     function Mp(t, n, e) {
         let {cell: i} = n
           , {code: r=""} = n;
-        const o = Lt(_p);
+        const o = errorLogger(_p);
         let s = "发送验证码"
           , u = !1
           , c = 60
@@ -12787,7 +12788,7 @@
     const Fm = {};
     function Nm(t, n, e) {
         let {src: i} = n;
-        const r = Lt("Svg");
+        const r = errorLogger("Svg");
         let o, s, u;
         return t.$$set = t => {
             "src"in t && e(1, i = t.src)
@@ -14035,7 +14036,7 @@
         let i, r, o;
         addEventListener(t, Xy, (t => e(0, i = t))),
         addEventListener(t, Ay, (t => e(1, r = t))),
-        addEventListener(t, ch, (t => e(2, o = t)));
+        addEventListener(t, darkModeState, (t => e(2, o = t)));
         let {desktop: s=!1} = n;
         return t.$$set = t => {
             "desktop"in t && e(4, s = t.desktop)
@@ -18277,7 +18278,7 @@
         ])
     }
     ));
-    const Jy = zt("CdnUploader")
+    const Jy = infoLogger("CdnUploader")
       , Ky = {
         useCdnDomain: !0,
         region: Wy.region.z0
@@ -18946,7 +18947,7 @@
           , {sheetArtist: o} = n
           , {onUploadComplete: s=( () => {}
         )} = n;
-        const u = zt("AudioUploader")
+        const u = infoLogger("AudioUploader")
           , c = Vy[Uy.AUDIO_FREE]
           , a = (r || "") + " - " + (o || "");
         let l, f, h, d, v, p = !1, m = !1, y = 0, g = "立即上传";
@@ -20318,7 +20319,7 @@
             e && await pa(n, e));
             return e
         }(p)
-          , w = rb() ? null : Xh(m);
+          , w = rb() ? null : executeTrackingTask(m);
         let x, k, S = o, E = !1, T = 0;
         function O() {
             e(4, l = !1),
@@ -20909,7 +20910,7 @@
     function kb(t, n) {
         const e = `练琴 ${Math.round(n / 60)} 分钟`;
         if (t) {
-            const n = cn(t);
+            const n = querySelector(t);
             n && (hn(n, !0),
             n.textContent = e)
         }
@@ -22327,17 +22328,17 @@
         stop() {
             this.rn && (clearInterval(this.rn),
             this.rn = null,
-            vn("metronome-beat", !1))
+            toggleDarkModeClass("metronome-beat", !1))
         }
         sn() {
-            vn("metronome-beat", !0),
+            toggleDarkModeClass("metronome-beat", !0),
             setTimeout(( () => {
-                vn("metronome-beat", !1)
+                toggleDarkModeClass("metronome-beat", !1)
             }
             ), 200)
         }
     }
-    const ew = zt("DrumManager")
+    const ew = infoLogger("DrumManager")
       , iw = {
         STARTED: "started",
         PAUSED: "paused",
@@ -24544,10 +24545,10 @@
     }
     function lx(t, n, e) {
         let i, r;
-        addEventListener(t, ch, (t => e(22, i = t))),
+        addEventListener(t, darkModeState, (t => e(22, i = t))),
         addEventListener(t, instrumentStateManager, (t => e(26, r = t)));
-        const o = zt("NierSheet")
-          , s = Lt("NierSheet");
+        const o = infoLogger("NierSheet")
+          , s = errorLogger("NierSheet");
         let {sheet: u} = n
           , {printable: c=!1} = n
           , {fullSize: a=!1} = n
@@ -25137,7 +25138,7 @@
     }
     function kx(t, n, e) {
         let i;
-        addEventListener(t, ch, (t => e(20, i = t)));
+        addEventListener(t, darkModeState, (t => e(20, i = t)));
         let {sheet: r} = n
           , {instrument: o} = n
           , {chordStyle: s} = n
@@ -25582,7 +25583,7 @@
                 if (!at.includes(s.format)) {
                     if (await new Promise(requestAnimationFrame),
                     !a.querySelector("footer.print-sheet-footer")) {
-                        const t = fn("footer", null, ["print-sheet-footer"]);
+                        const t = createElement("footer", null, ["print-sheet-footer"]);
                         t.innerHTML = `\n        <div>\n          谱由<i>有谱么</i>Pu主 ${s.owner.displayName}\n          提供\n        </div>\n        <div class='qrcode'>${c}</div>\n        <div>扫码打开电子版</div>\n    `,
                         a.appendChild(t)
                     }
@@ -27430,10 +27431,10 @@
         [s, u, c, a, A, X, I, _, instrument, E, T, O, C, M, R, b, w, x, k, S, P, q, $, j, B, l, f, h, d, v, p, y, D, F, function() {
             if (!Wf())
                 return void Cn.error("浏览器不支持全屏模式，推荐Chrome浏览器");
-            const t = cn(s.format === nt.XHE ? ".xhe-sheet" : "hexi-sheet");
+            const t = querySelector(s.format === nt.XHE ? ".xhe-sheet" : "hexi-sheet");
             Yf(t, ( () => {
                 t.setAttribute("columns", "3");
-                Oa(t, "rendercomplete").then(( () => {
+                waitForEvent(t, "rendercomplete").then(( () => {
                     const n = an(t, ".hexi-header").offsetHeight;
                     an(t, ".hexi-body").style.height = screen.availHeight - n - 60 + "px"
                 }
@@ -27578,6 +27579,6 @@
             }
         })
     }
-    Gh(initializeAndMountMusicComponent)
+    initializeApplication(initializeAndMountMusicComponent)
 }
 )();
