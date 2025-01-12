@@ -274,7 +274,7 @@
             e || (e = setTimeout(o, n))
         }
     }
-    function yt(t) {
+    function delay(t) {
         let n = null;
         const e = new Promise((e => {
             n = setTimeout(e, t)
@@ -698,7 +698,7 @@
     function installHandler(t, n) {
         self.customElements.define(t, n)
     }
-    const bn = infoLogger("Toast")
+    const clearPreviousToast = infoLogger("Toast")
       , wn = {
         CENTER: "center",
         BOTTOM: "bottom"
@@ -714,36 +714,36 @@
       , En = 5 * K.SECOND
       , Tn = Xn();
     let On;
-    class Cn {
+    class Toast {
         static error(t, n) {
-            return An(xn.ERROR, wn.BOTTOM, t, n)
+            return showToast(xn.ERROR, wn.BOTTOM, t, n)
         }
         static warn(t, n) {
-            return An(xn.WARN, wn.BOTTOM, t, n)
+            return showToast(xn.WARN, wn.BOTTOM, t, n)
         }
         static awesome(t, n) {
-            return An(xn.AWESOME, wn.BOTTOM, t, n)
+            return showToast(xn.AWESOME, wn.BOTTOM, t, n)
         }
         static show(t, n) {
-            return An(xn.DEFAULT, wn.BOTTOM, t, n)
+            return showToast(xn.DEFAULT, wn.BOTTOM, t, n)
         }
         static center(t) {
-            return An(xn.DEFAULT, wn.CENTER, t)
+            return showToast(xn.DEFAULT, wn.CENTER, t)
         }
     }
-    async function An(t, n, e, i) {
-        bn(e),
-        await yt(0),
-        an(Tn, ".message").innerHTML = on(e);
+    async function showToast(level, position, message, buttonText) {
+        clearPreviousToast(message),
+        await delay(0),
+        an(Tn, ".message").innerHTML = on(message);
         const r = an(Tn, "button[action]");
-        i ? (yn(r, "hide"),
-        r.textContent = i) : mn(r, "hide"),
-        Tn.setAttribute("level", t),
-        Tn.setAttribute("position", n),
+        buttonText ? (yn(r, "hide"),
+        r.textContent = buttonText) : mn(r, "hide"),
+        Tn.setAttribute("level", level),
+        Tn.setAttribute("position", position),
         mn(Tn, "show");
         const o = new Jt;
         On && On.cancel(),
-        On = yt(i ? Sn : En);
+        On = delay(buttonText ? Sn : En);
         const s = () => {
             u(!1)
         }
@@ -7025,7 +7025,7 @@
                 return t
         }
         const n = await Ga("/api/user/portfolio");
-        return Qa(n),
+        return setUserPortfolio(n),
         LocalStorage.setBoolean(Ut.USER_DATA_PORTFOLIO_STALE, !1),
         n
     }
@@ -7039,25 +7039,25 @@
             if (n) {
                 const n = Va();
                 n && n.audios && (n.audios = n.audios.filter((n => n.audioCode !== t)),
-                Qa(n))
+                setUserPortfolio(n))
             }
             return n
         }
         ))
     }
     function Ja() {
-        Ya(null),
-        Qa(null)
+        setUserInfo(null),
+        setUserPortfolio(null)
     }
     function Ka(t) {
         const n = LocalStorage.getJson(t);
         return n && 0 !== Object.keys(n).length ? n : null
     }
-    function Ya(t) {
-        void 0 !== t && LocalStorage.setJson(Ut.USER_DATA_USER_INFO, t)
+    function setUserInfo(userInfo) {
+        void 0 !== userInfo && LocalStorage.setJson(Ut.USER_DATA_USER_INFO, userInfo)
     }
-    function Qa(t) {
-        void 0 !== t && LocalStorage.setJson(Ut.USER_DATA_USER_PORTFOLIO, t)
+    function setUserPortfolio(userPortfolio) {
+        void 0 !== userPortfolio && LocalStorage.setJson(Ut.USER_DATA_USER_PORTFOLIO, userPortfolio)
     }
     async function Za(t, n=!1) {
         try {
@@ -7829,9 +7829,9 @@
         PORTRAIT: "portrait",
         LANDSCAPE: "landscape"
     }
-      , ih = screen && screen.orientation && screen.orientation.lock
-      , rh = "已将分享内容复制到了剪贴板"
-      , oh = "剪贴板获取失败，请尝试升级app";
+      , isScreenLockAvailable = screen && screen.orientation && screen.orientation.lock
+      , clipboardSuccessMessage = "已将分享内容复制到了剪贴板"
+      , clipboardErrorMessage = "剪贴板获取失败，请尝试升级app";
     class ScreenHandler {
         constructor() {
             this.j = new St,
@@ -7885,7 +7885,7 @@
                 n = n.concat("exit", "openAppStore", "shareApp", "shareText"),
                 n.indexOf(t) >= 0
             }
-            return "lockScreenOrientation" === t ? ih : 0 !== t.indexOf("request") && (!["openWeComKefu", "setColorMode"].includes(t) && !!this[t])
+            return "lockScreenOrientation" === t ? isScreenLockAvailable : 0 !== t.indexOf("request") && (!["openWeComKefu", "setColorMode"].includes(t) && !!this[t])
         }
         isSharingSupported(t) {
             webViewLog("isSharingSupported", t);
@@ -7905,7 +7905,7 @@
             this.isSupported("replacePage") ? this.K("replacePage", {
                 path: t
             }) || this.J("replacePage", t) || (history.replaceState(void 0, void 0, t),
-            history.go(0)) : Cn.error("请升级到最新版本app")
+            history.go(0)) : Toast.error("请升级到最新版本app")
         }
         keepScreenOn(t) {
             webViewLog("keepScreenOn", t),
@@ -7917,7 +7917,7 @@
             webViewLog("lockScreenOrientation", t),
             this.J("lockScreenOrientation", t) || this.K("lockScreenOrientation", {
                 orientation: t
-            }) || ih && (t === ScreenOrientations.PORTRAIT ? await exitFullscreen() : t === ScreenOrientations.LANDSCAPE && await requestFullscreen(),
+            }) || isScreenLockAvailable && (t === ScreenOrientations.PORTRAIT ? await exitFullscreen() : t === ScreenOrientations.LANDSCAPE && await requestFullscreen(),
             screen.orientation.lock(t).catch(( () => {}
             )))
         }
@@ -7988,7 +7988,7 @@
             if (webViewLog("copyToClipboard", t),
             this.isAndroid() && this.isSupported("copyToClipboard"))
                 return this.J("copyToClipboard", t),
-                void Cn.show(rh);
+                void Toast.show(clipboardSuccessMessage);
             uh(t)
         }
         requestAuthToken(t) {
@@ -8131,10 +8131,10 @@
     }
     function uh(t) {
         navigator.clipboard && navigator.clipboard.writeText(t).then(( () => {
-            Cn.show(rh)
+            Toast.show(clipboardSuccessMessage)
         }
         ), ( () => {
-            Cn.error(oh)
+            Toast.error(clipboardErrorMessage)
         }
         ))
     }
@@ -8229,7 +8229,7 @@
             if (!r) {
                 let t;
                 i instanceof Tt || (i instanceof Et ? t = "网络超时" : i instanceof Ot ? o && i.statusCode === Y.INVALID_CREDENTIAL || (t = i.message) : t = "无网络连接"),
-                t && Cn.error(t),
+                t && Toast.error(t),
                 Eh()
             }
         }
@@ -8241,7 +8241,7 @@
     }
     function Eh() {
         xh--,
-        yt(300).then(( () => Th()))
+        delay(300).then(( () => Th()))
     }
     function Th() {
         xh > 0 ? mn(wh.body, "loading") : yn(wh.body, "loading")
@@ -8389,10 +8389,10 @@
                 setOrRemoveGlobalAttribute("instrument", instrument)
             }
             ));
-            const r = querySelector("#song")
-              , o = parseElementContent(r);
-            o && void 0 !== o.user && (null === o.user ? Ja() : Ya(o.user)),
-            t(screenHandler, r, o),
+            const soneElement = querySelector("#song")
+              , parsedContent = parseElementContent(soneElement);
+            parsedContent && void 0 !== parsedContent.user && (null === parsedContent.user ? Ja() : setUserInfo(parsedContent.user)),
+            t(screenHandler, soneElement, parsedContent),
             applicationLog("Ready!")
         }
         ), 1)
@@ -11372,7 +11372,7 @@
                 });
                 if (t) {
                     const {closedSessionCount: n} = t;
-                    return Cn.show("验证成功，登出" + n + "个其他设备"),
+                    return Toast.show("验证成功，登出" + n + "个其他设备"),
                     !0
                 }
             }
@@ -12777,7 +12777,7 @@
         }
         , async function() {
             e(1, r = !1),
-            await yt(200),
+            await delay(200),
             e(2, o = !r)
         }
         , function(t) {
@@ -19320,12 +19320,12 @@
                 audioCode: t.audioCode
             }),
             e(2, s = !1),
-            Cn.show("上传成功")
+            Toast.show("上传成功")
         }
         , async function() {
             await nv("删除示范音频", "是要删除示范音频么？此操作不可逆转！") && (await Wa(r.audioCode),
             e(1, r = null),
-            Cn.show("删除成功"))
+            Toast.show("删除成功"))
         }
         , () => e(2, s = !0), () => e(2, s = !0), function(t) {
             s = t,
@@ -19983,18 +19983,18 @@
             await za(t) && (i.draftId ? location.href = "/view/" + i.id : i.sheetCode ? location.href = "/view/" + i.sheetCode : location.href = "/home#tab=sheets")
         }
         , async function() {
-            r ? o || r.isMember ? location.href = Pa(i) : Cn.show("改编他人曲谱是会员特权，请前往手机App开通会员") : Cn.error("请登录")
+            r ? o || r.isMember ? location.href = Pa(i) : Toast.show("改编他人曲谱是会员特权，请前往手机App开通会员") : Toast.error("请登录")
         }
         , async function() {
             const t = await qa(i.id);
-            t ? (Cn.awesome("已收藏曲谱"),
+            t ? (Toast.awesome("已收藏曲谱"),
             e(1, s = !0),
-            e(2, u = t.favoritesDisplay)) : Cn.error("收藏曲谱失败")
+            e(2, u = t.favoritesDisplay)) : Toast.error("收藏曲谱失败")
         }
         , async function() {
-            await $a(i.id) ? (Cn.awesome("已取消收藏"),
+            await $a(i.id) ? (Toast.awesome("已取消收藏"),
             e(1, s = !1),
-            e(2, u = i.favoritesDisplay)) : Cn.error("取消收藏失败")
+            e(2, u = i.favoritesDisplay)) : Toast.error("取消收藏失败")
         }
         , r, () => c("print")]
     }
@@ -20412,7 +20412,7 @@
                 w && await w;
                 const n = await b;
                 if (!n)
-                    return void Cn.show("音效加载失败");
+                    return void Toast.show("音效加载失败");
                 const e = () => {
                     t.loadSoundFont(n, !1, !0),
                     t.player.ready.off(e)
@@ -22018,7 +22018,7 @@
         , () => {
             e(17, C = !0)
         }
-        , () => Cn.show("提示：用鼠标拖拽选择反复段落"), () => {
+        , () => Toast.show("提示：用鼠标拖拽选择反复段落"), () => {
             w ? (e(7, w = !1),
             e(10, p = 0),
             setTimeout(( () => {
@@ -22390,7 +22390,7 @@
             if (t && (this.ln = t),
             this.start(),
             n)
-                return this.pn = yt(n),
+                return this.pn = delay(n),
                 this.pn.then(( () => {
                     this.pn = null,
                     this.stop()
@@ -22401,7 +22401,7 @@
             this.stop(),
             ew("drum start"),
             this.un.get(),
-            this.dn = yt(500);
+            this.dn = delay(500);
             this.vn === lt.METRONOME ? this.dn.then(( () => {
                 this.cn.play(this.ln),
                 this.sn.play(this.ln),
@@ -22427,7 +22427,7 @@
                 this.dn = null
             }
             ), (t => {
-                Cn.error(t.message)
+                Toast.error(t.message)
             }
             )),
             this.hn = iw.STARTED
@@ -27457,7 +27457,7 @@
         F(),
         [s, u, c, a, A, X, I, _, instrument, E, T, O, C, M, R, b, w, x, k, S, P, q, $, j, B, l, f, h, d, v, p, y, D, F, function() {
             if (!Wf())
-                return void Cn.error("浏览器不支持全屏模式，推荐Chrome浏览器");
+                return void Toast.error("浏览器不支持全屏模式，推荐Chrome浏览器");
             const t = querySelector(s.format === nt.XHE ? ".xhe-sheet" : "hexi-sheet");
             handleFullscreenChange(t, ( () => {
                 t.setAttribute("columns", "3");
