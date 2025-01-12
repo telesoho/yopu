@@ -6578,10 +6578,10 @@
     function fs(t) {
         return t && os(t.destroy) ? t.destroy : ns
     }
-    function hs(t, n) {
+    function appendElement(t, n) {
         t.appendChild(n)
     }
-    function ds(t, n, e) {
+    function insertElement(t, n, e) {
         t.insertBefore(n, e || null)
     }
     function vs(t) {
@@ -6591,27 +6591,27 @@
         for (let e = 0; e < t.length; e += 1)
             t[e] && t[e].d(n)
     }
-    function ms(t) {
+    function createElement(t) {
         return document.createElement(t)
     }
     function gs(t) {
         return document.createTextNode(t)
     }
-    function ys() {
+    function createSpacer() {
         return gs(" ")
     }
     function bs() {
         return gs("")
     }
-    function ws(t, n, e, i) {
+    function addEventListener(t, n, e, i) {
         return t.addEventListener(n, e, i),
         () => t.removeEventListener(n, e, i)
     }
-    function Xs(t, n, e) {
+    function setAttributes(t, n, e) {
         null == e ? t.removeAttribute(n) : t.getAttribute(n) !== e && t.setAttribute(n, e)
     }
     function xs(t, n, e) {
-        n in t ? t[n] = e : Xs(t, n, e)
+        n in t ? t[n] = e : setAttributes(t, n, e)
     }
     function ks(t, n) {
         n = "" + n,
@@ -6620,7 +6620,7 @@
     function Es(t, n) {
         t.value = null == n ? "" : n
     }
-    function Ts(t, n, e) {
+    function setChecked(t, n, e) {
         t.classList[e ? "add" : "remove"](n)
     }
     let Ss;
@@ -6746,7 +6746,7 @@
         void 0 !== i && (t.$$.bound[i] = e,
         e(t.$$.ctx[i]))
     }
-    function Ys(t) {
+    function createComponentFragment(t) {
         t && t.c()
     }
     function Zs(t, n, e, i) {
@@ -6819,7 +6819,7 @@
         }
         js(u)
     }
-    class eu {
+    class Component {
         $destroy() {
             tu(this, 1),
             this.$destroy = ns
@@ -7414,13 +7414,13 @@
         let n, e;
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 e = gs(t[2]),
-                Xs(n, "class", "title svelte-ezjm8c")
+                setAttributes(n, "class", "title svelte-ezjm8c")
             },
             m(t, i) {
-                ds(t, n, i),
-                hs(n, e)
+                insertElement(t, n, i),
+                appendElement(n, e)
             },
             p(t, n) {
                 4 & n && ks(e, t[2])
@@ -7434,17 +7434,17 @@
         let n, e;
         return {
             c() {
-                n = ms("div"),
-                Xs(n, "class", "arrow svelte-ezjm8c"),
-                Xs(n, "style", e = t[10].arrow),
-                Xs(n, "position", t[8])
+                n = createElement("div"),
+                setAttributes(n, "class", "arrow svelte-ezjm8c"),
+                setAttributes(n, "style", e = t[10].arrow),
+                setAttributes(n, "position", t[8])
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p(t, i) {
-                1024 & i && e !== (e = t[10].arrow) && Xs(n, "style", e),
-                256 & i && Xs(n, "position", t[8])
+                1024 & i && e !== (e = t[10].arrow) && setAttributes(n, "style", e),
+                256 & i && setAttributes(n, "position", t[8])
             },
             d(t) {
                 t && vs(n)
@@ -7461,42 +7461,42 @@
         let g = t[1] && Hu(t);
         return {
             c() {
-                n = ms("div"),
-                e = ms("div"),
+                n = createElement("div"),
+                e = createElement("div"),
                 d && d.c(),
-                i = ys(),
-                r = ms("div"),
-                o = ms("div"),
+                i = createSpacer(),
+                r = createElement("div"),
+                o = createElement("div"),
                 v && v.c(),
-                s = ys(),
+                s = createSpacer(),
                 m && m.c(),
-                u = ys(),
+                u = createSpacer(),
                 g && g.c(),
-                Xs(e, "class", "anchor"),
-                Xs(o, "class", "content svelte-ezjm8c"),
-                Ts(o, "no-padding", !t[4]),
-                Xs(r, "class", "wrapper svelte-ezjm8c"),
-                Xs(r, "style", c = t[10].wrapper),
-                Ts(r, "theme", t[3]),
-                Ts(r, "show", t[0]),
-                Xs(n, "class", "popover svelte-ezjm8c")
+                setAttributes(e, "class", "anchor"),
+                setAttributes(o, "class", "content svelte-ezjm8c"),
+                setChecked(o, "no-padding", !t[4]),
+                setAttributes(r, "class", "wrapper svelte-ezjm8c"),
+                setAttributes(r, "style", c = t[10].wrapper),
+                setChecked(r, "theme", t[3]),
+                setChecked(r, "show", t[0]),
+                setAttributes(n, "class", "popover svelte-ezjm8c")
             },
             m(c, h) {
-                ds(c, n, h),
-                hs(n, e),
+                insertElement(c, n, h),
+                appendElement(n, e),
                 d && d.m(e, null),
                 t[16](e),
-                hs(n, i),
-                hs(n, r),
-                hs(r, o),
+                appendElement(n, i),
+                appendElement(n, r),
+                appendElement(r, o),
                 v && v.m(o, null),
-                hs(o, s),
+                appendElement(o, s),
                 m && m.m(o, null),
-                hs(o, u),
+                appendElement(o, u),
                 g && g.m(o, null),
                 t[17](r),
                 a = !0,
-                l || (f = [ws(e, "mouseenter", t[13]), ws(r, "mouseenter", t[18]), ws(r, "click", t[19]), ws(r, "mouseleave", t[20]), ws(n, "mouseenter", t[11]), ws(n, "mouseleave", t[12])],
+                l || (f = [addEventListener(e, "mouseenter", t[13]), addEventListener(r, "mouseenter", t[18]), addEventListener(r, "click", t[19]), addEventListener(r, "mouseleave", t[20]), addEventListener(n, "mouseenter", t[11]), addEventListener(n, "mouseleave", t[12])],
                 l = !0)
             },
             p(t, [n]) {
@@ -7510,10 +7510,10 @@
                 g.c(),
                 g.m(o, null)) : g && (g.d(1),
                 g = null),
-                16 & n && Ts(o, "no-padding", !t[4]),
-                (!a || 1024 & n && c !== (c = t[10].wrapper)) && Xs(r, "style", c),
-                8 & n && Ts(r, "theme", t[3]),
-                1 & n && Ts(r, "show", t[0])
+                16 & n && setChecked(o, "no-padding", !t[4]),
+                (!a || 1024 & n && c !== (c = t[10].wrapper)) && setAttributes(r, "style", c),
+                8 & n && setChecked(r, "theme", t[3]),
+                1 & n && setChecked(r, "show", t[0])
             },
             i(t) {
                 a || (Vs(d, t),
@@ -7646,7 +7646,7 @@
         }
         ]
     }
-    class Qu extends eu {
+    class Qu extends Component {
         constructor(t) {
             super(),
             nu(this, t, Ku, Ju, ss, {
@@ -7693,17 +7693,17 @@
         let n, e, i;
         return {
             c() {
-                n = ms("div"),
-                e = ms("img"),
-                e.src !== (i = "//cdn.yopu.co/img/qrcode_app_download.436360b7.png") && Xs(e, "src", "//cdn.yopu.co/img/qrcode_app_download.436360b7.png"),
-                Xs(e, "alt", "qrcode"),
-                Xs(e, "class", "svelte-2wjwnn"),
-                Xs(n, "class", "download-popover svelte-2wjwnn"),
-                Xs(n, "slot", "content")
+                n = createElement("div"),
+                e = createElement("img"),
+                e.src !== (i = "//cdn.yopu.co/img/qrcode_app_download.436360b7.png") && setAttributes(e, "src", "//cdn.yopu.co/img/qrcode_app_download.436360b7.png"),
+                setAttributes(e, "alt", "qrcode"),
+                setAttributes(e, "class", "svelte-2wjwnn"),
+                setAttributes(n, "class", "download-popover svelte-2wjwnn"),
+                setAttributes(n, "slot", "content")
             },
             m(t, i) {
-                ds(t, n, i),
-                hs(n, e)
+                insertElement(t, n, i),
+                appendElement(n, e)
             },
             p: ns,
             d(t) {
@@ -7726,7 +7726,7 @@
         }),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, i) {
                 Zs(n, t, i),
@@ -7761,7 +7761,7 @@
         ,
         [i, r]
     }
-    class rc extends eu {
+    class rc extends Component {
         constructor(t) {
             super(),
             nu(this, t, ic, ec, ss, {})
@@ -7775,10 +7775,10 @@
             let n;
             return {
                 c() {
-                    n = ms("span")
+                    n = createElement("span")
                 },
                 m(t, e) {
-                    ds(t, n, e)
+                    insertElement(t, n, e)
                 },
                 d(t) {
                     t && vs(n)
@@ -7787,26 +7787,26 @@
         }();
         return {
             c() {
-                n = ms("button"),
+                n = createElement("button"),
                 u && u.c(),
                 n.disabled = t[0],
-                Xs(n, "size", t[1]),
-                Xs(n, "theme", t[2]),
-                Xs(n, "type", "button"),
-                Xs(n, "class", "svelte-1kcxt4g")
+                setAttributes(n, "size", t[1]),
+                setAttributes(n, "theme", t[2]),
+                setAttributes(n, "type", "button"),
+                setAttributes(n, "class", "svelte-1kcxt4g")
             },
             m(o, s) {
-                ds(o, n, s),
+                insertElement(o, n, s),
                 u && u.m(n, null),
                 e = !0,
-                i || (r = ws(n, "click", t[5]),
+                i || (r = addEventListener(n, "click", t[5]),
                 i = !0)
             },
             p(t, [i]) {
                 s && s.p && 8 & i && ls(s, o, t, t[3], i, null, null),
                 (!e || 1 & i) && (n.disabled = t[0]),
-                (!e || 2 & i) && Xs(n, "size", t[1]),
-                (!e || 4 & i) && Xs(n, "theme", t[2])
+                (!e || 2 & i) && setAttributes(n, "size", t[1]),
+                (!e || 4 & i) && setAttributes(n, "theme", t[2])
             },
             i(t) {
                 e || (Vs(u, t),
@@ -7841,7 +7841,7 @@
         }
         ]
     }
-    class uc extends eu {
+    class uc extends Component {
         constructor(t) {
             super(),
             nu(this, t, sc, oc, ss, {
@@ -7858,37 +7858,37 @@
         let h = !t[1] && (t[7] || t[9]) && ac(t);
         return {
             c() {
-                n = ms("dialog"),
-                e = ms("div"),
-                i = ys(),
-                r = ms("div"),
-                o = ms("div"),
+                n = createElement("dialog"),
+                e = createElement("div"),
+                i = createSpacer(),
+                r = createElement("div"),
+                o = createElement("div"),
                 f && f.c(),
-                s = ys(),
+                s = createSpacer(),
                 h && h.c(),
-                Xs(e, "glass", ""),
-                Xs(e, "class", "svelte-4llsvh"),
-                Xs(o, "content", ""),
-                Xs(o, "class", "svelte-4llsvh"),
-                Xs(r, "wrapper", ""),
-                Xs(r, "class", "svelte-4llsvh"),
-                Xs(n, "position", t[2]),
+                setAttributes(e, "glass", ""),
+                setAttributes(e, "class", "svelte-4llsvh"),
+                setAttributes(o, "content", ""),
+                setAttributes(o, "class", "svelte-4llsvh"),
+                setAttributes(r, "wrapper", ""),
+                setAttributes(r, "class", "svelte-4llsvh"),
+                setAttributes(n, "position", t[2]),
                 n.open = !0,
-                Xs(n, "class", "svelte-4llsvh"),
-                Ts(n, "wide", t[5]),
-                Ts(n, "horizontal-buttons", t[4])
+                setAttributes(n, "class", "svelte-4llsvh"),
+                setChecked(n, "wide", t[5]),
+                setChecked(n, "horizontal-buttons", t[4])
             },
             m(l, d) {
-                ds(l, n, d),
-                hs(n, e),
-                hs(n, i),
-                hs(n, r),
-                hs(r, o),
+                insertElement(l, n, d),
+                appendElement(n, e),
+                appendElement(n, i),
+                appendElement(n, r),
+                appendElement(r, o),
                 f && f.m(o, null),
-                hs(r, s),
+                appendElement(r, s),
                 h && h.m(r, null),
                 u = !0,
-                c || (a = ws(e, "click", t[11]),
+                c || (a = addEventListener(e, "click", t[11]),
                 c = !0)
             },
             p(t, e) {
@@ -7903,9 +7903,9 @@
                 h.c(),
                 Vs(h, 1),
                 h.m(r, null)),
-                (!u || 4 & e) && Xs(n, "position", t[2]),
-                32 & e && Ts(n, "wide", t[5]),
-                16 & e && Ts(n, "horizontal-buttons", t[4])
+                (!u || 4 & e) && setAttributes(n, "position", t[2]),
+                32 & e && setChecked(n, "wide", t[5]),
+                16 & e && setChecked(n, "horizontal-buttons", t[4])
             },
             i(t) {
                 u || (Vs(f, t),
@@ -7945,16 +7945,16 @@
         let o = t[9] && fc(t);
         return {
             c() {
-                n = ms("div"),
-                Ys(e.$$.fragment),
-                i = ys(),
+                n = createElement("div"),
+                createComponentFragment(e.$$.fragment),
+                i = createSpacer(),
                 o && o.c(),
-                Xs(n, "class", "buttons svelte-4llsvh")
+                setAttributes(n, "class", "buttons svelte-4llsvh")
             },
             m(t, s) {
-                ds(t, n, s),
+                insertElement(t, n, s),
                 Zs(e, n, null),
-                hs(n, i),
+                appendElement(n, i),
                 o && o.m(n, null),
                 r = !0
             },
@@ -8003,7 +8003,7 @@
                 n = gs(t[8])
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p(t, e) {
                 256 & e && ks(n, t[8])
@@ -8031,7 +8031,7 @@
         n.$on("click", t[17]),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, i) {
                 Zs(n, t, i),
@@ -8068,7 +8068,7 @@
                 n = gs(t[9])
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p(t, e) {
                 512 & e && ks(n, t[9])
@@ -8087,7 +8087,7 @@
             },
             m(t, r) {
                 i && i.m(t, r),
-                ds(t, n, r),
+                insertElement(t, n, r),
                 e = !0
             },
             p(t, [e]) {
@@ -8156,7 +8156,7 @@
         }
         , h, d, v, i, () => b(!0), () => b(!1), r]
     }
-    class pc extends eu {
+    class pc extends Component {
         constructor(t) {
             super(),
             nu(this, t, vc, dc, ss, {
@@ -8176,18 +8176,18 @@
         let n, e, i;
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 n.textContent = "账号被暂停使用",
-                e = ys(),
-                i = ms("div"),
+                e = createSpacer(),
+                i = createElement("div"),
                 i.innerHTML = '<p>该账号违反<a class="blue" href="/help#terms">用户协议</a>、<a class="blue" href="/help#membership">会员服务协议</a>或国家相关法规，目前已被暂停使用。</p> \n    <p>最近有谱君发现一些不法商家冒充有谱么官方在淘宝等电商平台销售所谓<b>“有谱么共享会员账号”</b>， 还请用户擦亮眼睛，切勿上当受骗。\n      您如购买了此类“账号”，请及时联系卖家退款，必要时可向电商平台发起投诉以维护您自身的权益。</p> \n    <p>感谢使用有谱么！请明白，只有维护一个公平有序的环境，有谱君才能持续为大家提供更好的服务。</p>',
-                Xs(n, "title", ""),
-                Xs(i, "description", "")
+                setAttributes(n, "title", ""),
+                setAttributes(i, "description", "")
             },
             m(t, r) {
-                ds(t, n, r),
-                ds(t, e, r),
-                ds(t, i, r)
+                insertElement(t, n, r),
+                insertElement(t, e, r),
+                insertElement(t, i, r)
             },
             d(t) {
                 t && vs(n),
@@ -8219,7 +8219,7 @@
         Ds.push(( () => Qs(n, "open", r))),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, e) {
                 Zs(n, t, e),
@@ -8265,7 +8265,7 @@
         }
         ]
     }
-    class bc extends eu {
+    class bc extends Component {
         constructor(t) {
             super(),
             nu(this, t, yc, gc, ss, {
@@ -9601,29 +9601,29 @@
         let n, e, i;
         return {
             c() {
-                n = ms("input"),
-                Xs(n, "placeholder", t[1]),
-                Xs(n, "autocomplete", t[2]),
+                n = createElement("input"),
+                setAttributes(n, "placeholder", t[1]),
+                setAttributes(n, "autocomplete", t[2]),
                 n.autofocus = t[3],
-                Xs(n, "maxlength", t[4]),
+                setAttributes(n, "maxlength", t[4]),
                 n.disabled = t[6],
-                Xs(n, "class", "svelte-1bm78md"),
-                Ts(n, "gray", t[5])
+                setAttributes(n, "class", "svelte-1bm78md"),
+                setChecked(n, "gray", t[5])
             },
             m(r, o) {
-                ds(r, n, o),
+                insertElement(r, n, o),
                 Es(n, t[0]),
-                e || (i = [fs(t[7].call(null, n)), ws(n, "input", t[10]), ws(n, "input", t[9])],
+                e || (i = [fs(t[7].call(null, n)), addEventListener(n, "input", t[10]), addEventListener(n, "input", t[9])],
                 e = !0)
             },
             p(t, [e]) {
-                2 & e && Xs(n, "placeholder", t[1]),
-                4 & e && Xs(n, "autocomplete", t[2]),
+                2 & e && setAttributes(n, "placeholder", t[1]),
+                4 & e && setAttributes(n, "autocomplete", t[2]),
                 8 & e && (n.autofocus = t[3]),
-                16 & e && Xs(n, "maxlength", t[4]),
+                16 & e && setAttributes(n, "maxlength", t[4]),
                 64 & e && (n.disabled = t[6]),
                 1 & e && n.value !== t[0] && Es(n, t[0]),
-                32 & e && Ts(n, "gray", t[5])
+                32 & e && setChecked(n, "gray", t[5])
             },
             i: ns,
             o: ns,
@@ -9666,7 +9666,7 @@
         }
         ]
     }
-    class Ea extends eu {
+    class Ea extends Component {
         constructor(t) {
             super(),
             nu(this, t, ka, xa, ss, {
@@ -9698,26 +9698,26 @@
         Ds.push(( () => Qs(e, "value", f))),
         {
             c() {
-                n = ms("div"),
-                Ys(e.$$.fragment),
-                r = ys(),
-                o = ms("div"),
-                s = ms("button"),
+                n = createElement("div"),
+                createComponentFragment(e.$$.fragment),
+                r = createSpacer(),
+                o = createElement("div"),
+                s = createElement("button"),
                 u = gs(t[1]),
                 s.disabled = t[2],
-                Xs(s, "class", "svelte-1ci3qls"),
-                Xs(o, "class", "code-input-button svelte-1ci3qls"),
-                Xs(n, "class", "code-input svelte-1ci3qls")
+                setAttributes(s, "class", "svelte-1ci3qls"),
+                setAttributes(o, "class", "code-input-button svelte-1ci3qls"),
+                setAttributes(n, "class", "code-input svelte-1ci3qls")
             },
             m(i, f) {
-                ds(i, n, f),
+                insertElement(i, n, f),
                 Zs(e, n, null),
-                hs(n, r),
-                hs(n, o),
-                hs(o, s),
-                hs(s, u),
+                appendElement(n, r),
+                appendElement(n, o),
+                appendElement(o, s),
+                appendElement(s, u),
                 c = !0,
-                a || (l = ws(s, "click", t[3]),
+                a || (l = addEventListener(s, "click", t[3]),
                 a = !0)
             },
             p(t, [n]) {
@@ -9796,7 +9796,7 @@
         }
         ]
     }
-    class ja extends eu {
+    class ja extends Component {
         constructor(t) {
             super(),
             nu(this, t, Sa, Ta, ss, {
@@ -9809,11 +9809,11 @@
         let n;
         return {
             c() {
-                n = ms("p"),
+                n = createElement("p"),
                 n.textContent = "本账号在过多设备上登录，未防止盗号，请绑定手机。"
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p: ns,
             i: ns,
@@ -9836,25 +9836,25 @@
         Ds.push(( () => Qs(c, "code", f))),
         {
             c() {
-                n = ms("p"),
+                n = createElement("p"),
                 n.textContent = "本账号在过多设备上登录，需二次验证身份。",
-                e = ys(),
-                i = ms("div"),
+                e = createSpacer(),
+                i = createElement("div"),
                 r = gs("我们将向"),
                 o = gs(t[1]),
                 s = gs("的手机号发送验证码。"),
-                u = ys(),
-                Ys(c.$$.fragment),
-                Xs(i, "class", "tip svelte-15ra0dz")
+                u = createSpacer(),
+                createComponentFragment(c.$$.fragment),
+                setAttributes(i, "class", "tip svelte-15ra0dz")
             },
             m(t, a) {
-                ds(t, n, a),
-                ds(t, e, a),
-                ds(t, i, a),
-                hs(i, r),
-                hs(i, o),
-                hs(i, s),
-                ds(t, u, a),
+                insertElement(t, n, a),
+                insertElement(t, e, a),
+                insertElement(t, i, a),
+                appendElement(i, r),
+                appendElement(i, o),
+                appendElement(i, s),
+                insertElement(t, u, a),
                 Zs(c, t, a),
                 l = !0
             },
@@ -9894,19 +9894,19 @@
         o = c[r] = u[r](t),
         {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 n.textContent = "二次验证",
-                e = ys(),
-                i = ms("div"),
+                e = createSpacer(),
+                i = createElement("div"),
                 o.c(),
-                Xs(n, "title", ""),
-                Xs(i, "description", ""),
-                Xs(i, "class", "svelte-15ra0dz")
+                setAttributes(n, "title", ""),
+                setAttributes(i, "description", ""),
+                setAttributes(i, "class", "svelte-15ra0dz")
             },
             m(t, o) {
-                ds(t, n, o),
-                ds(t, e, o),
-                ds(t, i, o),
+                insertElement(t, n, o),
+                insertElement(t, e, o),
+                insertElement(t, i, o),
                 c[r].m(i, null),
                 s = !0
             },
@@ -9965,7 +9965,7 @@
         Ds.push(( () => Qs(n, "open", r))),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, e) {
                 Zs(n, t, e),
@@ -10036,7 +10036,7 @@
         }
         ]
     }
-    class Da extends eu {
+    class Da extends Component {
         constructor(t) {
             super(),
             nu(this, t, Ba, _a, ss, {
@@ -10054,18 +10054,18 @@
         let n, e, i, r = t[8].icon + "";
         return {
             c() {
-                n = ms("span"),
+                n = createElement("span"),
                 e = gs(r),
-                Xs(n, "class", "icon yoopu3-icon svelte-av5z1h"),
-                Xs(n, "style", i = t[8].iconColor ? `color: ${t[8].iconColor}` : "")
+                setAttributes(n, "class", "icon yoopu3-icon svelte-av5z1h"),
+                setAttributes(n, "style", i = t[8].iconColor ? `color: ${t[8].iconColor}` : "")
             },
             m(t, i) {
-                ds(t, n, i),
-                hs(n, e)
+                insertElement(t, n, i),
+                appendElement(n, e)
             },
             p(t, o) {
                 2 & o && r !== (r = t[8].icon + "") && ks(e, r),
-                2 & o && i !== (i = t[8].iconColor ? `color: ${t[8].iconColor}` : "") && Xs(n, "style", i)
+                2 & o && i !== (i = t[8].iconColor ? `color: ${t[8].iconColor}` : "") && setAttributes(n, "style", i)
             },
             d(t) {
                 t && vs(n)
@@ -10079,36 +10079,36 @@
         }
         return {
             c() {
-                n = ms("div"),
-                e = ms("span"),
+                n = createElement("div"),
+                e = createElement("span"),
                 e.innerHTML = '<span class="checkmark-checked svelte-av5z1h"></span>',
-                i = ys(),
-                r = ms("div"),
+                i = createSpacer(),
+                r = createElement("div"),
                 h && h.c(),
-                o = ys(),
-                s = ms("span"),
+                o = createSpacer(),
+                s = createElement("span"),
                 u = gs(f),
-                c = ys(),
-                Xs(e, "class", "checkmark svelte-av5z1h"),
-                Xs(s, "class", "title svelte-av5z1h"),
-                Xs(r, "class", "content svelte-av5z1h"),
-                Xs(n, "class", "option svelte-av5z1h"),
-                Ts(n, "bottom-line", t[3]),
-                Ts(n, "reverse", t[4]),
-                Ts(n, "selected", t[8].value == t[0]),
-                Ts(n, "disabled", t[8].disabled)
+                c = createSpacer(),
+                setAttributes(e, "class", "checkmark svelte-av5z1h"),
+                setAttributes(s, "class", "title svelte-av5z1h"),
+                setAttributes(r, "class", "content svelte-av5z1h"),
+                setAttributes(n, "class", "option svelte-av5z1h"),
+                setChecked(n, "bottom-line", t[3]),
+                setChecked(n, "reverse", t[4]),
+                setChecked(n, "selected", t[8].value == t[0]),
+                setChecked(n, "disabled", t[8].disabled)
             },
             m(t, f) {
-                ds(t, n, f),
-                hs(n, e),
-                hs(n, i),
-                hs(n, r),
+                insertElement(t, n, f),
+                appendElement(n, e),
+                appendElement(n, i),
+                appendElement(n, r),
                 h && h.m(r, null),
-                hs(r, o),
-                hs(r, s),
-                hs(s, u),
-                hs(n, c),
-                a || (l = ws(n, "click", d),
+                appendElement(r, o),
+                appendElement(r, s),
+                appendElement(s, u),
+                appendElement(n, c),
+                a || (l = addEventListener(n, "click", d),
                 a = !0)
             },
             p(e, i) {
@@ -10117,10 +10117,10 @@
                 h.m(r, o)) : h && (h.d(1),
                 h = null),
                 2 & i && f !== (f = t[8].title + "") && ks(u, f),
-                8 & i && Ts(n, "bottom-line", t[3]),
-                16 & i && Ts(n, "reverse", t[4]),
-                3 & i && Ts(n, "selected", t[8].value == t[0]),
-                2 & i && Ts(n, "disabled", t[8].disabled)
+                8 & i && setChecked(n, "bottom-line", t[3]),
+                16 & i && setChecked(n, "reverse", t[4]),
+                3 & i && setChecked(n, "selected", t[8].value == t[0]),
+                2 & i && setChecked(n, "disabled", t[8].disabled)
             },
             d(t) {
                 t && vs(n),
@@ -10136,14 +10136,14 @@
             i[n] = Ma(qa(t, e, n));
         return {
             c() {
-                n = ms("div");
+                n = createElement("div");
                 for (let t = 0; t < i.length; t += 1)
                     i[t].c();
-                Xs(n, "class", "container svelte-av5z1h"),
-                Ts(n, "check-style", t[2])
+                setAttributes(n, "class", "container svelte-av5z1h"),
+                setChecked(n, "check-style", t[2])
             },
             m(t, e) {
-                ds(t, n, e);
+                insertElement(t, n, e);
                 for (let t = 0; t < i.length; t += 1)
                     i[t].m(n, null)
             },
@@ -10161,7 +10161,7 @@
                         i[o].d(1);
                     i.length = e.length
                 }
-                4 & r && Ts(n, "check-style", t[2])
+                4 & r && setChecked(n, "check-style", t[2])
             },
             i: ns,
             o: ns,
@@ -10192,7 +10192,7 @@
         ,
         [r, i, o, s, u, t => e(0, r = t.value)]
     }
-    class $a extends eu {
+    class $a extends Component {
         constructor(t) {
             super(),
             nu(this, t, Na, Fa, ss, {
@@ -10220,15 +10220,15 @@
         i.$on("change", t[3]),
         {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 n.textContent = "黑夜模式设置",
-                e = ys(),
-                Ys(i.$$.fragment),
-                Xs(n, "title", "")
+                e = createSpacer(),
+                createComponentFragment(i.$$.fragment),
+                setAttributes(n, "title", "")
             },
             m(t, r) {
-                ds(t, n, r),
-                ds(t, e, r),
+                insertElement(t, n, r),
+                insertElement(t, e, r),
                 Zs(i, t, r),
                 o = !0
             },
@@ -10276,7 +10276,7 @@
         Ds.push(( () => Qs(n, "open", r))),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, e) {
                 Zs(n, t, e),
@@ -10339,7 +10339,7 @@
         }
         ]
     }
-    class Ua extends eu {
+    class Ua extends Component {
         constructor(t) {
             super(),
             nu(this, t, Pa, Ga, ss, {
@@ -10347,117 +10347,117 @@
             })
         }
     }
-    function La(n) {
-        let e, i, r, o, s, u, c, a, l, f, h, d, v, p, m, g, y, b, w, X, x, k, E, T, S = n[1] && function(n) {
-            let e, i, r, o, s, u, c, a;
+    function renderMenu(context) {
+        let e, i, r, o, s, u, c, a, l, f, h, d, v, p, m, g, y, b, w, X, x, k, E, T, S = context[1] && function(n) {
+            let labelElement, checkboxElement, imgElement, o, spacerElement, labelContentElement, c, a;
             return {
                 c() {
-                    e = ms("label"),
-                    i = ms("div"),
-                    r = ms("img"),
-                    s = ys(),
-                    u = ms("div"),
-                    u.innerHTML = '<div class="minor svelte-1kspwqr">五线谱+功能谱</div> \n          <div class="main svelte-1kspwqr">钢琴</div> \n          <div class="promotion svelte-1kspwqr">新！免费会员发放中</div>',
-                    r.src !== (o = "//cdn.yopu.co/img/selection-piano.1beed644.svg") && Xs(r, "src", "//cdn.yopu.co/img/selection-piano.1beed644.svg"),
-                    Xs(r, "class", "svelte-1kspwqr"),
-                    Xs(u, "class", "label svelte-1kspwqr"),
-                    Xs(i, "class", "checkbox svelte-1kspwqr"),
-                    Xs(e, "class", "option svelte-1kspwqr"),
-                    Ts(e, "checked", n[0] === t.PIANO)
+                    labelElement = createElement("label"),
+                    checkboxElement = createElement("div"),
+                    imgElement = createElement("img"),
+                    spacerElement = createSpacer(),
+                    labelContentElement = createElement("div"),
+                    labelContentElement.innerHTML = '<div class="minor svelte-1kspwqr">五线谱+功能谱</div> \n          <div class="main svelte-1kspwqr">钢琴</div> \n          <div class="promotion svelte-1kspwqr">新！免费会员发放中</div>',
+                    imgElement.src !== (o = "//cdn.yopu.co/img/selection-piano.1beed644.svg") && setAttributes(imgElement, "src", "//cdn.yopu.co/img/selection-piano.1beed644.svg"),
+                    setAttributes(imgElement, "class", "svelte-1kspwqr"),
+                    setAttributes(labelContentElement, "class", "label svelte-1kspwqr"),
+                    setAttributes(checkboxElement, "class", "checkbox svelte-1kspwqr"),
+                    setAttributes(labelElement, "class", "option svelte-1kspwqr"),
+                    setChecked(labelElement, "checked", n[0] === t.PIANO)
                 },
-                m(t, o) {
-                    ds(t, e, o),
-                    hs(e, i),
-                    hs(i, r),
-                    hs(i, s),
-                    hs(i, u),
-                    c || (a = ws(e, "click", n[4]),
+                mount(t, o) {
+                    insertElement(t, labelElement, o),
+                    appendElement(labelElement, checkboxElement),
+                    appendElement(checkboxElement, imgElement),
+                    appendElement(checkboxElement, spacerElement),
+                    appendElement(checkboxElement, labelContentElement),
+                    c || (a = addEventListener(labelElement, "click", n[4]),
                     c = !0)
                 },
                 p(n, i) {
-                    1 & i && Ts(e, "checked", n[0] === t.PIANO)
+                    1 & i && setChecked(labelElement, "checked", n[0] === t.PIANO)
                 },
                 d(t) {
-                    t && vs(e),
+                    t && vs(labelElement),
                     c = !1,
                     a()
                 }
             }
-        }(n);
+        }(context);
         return {
             c() {
-                e = ms("div"),
+                e = createElement("div"),
                 S && S.c(),
-                i = ys(),
-                r = ms("label"),
-                o = ms("div"),
-                s = ms("img"),
-                c = ys(),
-                a = ms("div"),
+                i = createSpacer(),
+                r = createElement("label"),
+                o = createElement("div"),
+                s = createElement("img"),
+                c = createSpacer(),
+                a = createElement("div"),
                 a.innerHTML = '<div class="minor svelte-1kspwqr">六线谱+和弦谱</div> \n        <div class="main svelte-1kspwqr">吉他</div>',
-                l = ys(),
-                f = ms("label"),
-                h = ms("div"),
-                d = ms("img"),
-                p = ys(),
-                m = ms("div"),
+                l = createSpacer(),
+                f = createElement("label"),
+                h = createElement("div"),
+                d = createElement("img"),
+                p = createSpacer(),
+                m = createElement("div"),
                 m.innerHTML = '<div class="minor svelte-1kspwqr">四线谱+和弦谱</div> \n        <div class="main svelte-1kspwqr">尤克里里</div>',
-                g = ys(),
-                y = ms("label"),
-                b = ms("div"),
-                w = ms("img"),
-                x = ys(),
-                k = ms("div"),
+                g = createSpacer(),
+                y = createElement("label"),
+                b = createElement("div"),
+                w = createElement("img"),
+                x = createSpacer(),
+                k = createElement("div"),
                 k.innerHTML = '<div class="minor svelte-1kspwqr">简谱</div> \n        <div class="main svelte-1kspwqr">民乐</div>',
-                s.src !== (u = "//cdn.yopu.co/img/selection-guitar.39468ba1.svg") && Xs(s, "src", "//cdn.yopu.co/img/selection-guitar.39468ba1.svg"),
-                Xs(s, "class", "svelte-1kspwqr"),
-                Xs(a, "class", "label svelte-1kspwqr"),
-                Xs(o, "class", "checkbox svelte-1kspwqr"),
-                Xs(r, "class", "option svelte-1kspwqr"),
-                Ts(r, "checked", n[0] === t.GUITAR),
-                d.src !== (v = "//cdn.yopu.co/img/selection-ukulele.4025607e.svg") && Xs(d, "src", "//cdn.yopu.co/img/selection-ukulele.4025607e.svg"),
-                Xs(d, "class", "svelte-1kspwqr"),
-                Xs(m, "class", "label svelte-1kspwqr"),
-                Xs(h, "class", "checkbox svelte-1kspwqr"),
-                Xs(f, "class", "option svelte-1kspwqr"),
-                Ts(f, "checked", n[0] === t.UKULELE),
-                w.src !== (X = "//cdn.yopu.co/img/selection-jian.8213afc4.svg") && Xs(w, "src", "//cdn.yopu.co/img/selection-jian.8213afc4.svg"),
-                Xs(w, "class", "svelte-1kspwqr"),
-                Xs(k, "class", "label svelte-1kspwqr"),
-                Xs(b, "class", "checkbox svelte-1kspwqr"),
-                Xs(y, "class", "option svelte-1kspwqr"),
-                Ts(y, "checked", n[0] === t.JIAN),
-                Xs(e, "class", "options svelte-1kspwqr")
+                s.src !== (u = "//cdn.yopu.co/img/selection-guitar.39468ba1.svg") && setAttributes(s, "src", "//cdn.yopu.co/img/selection-guitar.39468ba1.svg"),
+                setAttributes(s, "class", "svelte-1kspwqr"),
+                setAttributes(a, "class", "label svelte-1kspwqr"),
+                setAttributes(o, "class", "checkbox svelte-1kspwqr"),
+                setAttributes(r, "class", "option svelte-1kspwqr"),
+                setChecked(r, "checked", context[0] === t.GUITAR),
+                d.src !== (v = "//cdn.yopu.co/img/selection-ukulele.4025607e.svg") && setAttributes(d, "src", "//cdn.yopu.co/img/selection-ukulele.4025607e.svg"),
+                setAttributes(d, "class", "svelte-1kspwqr"),
+                setAttributes(m, "class", "label svelte-1kspwqr"),
+                setAttributes(h, "class", "checkbox svelte-1kspwqr"),
+                setAttributes(f, "class", "option svelte-1kspwqr"),
+                setChecked(f, "checked", context[0] === t.UKULELE),
+                w.src !== (X = "//cdn.yopu.co/img/selection-jian.8213afc4.svg") && setAttributes(w, "src", "//cdn.yopu.co/img/selection-jian.8213afc4.svg"),
+                setAttributes(w, "class", "svelte-1kspwqr"),
+                setAttributes(k, "class", "label svelte-1kspwqr"),
+                setAttributes(b, "class", "checkbox svelte-1kspwqr"),
+                setAttributes(y, "class", "option svelte-1kspwqr"),
+                setChecked(y, "checked", context[0] === t.JIAN),
+                setAttributes(e, "class", "options svelte-1kspwqr")
             },
             m(t, u) {
-                ds(t, e, u),
+                insertElement(t, e, u),
                 S && S.m(e, null),
-                hs(e, i),
-                hs(e, r),
-                hs(r, o),
-                hs(o, s),
-                hs(o, c),
-                hs(o, a),
-                hs(e, l),
-                hs(e, f),
-                hs(f, h),
-                hs(h, d),
-                hs(h, p),
-                hs(h, m),
-                hs(e, g),
-                hs(e, y),
-                hs(y, b),
-                hs(b, w),
-                hs(b, x),
-                hs(b, k),
-                E || (T = [ws(r, "click", n[5]), ws(f, "click", n[6]), ws(y, "click", n[7])],
+                appendElement(e, i),
+                appendElement(e, r),
+                appendElement(r, o),
+                appendElement(o, s),
+                appendElement(o, c),
+                appendElement(o, a),
+                appendElement(e, l),
+                appendElement(e, f),
+                appendElement(f, h),
+                appendElement(h, d),
+                appendElement(h, p),
+                appendElement(h, m),
+                appendElement(e, g),
+                appendElement(e, y),
+                appendElement(y, b),
+                appendElement(b, w),
+                appendElement(b, x),
+                appendElement(b, k),
+                E || (T = [addEventListener(r, "click", context[5]), addEventListener(f, "click", context[6]), addEventListener(y, "click", context[7])],
                 E = !0)
             },
             p(n, [e]) {
                 n[1] && S.p(n, e),
-                1 & e && Ts(r, "checked", n[0] === t.GUITAR),
-                1 & e && Ts(f, "checked", n[0] === t.UKULELE),
-                1 & e && Ts(y, "checked", n[0] === t.JIAN)
+                1 & e && setChecked(r, "checked", n[0] === t.GUITAR),
+                1 & e && setChecked(f, "checked", n[0] === t.UKULELE),
+                1 & e && setChecked(y, "checked", n[0] === t.JIAN)
             },
             i: ns,
             o: ns,
@@ -10485,10 +10485,10 @@
         ,
         [r, !0, u, o, () => u(t.PIANO), () => u(t.GUITAR), () => u(t.UKULELE), () => u(t.JIAN)]
     }
-    class Wa extends eu {
+    class InstrumentSelector extends Component {
         constructor(t) {
             super(),
-            nu(this, t, za, La, ss, {
+            nu(this, t, za, renderMenu, ss, {
                 instrument: 0,
                 user: 3
             })
@@ -10617,24 +10617,24 @@
         }
         return {
             c() {
-                n = ms("div"),
-                e = ms("i"),
+                n = createElement("div"),
+                e = createElement("i"),
                 e.textContent = "",
-                i = ys(),
-                r = ms("span"),
+                i = createSpacer(),
+                r = createElement("span"),
                 o = gs(a),
-                s = ys(),
-                Xs(e, "class", "yoopu3-icon svelte-vbhppz"),
-                Xs(n, "class", "row svelte-vbhppz")
+                s = createSpacer(),
+                setAttributes(e, "class", "yoopu3-icon svelte-vbhppz"),
+                setAttributes(n, "class", "row svelte-vbhppz")
             },
             m(t, a) {
-                ds(t, n, a),
-                hs(n, e),
-                hs(n, i),
-                hs(n, r),
-                hs(r, o),
-                hs(n, s),
-                u || (c = ws(n, "click", l),
+                insertElement(t, n, a),
+                appendElement(n, e),
+                appendElement(n, i),
+                appendElement(n, r),
+                appendElement(r, o),
+                appendElement(n, s),
+                u || (c = addEventListener(n, "click", l),
                 u = !0)
             },
             p(n, e) {
@@ -10654,19 +10654,19 @@
             o[n] = el(Ya(t, r, n));
         return {
             c() {
-                n = ms("h5"),
+                n = createElement("h5"),
                 n.textContent = "我的原创和收藏",
-                e = ys(),
-                i = ms("div");
+                e = createSpacer(),
+                i = createElement("div");
                 for (let t = 0; t < o.length; t += 1)
                     o[t].c();
-                Xs(n, "class", "svelte-vbhppz"),
-                Xs(i, "class", "list svelte-vbhppz")
+                setAttributes(n, "class", "svelte-vbhppz"),
+                setAttributes(i, "class", "list svelte-vbhppz")
             },
             m(t, r) {
-                ds(t, n, r),
-                ds(t, e, r),
-                ds(t, i, r);
+                insertElement(t, n, r),
+                insertElement(t, e, r),
+                insertElement(t, i, r);
                 for (let t = 0; t < o.length; t += 1)
                     o[t].m(i, null)
             },
@@ -10697,33 +10697,33 @@
         let n, e, i, r, o, s, u, c, a, l = t[10].artist + "", f = t[10].title + "";
         return {
             c() {
-                n = ms("a"),
-                e = ms("i"),
+                n = createElement("a"),
+                e = createElement("i"),
                 e.textContent = "",
-                i = ys(),
-                r = ms("span"),
+                i = createSpacer(),
+                r = createElement("span"),
                 o = gs(l),
                 s = gs(" - "),
                 u = gs(f),
-                c = ys(),
-                Xs(e, "class", "yoopu3-icon svelte-vbhppz"),
-                Xs(n, "class", "row svelte-vbhppz"),
-                Xs(n, "href", a = "/view/" + t[10].id)
+                c = createSpacer(),
+                setAttributes(e, "class", "yoopu3-icon svelte-vbhppz"),
+                setAttributes(n, "class", "row svelte-vbhppz"),
+                setAttributes(n, "href", a = "/view/" + t[10].id)
             },
             m(t, a) {
-                ds(t, n, a),
-                hs(n, e),
-                hs(n, i),
-                hs(n, r),
-                hs(r, o),
-                hs(r, s),
-                hs(r, u),
-                hs(n, c)
+                insertElement(t, n, a),
+                appendElement(n, e),
+                appendElement(n, i),
+                appendElement(n, r),
+                appendElement(r, o),
+                appendElement(r, s),
+                appendElement(r, u),
+                appendElement(n, c)
             },
             p(t, e) {
                 2 & e && l !== (l = t[10].artist + "") && ks(o, l),
                 2 & e && f !== (f = t[10].title + "") && ks(u, f),
-                2 & e && a !== (a = "/view/" + t[10].id) && Xs(n, "href", a)
+                2 & e && a !== (a = "/view/" + t[10].id) && setAttributes(n, "href", a)
             },
             d(t) {
                 t && vs(n)
@@ -10737,21 +10737,21 @@
         let s = t[1].length && nl(t);
         return {
             c() {
-                n = ms("section"),
-                e = ms("div");
+                n = createElement("section"),
+                e = createElement("div");
                 for (let t = 0; t < o.length; t += 1)
                     o[t].c();
-                i = ys(),
+                i = createSpacer(),
                 s && s.c(),
-                Xs(e, "class", "list svelte-vbhppz"),
-                Xs(n, "class", "searchAutoComplete svelte-vbhppz")
+                setAttributes(e, "class", "list svelte-vbhppz"),
+                setAttributes(n, "class", "searchAutoComplete svelte-vbhppz")
             },
             m(t, r) {
-                ds(t, n, r),
-                hs(n, e);
+                insertElement(t, n, r),
+                appendElement(n, e);
                 for (let t = 0; t < o.length; t += 1)
                     o[t].m(e, null);
-                hs(n, i),
+                appendElement(n, i),
                 s && s.m(n, null)
             },
             p(t, [i]) {
@@ -10823,7 +10823,7 @@
         ,
         [u, c, l, r, t => l(t)]
     }
-    class ol extends eu {
+    class ol extends Component {
         constructor(t) {
             super(),
             nu(this, t, rl, il, ss, {
@@ -10847,33 +10847,33 @@
             f[n] = al(ul(t, l, n));
         return {
             c() {
-                n = ms("section"),
-                e = ms("div"),
-                i = ms("span"),
+                n = createElement("section"),
+                e = createElement("div"),
+                i = createElement("span"),
                 i.textContent = "搜索历史",
-                r = ys(),
-                o = ms("span"),
+                r = createSpacer(),
+                o = createElement("span"),
                 o.textContent = "清除记录",
-                s = ys(),
-                u = ms("div");
+                s = createSpacer(),
+                u = createElement("div");
                 for (let t = 0; t < f.length; t += 1)
                     f[t].c();
-                Xs(o, "class", "right button svelte-1pln1xx"),
-                Xs(e, "class", "title svelte-1pln1xx"),
-                Xs(u, "class", "queries svelte-1pln1xx"),
-                Xs(n, "class", "svelte-1pln1xx")
+                setAttributes(o, "class", "right button svelte-1pln1xx"),
+                setAttributes(e, "class", "title svelte-1pln1xx"),
+                setAttributes(u, "class", "queries svelte-1pln1xx"),
+                setAttributes(n, "class", "svelte-1pln1xx")
             },
             m(l, h) {
-                ds(l, n, h),
-                hs(n, e),
-                hs(e, i),
-                hs(e, r),
-                hs(e, o),
-                hs(n, s),
-                hs(n, u);
+                insertElement(l, n, h),
+                appendElement(n, e),
+                appendElement(e, i),
+                appendElement(e, r),
+                appendElement(e, o),
+                appendElement(n, s),
+                appendElement(n, u);
                 for (let t = 0; t < f.length; t += 1)
                     f[t].m(u, null);
-                c || (a = ws(o, "click", t[3]),
+                c || (a = addEventListener(o, "click", t[3]),
                 c = !0)
             },
             p(t, n) {
@@ -10906,14 +10906,14 @@
         }
         return {
             c() {
-                n = ms("span"),
+                n = createElement("span"),
                 e = gs(o),
-                Xs(n, "class", "query svelte-1pln1xx")
+                setAttributes(n, "class", "query svelte-1pln1xx")
             },
             m(t, o) {
-                ds(t, n, o),
-                hs(n, e),
-                i || (r = ws(n, "click", s),
+                insertElement(t, n, o),
+                appendElement(n, e),
+                i || (r = addEventListener(n, "click", s),
                 i = !0)
             },
             p(n, i) {
@@ -10933,22 +10933,22 @@
             s[n] = fl(sl(t, o, n));
         return {
             c() {
-                n = ms("section"),
-                e = ms("div"),
+                n = createElement("section"),
+                e = createElement("div"),
                 e.textContent = "热门搜索",
-                i = ys(),
-                r = ms("div");
+                i = createSpacer(),
+                r = createElement("div");
                 for (let t = 0; t < s.length; t += 1)
                     s[t].c();
-                Xs(e, "class", "title svelte-1pln1xx"),
-                Xs(r, "class", "queries svelte-1pln1xx"),
-                Xs(n, "class", "svelte-1pln1xx")
+                setAttributes(e, "class", "title svelte-1pln1xx"),
+                setAttributes(r, "class", "queries svelte-1pln1xx"),
+                setAttributes(n, "class", "svelte-1pln1xx")
             },
             m(t, o) {
-                ds(t, n, o),
-                hs(n, e),
-                hs(n, i),
-                hs(n, r);
+                insertElement(t, n, o),
+                appendElement(n, e),
+                appendElement(n, i),
+                appendElement(n, r);
                 for (let t = 0; t < s.length; t += 1)
                     s[t].m(r, null)
             },
@@ -10980,14 +10980,14 @@
         }
         return {
             c() {
-                n = ms("span"),
+                n = createElement("span"),
                 e = gs(o),
-                Xs(n, "class", "query svelte-1pln1xx")
+                setAttributes(n, "class", "query svelte-1pln1xx")
             },
             m(t, o) {
-                ds(t, n, o),
-                hs(n, e),
-                i || (r = ws(n, "click", s),
+                insertElement(t, n, o),
+                appendElement(n, e),
+                i || (r = addEventListener(n, "click", s),
                 i = !0)
             },
             p(n, i) {
@@ -11006,15 +11006,15 @@
         return {
             c() {
                 i && i.c(),
-                n = ys(),
+                n = createSpacer(),
                 r && r.c(),
                 e = bs()
             },
             m(t, o) {
                 i && i.m(t, o),
-                ds(t, n, o),
+                insertElement(t, n, o),
                 r && r.m(t, o),
-                ds(t, e, o)
+                insertElement(t, e, o)
             },
             p(t, [o]) {
                 t[0].length ? i ? i.p(t, o) : (i = cl(t),
@@ -11060,7 +11060,7 @@
         }
         , i, t => c(t), t => c(t)]
     }
-    class vl extends eu {
+    class vl extends Component {
         constructor(t) {
             super(),
             nu(this, t, dl, hl, ss, {})
@@ -11072,12 +11072,12 @@
         e.$on("search", t[2]),
         {
             c() {
-                n = ms("div"),
-                Ys(e.$$.fragment),
-                Xs(n, "class", "query-container svelte-k55a1y")
+                n = createElement("div"),
+                createComponentFragment(e.$$.fragment),
+                setAttributes(n, "class", "query-container svelte-k55a1y")
             },
             m(t, r) {
-                ds(t, n, r),
+                insertElement(t, n, r),
                 Zs(e, n, null),
                 i = !0
             },
@@ -11106,7 +11106,7 @@
         n.$on("search", t[1]),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, i) {
                 Zs(n, t, i),
@@ -11146,7 +11146,7 @@
             },
             m(t, e) {
                 s[n].m(t, e),
-                ds(t, i, e),
+                insertElement(t, i, e),
                 r = !0
             },
             p(t, [r]) {
@@ -11192,7 +11192,7 @@
         }
         ]
     }
-    class bl extends eu {
+    class bl extends Component {
         constructor(t) {
             super(),
             nu(this, t, yl, gl, ss, {
@@ -11204,16 +11204,16 @@
         let n, e, i, r;
         return {
             c() {
-                n = ms("button"),
+                n = createElement("button"),
                 e = gs(""),
                 n.disabled = t[2],
-                Xs(n, "type", "button"),
-                Xs(n, "class", "cancel yoopu3-icon svelte-4q4jwj")
+                setAttributes(n, "type", "button"),
+                setAttributes(n, "class", "cancel yoopu3-icon svelte-4q4jwj")
             },
             m(o, s) {
-                ds(o, n, s),
-                hs(n, e),
-                i || (r = ws(n, "click", t[6]),
+                insertElement(o, n, s),
+                appendElement(n, e),
+                i || (r = addEventListener(n, "click", t[6]),
                 i = !0)
             },
             p(t, e) {
@@ -11230,43 +11230,43 @@
         let n, e, i, r, o, s, u, c = t[0] && wl(t);
         return {
             c() {
-                n = ms("form"),
-                e = ms("i"),
+                n = createElement("form"),
+                e = createElement("i"),
                 e.textContent = "",
-                i = ys(),
-                r = ms("input"),
-                o = ys(),
+                i = createSpacer(),
+                r = createElement("input"),
+                o = createSpacer(),
                 c && c.c(),
-                Xs(e, "class", "icon yoopu3-icon svelte-4q4jwj"),
-                Xs(r, "class", "search-input svelte-4q4jwj"),
-                Xs(r, "type", "text"),
+                setAttributes(e, "class", "icon yoopu3-icon svelte-4q4jwj"),
+                setAttributes(r, "class", "search-input svelte-4q4jwj"),
+                setAttributes(r, "type", "text"),
                 r.disabled = t[2],
-                Xs(r, "placeholder", t[1]),
-                Xs(r, "autocomplete", "off"),
-                Xs(n, "class", "search-wrapper svelte-4q4jwj"),
-                Ts(n, "white", t[3])
+                setAttributes(r, "placeholder", t[1]),
+                setAttributes(r, "autocomplete", "off"),
+                setAttributes(n, "class", "search-wrapper svelte-4q4jwj"),
+                setChecked(n, "white", t[3])
             },
             m(a, l) {
-                ds(a, n, l),
-                hs(n, e),
-                hs(n, i),
-                hs(n, r),
+                insertElement(a, n, l),
+                appendElement(n, e),
+                appendElement(n, i),
+                appendElement(n, r),
                 t[11](r),
                 Es(r, t[0]),
-                hs(n, o),
+                appendElement(n, o),
                 c && c.m(n, null),
-                s || (u = [ws(r, "input", t[12]), ws(r, "focus", t[8]), ws(r, "blur", t[9]), ws(r, "input", t[10]), ws(n, "submit", t[5])],
+                s || (u = [addEventListener(r, "input", t[12]), addEventListener(r, "focus", t[8]), addEventListener(r, "blur", t[9]), addEventListener(r, "input", t[10]), addEventListener(n, "submit", t[5])],
                 s = !0)
             },
             p(t, [e]) {
                 4 & e && (r.disabled = t[2]),
-                2 & e && Xs(r, "placeholder", t[1]),
+                2 & e && setAttributes(r, "placeholder", t[1]),
                 1 & e && r.value !== t[0] && Es(r, t[0]),
                 t[0] ? c ? c.p(t, e) : (c = wl(t),
                 c.c(),
                 c.m(n, null)) : c && (c.d(1),
                 c = null),
-                8 & e && Ts(n, "white", t[3])
+                8 & e && setChecked(n, "white", t[3])
             },
             i: ns,
             o: ns,
@@ -11330,7 +11330,7 @@
         }
         ]
     }
-    class kl extends eu {
+    class kl extends Component {
         constructor(t) {
             super(),
             nu(this, t, xl, Xl, ss, {
@@ -11369,21 +11369,21 @@
         s.$on("search", t[8]),
         {
             c() {
-                n = ms("div"),
-                Ys(e.$$.fragment),
-                r = ys(),
-                o = ms("div"),
-                Ys(s.$$.fragment),
-                Xs(o, "class", "panel svelte-y4hgxl"),
-                Ts(o, "show", t[1]),
-                Ts(o, "unclickable", t[2]),
-                Xs(n, "class", "container svelte-y4hgxl")
+                n = createElement("div"),
+                createComponentFragment(e.$$.fragment),
+                r = createSpacer(),
+                o = createElement("div"),
+                createComponentFragment(s.$$.fragment),
+                setAttributes(o, "class", "panel svelte-y4hgxl"),
+                setChecked(o, "show", t[1]),
+                setChecked(o, "unclickable", t[2]),
+                setAttributes(n, "class", "container svelte-y4hgxl")
             },
             m(t, i) {
-                ds(t, n, i),
+                insertElement(t, n, i),
                 Zs(e, n, null),
-                hs(n, r),
-                hs(n, o),
+                appendElement(n, r),
+                appendElement(n, o),
                 Zs(s, o, null),
                 u = !0
             },
@@ -11396,8 +11396,8 @@
                 const u = {};
                 1 & n && (u.query = t[0]),
                 s.$set(u),
-                2 & n && Ts(o, "show", t[1]),
-                4 & n && Ts(o, "unclickable", t[2])
+                2 & n && setChecked(o, "show", t[1]),
+                4 & n && setChecked(o, "unclickable", t[2])
             },
             i(t) {
                 u || (Vs(e.$$.fragment, t),
@@ -11439,7 +11439,7 @@
         }
         , () => s(i), t => s(t.detail.query)]
     }
-    class Sl extends eu {
+    class Sl extends Component {
         constructor(t) {
             super(),
             nu(this, t, Tl, El, ss, {})
@@ -11449,11 +11449,11 @@
         let n;
         return {
             c() {
-                n = ms("div"),
-                Xs(n, "class", "svg-container svelte-jr7qzq")
+                n = createElement("div"),
+                setAttributes(n, "class", "svg-container svelte-jr7qzq")
             },
             m(e, i) {
-                ds(e, n, i),
+                insertElement(e, n, i),
                 t[4](n)
             },
             p: ns,
@@ -11510,7 +11510,7 @@
         }
         ]
     }
-    class Ol extends eu {
+    class Ol extends Component {
         constructor(t) {
             super(),
             nu(this, t, Al, jl, ss, {
@@ -11527,32 +11527,32 @@
         }),
         {
             c() {
-                n = ms("div"),
-                e = ms("a"),
-                i = ms("span"),
+                n = createElement("div"),
+                e = createElement("a"),
+                i = createElement("span"),
                 i.textContent = "",
-                r = ys(),
-                o = ms("div"),
-                Ys(s.$$.fragment),
-                u = ys(),
-                c = ms("span"),
+                r = createSpacer(),
+                o = createElement("div"),
+                createComponentFragment(s.$$.fragment),
+                u = createSpacer(),
+                c = createElement("span"),
                 c.textContent = "随身的曲谱书",
-                Xs(i, "class", "yoopu3-icon svelte-dhvbeg"),
-                Xs(o, "class", "name svelte-dhvbeg"),
-                Xs(e, "href", "/"),
-                Xs(e, "class", "logo svelte-dhvbeg"),
-                Xs(c, "class", "slogan-text svelte-dhvbeg"),
-                Xs(n, "class", "logo-container svelte-dhvbeg")
+                setAttributes(i, "class", "yoopu3-icon svelte-dhvbeg"),
+                setAttributes(o, "class", "name svelte-dhvbeg"),
+                setAttributes(e, "href", "/"),
+                setAttributes(e, "class", "logo svelte-dhvbeg"),
+                setAttributes(c, "class", "slogan-text svelte-dhvbeg"),
+                setAttributes(n, "class", "logo-container svelte-dhvbeg")
             },
             m(t, l) {
-                ds(t, n, l),
-                hs(n, e),
-                hs(e, i),
-                hs(e, r),
-                hs(e, o),
+                insertElement(t, n, l),
+                appendElement(n, e),
+                appendElement(e, i),
+                appendElement(e, r),
+                appendElement(e, o),
                 Zs(s, o, null),
-                hs(n, u),
-                hs(n, c),
+                appendElement(n, u),
+                appendElement(n, c),
                 a = !0
             },
             p: ns,
@@ -11570,7 +11570,7 @@
             }
         }
     }
-    class Bl extends eu {
+    class Bl extends Component {
         constructor(t) {
             super(),
             nu(this, t, null, _l, ss, {})
@@ -11580,16 +11580,16 @@
         let n;
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 n.innerHTML = '<div class="mover svelte-bmkbx9"></div>',
-                Xs(n, "class", "loader svelte-bmkbx9"),
-                Ts(n, "above", t[0])
+                setAttributes(n, "class", "loader svelte-bmkbx9"),
+                setChecked(n, "above", t[0])
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p(t, [e]) {
-                1 & e && Ts(n, "above", t[0])
+                1 & e && setChecked(n, "above", t[0])
             },
             i: ns,
             o: ns,
@@ -11606,7 +11606,7 @@
         ,
         [i]
     }
-    class Il extends eu {
+    class Il extends Component {
         constructor(t) {
             super(),
             nu(this, t, ql, Dl, ss, {
@@ -11618,16 +11618,16 @@
         let n, e;
         return {
             c() {
-                n = ms("img"),
-                Xs(n, "class", "hat svelte-1a9wei7"),
-                n.src !== (e = t[4]) && Xs(n, "src", e),
-                Xs(n, "alt", "hat")
+                n = createElement("img"),
+                setAttributes(n, "class", "hat svelte-1a9wei7"),
+                n.src !== (e = t[4]) && setAttributes(n, "src", e),
+                setAttributes(n, "alt", "hat")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p(t, i) {
-                16 & i && n.src !== (e = t[4]) && Xs(n, "src", e)
+                16 & i && n.src !== (e = t[4]) && setAttributes(n, "src", e)
             },
             d(t) {
                 t && vs(n)
@@ -11638,16 +11638,16 @@
         let n, e;
         return {
             c() {
-                n = ms("img"),
-                Xs(n, "class", "badge svelte-1a9wei7"),
-                n.src !== (e = t[5]) && Xs(n, "src", e),
-                Xs(n, "alt", "badge")
+                n = createElement("img"),
+                setAttributes(n, "class", "badge svelte-1a9wei7"),
+                n.src !== (e = t[5]) && setAttributes(n, "src", e),
+                setAttributes(n, "alt", "badge")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p(t, i) {
-                32 & i && n.src !== (e = t[5]) && Xs(n, "src", e)
+                32 & i && n.src !== (e = t[5]) && setAttributes(n, "src", e)
             },
             d(t) {
                 t && vs(n)
@@ -11658,33 +11658,33 @@
         let n, e, i, r, o, s, u, c, a, l = t[4] && Ml(t), f = t[5] && Fl(t);
         return {
             c() {
-                n = ms("div"),
-                e = ms("img"),
-                r = ys(),
+                n = createElement("div"),
+                e = createElement("img"),
+                r = createSpacer(),
                 l && l.c(),
-                o = ys(),
+                o = createSpacer(),
                 f && f.c(),
-                Xs(e, "class", "avatar svelte-1a9wei7"),
-                e.src !== (i = t[3]) && Xs(e, "src", i),
-                Xs(e, "alt", "avatar"),
-                Xs(n, "class", "container svelte-1a9wei7"),
-                Xs(n, "size", t[1]),
-                Xs(n, "gender", s = t[0].gender),
-                Xs(n, "ladder", u = t[0].ladder),
-                Ts(n, "link", t[2])
+                setAttributes(e, "class", "avatar svelte-1a9wei7"),
+                e.src !== (i = t[3]) && setAttributes(e, "src", i),
+                setAttributes(e, "alt", "avatar"),
+                setAttributes(n, "class", "container svelte-1a9wei7"),
+                setAttributes(n, "size", t[1]),
+                setAttributes(n, "gender", s = t[0].gender),
+                setAttributes(n, "ladder", u = t[0].ladder),
+                setChecked(n, "link", t[2])
             },
             m(i, s) {
-                ds(i, n, s),
-                hs(n, e),
-                hs(n, r),
+                insertElement(i, n, s),
+                appendElement(n, e),
+                appendElement(n, r),
                 l && l.m(n, null),
-                hs(n, o),
+                appendElement(n, o),
                 f && f.m(n, null),
-                c || (a = [ws(e, "error", t[7]), ws(n, "click", t[6])],
+                c || (a = [addEventListener(e, "error", t[7]), addEventListener(n, "click", t[6])],
                 c = !0)
             },
             p(t, [r]) {
-                8 & r && e.src !== (i = t[3]) && Xs(e, "src", i),
+                8 & r && e.src !== (i = t[3]) && setAttributes(e, "src", i),
                 t[4] ? l ? l.p(t, r) : (l = Ml(t),
                 l.c(),
                 l.m(n, o)) : l && (l.d(1),
@@ -11693,10 +11693,10 @@
                 f.c(),
                 f.m(n, null)) : f && (f.d(1),
                 f = null),
-                2 & r && Xs(n, "size", t[1]),
-                1 & r && s !== (s = t[0].gender) && Xs(n, "gender", s),
-                1 & r && u !== (u = t[0].ladder) && Xs(n, "ladder", u),
-                4 & r && Ts(n, "link", t[2])
+                2 & r && setAttributes(n, "size", t[1]),
+                1 & r && s !== (s = t[0].gender) && setAttributes(n, "gender", s),
+                1 & r && u !== (u = t[0].ladder) && setAttributes(n, "ladder", u),
+                4 & r && setChecked(n, "link", t[2])
             },
             i: ns,
             o: ns,
@@ -11740,7 +11740,7 @@
         }
         ]
     }
-    class Rl extends eu {
+    class Rl extends Component {
         constructor(t) {
             super(),
             nu(this, t, $l, Nl, ss, {
@@ -11754,23 +11754,23 @@
         let e, i, r, o, s, u, c, a = n[t[5]] + "";
         return {
             c() {
-                e = ms("div"),
-                i = ms("i"),
+                e = createElement("div"),
+                i = createElement("i"),
                 i.textContent = "",
-                r = ys(),
-                o = ms("span"),
+                r = createSpacer(),
+                o = createElement("span"),
                 s = gs(a),
-                Xs(i, "class", "yoopu3-icon svelte-tg1f35"),
-                Xs(o, "class", "label svelte-tg1f35"),
-                Xs(e, "class", "instrument-selection svelte-tg1f35")
+                setAttributes(i, "class", "yoopu3-icon svelte-tg1f35"),
+                setAttributes(o, "class", "label svelte-tg1f35"),
+                setAttributes(e, "class", "instrument-selection svelte-tg1f35")
             },
             m(n, a) {
-                ds(n, e, a),
-                hs(e, i),
-                hs(e, r),
-                hs(e, o),
-                hs(o, s),
-                u || (c = ws(e, "click", t[9]),
+                insertElement(n, e, a),
+                appendElement(e, i),
+                appendElement(e, r),
+                appendElement(e, o),
+                appendElement(o, s),
+                u || (c = addEventListener(e, "click", t[9]),
                 u = !0)
             },
             p(t, e) {
@@ -11787,13 +11787,13 @@
         let n;
         return {
             c() {
-                n = ms("a"),
+                n = createElement("a"),
                 n.textContent = "登录",
-                Xs(n, "class", "login-button svelte-tg1f35"),
-                Xs(n, "href", "/start")
+                setAttributes(n, "class", "login-button svelte-tg1f35"),
+                setAttributes(n, "href", "/start")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p: ns,
             i: ns,
@@ -11818,7 +11818,7 @@
         }),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, i) {
                 Zs(n, t, i),
@@ -11855,18 +11855,18 @@
         }),
         {
             c() {
-                n = ms("div"),
-                e = ms("div"),
+                n = createElement("div"),
+                e = createElement("div"),
                 e.textContent = `${t[6].displayName}`,
-                i = ys(),
-                Ys(r.$$.fragment),
-                Xs(e, "class", "display-name svelte-tg1f35"),
-                Xs(n, "class", "user-info svelte-tg1f35")
+                i = createSpacer(),
+                createComponentFragment(r.$$.fragment),
+                setAttributes(e, "class", "display-name svelte-tg1f35"),
+                setAttributes(n, "class", "user-info svelte-tg1f35")
             },
             m(t, s) {
-                ds(t, n, s),
-                hs(n, e),
-                hs(n, i),
+                insertElement(t, n, s),
+                appendElement(n, e),
+                appendElement(n, i),
                 Zs(r, n, null),
                 o = !0
             },
@@ -11890,13 +11890,13 @@
             let n;
             return {
                 c() {
-                    n = ms("a"),
+                    n = createElement("a"),
                     n.innerHTML = '<span class="icon yoopu3-icon svelte-tg1f35"></span> \n                <span>管理员工具</span>',
-                    Xs(n, "class", "action clickable svelte-tg1f35"),
-                    Xs(n, "href", "/internal")
+                    setAttributes(n, "class", "action clickable svelte-tg1f35"),
+                    setAttributes(n, "href", "/internal")
                 },
                 m(t, e) {
-                    ds(t, n, e)
+                    insertElement(t, n, e)
                 },
                 d(t) {
                     t && vs(n)
@@ -11905,43 +11905,43 @@
         }();
         return {
             c() {
-                n = ms("div"),
-                e = ms("a"),
+                n = createElement("div"),
+                e = createElement("a"),
                 e.innerHTML = '<span class="icon yoopu3-icon svelte-tg1f35"></span> \n              <span>用户中心</span>',
-                i = ys(),
-                r = ms("a"),
-                o = ms("span"),
+                i = createSpacer(),
+                r = createElement("a"),
+                o = createElement("span"),
                 o.textContent = "",
-                s = ys(),
-                u = ms("span"),
+                s = createSpacer(),
+                u = createElement("span"),
                 u.textContent = "我的个人页",
-                c = ys(),
-                a = ms("div"),
+                c = createSpacer(),
+                a = createElement("div"),
                 a.innerHTML = '<span class="icon yoopu3-icon svelte-tg1f35"></span> \n              <span>黑夜模式</span>',
-                l = ys(),
+                l = createSpacer(),
                 d && d.c(),
-                Xs(e, "class", "action clickable svelte-tg1f35"),
-                Xs(e, "href", "/setting"),
-                Xs(o, "class", "icon yoopu3-icon svelte-tg1f35"),
-                Xs(r, "class", "action clickable svelte-tg1f35"),
-                Xs(r, "href", "/user#code=" + t[6].userCode),
-                Xs(a, "class", "action clickable svelte-tg1f35"),
-                Xs(n, "slot", "content"),
-                Xs(n, "class", "user-panel svelte-tg1f35")
+                setAttributes(e, "class", "action clickable svelte-tg1f35"),
+                setAttributes(e, "href", "/setting"),
+                setAttributes(o, "class", "icon yoopu3-icon svelte-tg1f35"),
+                setAttributes(r, "class", "action clickable svelte-tg1f35"),
+                setAttributes(r, "href", "/user#code=" + t[6].userCode),
+                setAttributes(a, "class", "action clickable svelte-tg1f35"),
+                setAttributes(n, "slot", "content"),
+                setAttributes(n, "class", "user-panel svelte-tg1f35")
             },
             m(v, p) {
-                ds(v, n, p),
-                hs(n, e),
-                hs(n, i),
-                hs(n, r),
-                hs(r, o),
-                hs(r, s),
-                hs(r, u),
-                hs(n, c),
-                hs(n, a),
-                hs(n, l),
+                insertElement(v, n, p),
+                appendElement(n, e),
+                appendElement(n, i),
+                appendElement(n, r),
+                appendElement(r, o),
+                appendElement(r, s),
+                appendElement(r, u),
+                appendElement(n, c),
+                appendElement(n, a),
+                appendElement(n, l),
                 d && d.m(n, null),
-                f || (h = ws(a, "click", t[10]),
+                f || (h = addEventListener(a, "click", t[10]),
                 f = !0)
             },
             p: ns,
@@ -11953,26 +11953,26 @@
             }
         }
     }
-    function Wl(t) {
-        let n, e, i;
-        function r(n) {
-            t[11](n)
+    function createInstrumentSelector(context) {
+        let instrumentSelectorInstance, e, i;
+        function handleInstrumentChange(event) {
+            context[11](event)
         }
-        let o = {
-            user: t[6]
+        let instrumentSelectorProps = {
+            user: context[6]
         };
-        return void 0 !== t[5] && (o.instrument = t[5]),
-        n = new Wa({
-            props: o
+        return void 0 !== context[5] && (instrumentSelectorProps.instrument = context[5]),
+        instrumentSelectorInstance = new InstrumentSelector({
+            props: instrumentSelectorProps
         }),
-        Ds.push(( () => Qs(n, "instrument", r))),
-        n.$on("change", t[12]),
+        Ds.push(( () => Qs(instrumentSelectorInstance, "instrument", handleInstrumentChange))),
+        instrumentSelectorInstance.$on("change", context[12]),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(instrumentSelectorInstance.$$.fragment)
             },
             m(t, e) {
-                Zs(n, t, e),
+                Zs(instrumentSelectorInstance, t, e),
                 i = !0
             },
             p(t, i) {
@@ -11980,18 +11980,18 @@
                 !e && 32 & i && (e = !0,
                 r.instrument = t[5],
                 Rs(( () => e = !1))),
-                n.$set(r)
+                instrumentSelectorInstance.$set(r)
             },
             i(t) {
-                i || (Vs(n.$$.fragment, t),
+                i || (Vs(instrumentSelectorInstance.$$.fragment, t),
                 i = !0)
             },
             o(t) {
-                Ks(n.$$.fragment, t),
+                Ks(instrumentSelectorInstance.$$.fragment, t),
                 i = !1
             },
             d(t) {
-                tu(n, t)
+                tu(instrumentSelectorInstance, t)
             }
         }
     }
@@ -12014,7 +12014,7 @@
             noButtons: !0,
             cancelButtonText: t[5] ? "" : void 0,
             $$slots: {
-                default: [Wl]
+                default: [createInstrumentSelector]
             },
             $$scope: {
                 ctx: t
@@ -12047,56 +12047,56 @@
         }),
         {
             c() {
-                n = ms("header"),
-                e = ms("div"),
-                Ys(i.$$.fragment),
-                r = ys(),
-                o = ms("div"),
-                Ys(s.$$.fragment),
-                u = ys(),
+                n = createElement("header"),
+                e = createElement("div"),
+                createComponentFragment(i.$$.fragment),
+                r = createSpacer(),
+                o = createElement("div"),
+                createComponentFragment(s.$$.fragment),
+                u = createSpacer(),
                 j && j.c(),
-                c = ys(),
-                a = ms("div"),
+                c = createSpacer(),
+                a = createElement("div"),
                 f && f.c(),
-                h = ys(),
-                Ys(d.$$.fragment),
-                v = ys(),
-                Ys(p.$$.fragment),
-                g = ys(),
-                Ys(y.$$.fragment),
-                w = ys(),
-                Ys(X.$$.fragment),
-                x = ys(),
-                Ys(k.$$.fragment),
-                Xs(o, "class", "search-container svelte-tg1f35"),
-                Xs(a, "class", "user-container svelte-tg1f35"),
-                Xs(e, "class", "dt-top-navigation svelte-tg1f35"),
-                Xs(n, "class", "svelte-tg1f35")
+                h = createSpacer(),
+                createComponentFragment(d.$$.fragment),
+                v = createSpacer(),
+                createComponentFragment(p.$$.fragment),
+                g = createSpacer(),
+                createComponentFragment(y.$$.fragment),
+                w = createSpacer(),
+                createComponentFragment(X.$$.fragment),
+                x = createSpacer(),
+                createComponentFragment(k.$$.fragment),
+                setAttributes(o, "class", "search-container svelte-tg1f35"),
+                setAttributes(a, "class", "user-container svelte-tg1f35"),
+                setAttributes(e, "class", "dt-top-navigation svelte-tg1f35"),
+                setAttributes(n, "class", "svelte-tg1f35")
             },
             m(f, m) {
-                ds(f, n, m),
-                hs(n, e),
+                insertElement(f, n, m),
+                appendElement(n, e),
                 Zs(i, e, null),
-                hs(e, r),
-                hs(e, o),
+                appendElement(e, r),
+                appendElement(e, o),
                 Zs(s, o, null),
-                hs(e, u),
+                appendElement(e, u),
                 j && j.m(e, null),
-                hs(e, c),
-                hs(e, a),
+                appendElement(e, c),
+                appendElement(e, a),
                 ~l && A[l].m(a, null),
-                hs(n, h),
+                appendElement(n, h),
                 Zs(d, n, null),
-                ds(f, v, m),
+                insertElement(f, v, m),
                 Zs(p, f, m),
-                ds(f, g, m),
+                insertElement(f, g, m),
                 Zs(y, f, m),
-                ds(f, w, m),
+                insertElement(f, w, m),
                 Zs(X, f, m),
-                ds(f, x, m),
+                insertElement(f, x, m),
                 Zs(k, f, m),
                 E = !0,
-                T || (S = ws(o, "focus", t[8], !0),
+                T || (S = addEventListener(o, "focus", t[8], !0),
                 T = !0)
             },
             p(t, [n]) {
@@ -12212,7 +12212,7 @@
         }
         ]
     }
-    class Vl extends eu {
+    class Vl extends Component {
         constructor(t) {
             super(),
             nu(this, t, Jl, Hl, ss, {
@@ -12228,7 +12228,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12242,7 +12242,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12256,7 +12256,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12270,7 +12270,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12284,7 +12284,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12298,7 +12298,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12312,7 +12312,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12326,7 +12326,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12340,7 +12340,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12354,7 +12354,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12368,7 +12368,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12382,7 +12382,7 @@
                 n = gs("")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12423,150 +12423,150 @@
           , J = H(t);
         return {
             c() {
-                n = ms("nav"),
-                e = ms("a"),
-                i = ms("div"),
+                n = createElement("nav"),
+                e = createElement("a"),
+                i = createElement("div"),
                 D.c(),
-                r = ys(),
-                o = ms("div"),
+                r = createSpacer(),
+                o = createElement("div"),
                 o.textContent = "发现曲谱",
-                s = ys(),
-                u = ms("a"),
-                c = ms("div"),
+                s = createSpacer(),
+                u = createElement("a"),
+                c = createElement("div"),
                 M.c(),
-                a = ys(),
-                l = ms("div"),
+                a = createSpacer(),
+                l = createElement("div"),
                 l.textContent = "我的曲谱",
-                f = ys(),
-                h = ms("a"),
-                d = ms("div"),
+                f = createSpacer(),
+                h = createElement("a"),
+                d = createElement("div"),
                 $.c(),
-                v = ys(),
-                p = ms("div"),
+                v = createSpacer(),
+                p = createElement("div"),
                 p.textContent = "求谱墙",
-                m = ys(),
-                g = ms("a"),
-                y = ms("div"),
+                m = createSpacer(),
+                g = createElement("a"),
+                y = createElement("div"),
                 P.c(),
-                b = ys(),
-                w = ms("div"),
+                b = createSpacer(),
+                w = createElement("div"),
                 w.textContent = "Pu主排名",
-                X = ys(),
-                x = ms("a"),
-                k = ms("div"),
+                X = createSpacer(),
+                x = createElement("a"),
+                k = createElement("div"),
                 z.c(),
-                E = ys(),
-                T = ms("div"),
+                E = createSpacer(),
+                T = createElement("div"),
                 T.textContent = "帮助",
-                S = ys(),
-                j = ms("a"),
-                C = ms("div"),
+                S = createSpacer(),
+                j = createElement("a"),
+                C = createElement("div"),
                 J.c(),
-                A = ys(),
-                O = ms("div"),
+                A = createSpacer(),
+                O = createElement("div"),
                 O.textContent = "和弦查询",
-                Xs(i, "class", "yoopu3-icon icon svelte-1y5ln63"),
-                Xs(o, "class", "label svelte-1y5ln63"),
-                Xs(e, "href", "/explore"),
-                Xs(e, "class", "svelte-1y5ln63"),
-                Ts(e, "selected", "explore" === t[0]),
-                Xs(c, "class", "yoopu3-icon icon svelte-1y5ln63"),
-                Xs(l, "class", "label svelte-1y5ln63"),
-                Xs(u, "href", "/home"),
-                Xs(u, "class", "svelte-1y5ln63"),
-                Ts(u, "selected", "home" === t[0]),
-                Xs(d, "class", "yoopu3-icon icon svelte-1y5ln63"),
-                Xs(p, "class", "label svelte-1y5ln63"),
-                Xs(h, "href", "/dory"),
-                Xs(h, "class", "svelte-1y5ln63"),
-                Ts(h, "selected", "dory" === t[0]),
-                Xs(y, "class", "yoopu3-icon icon svelte-1y5ln63"),
-                Xs(w, "class", "label svelte-1y5ln63"),
-                Xs(g, "href", "/rank"),
-                Xs(g, "class", "svelte-1y5ln63"),
-                Ts(g, "selected", "rank" === t[0]),
-                Xs(k, "class", "yoopu3-icon icon svelte-1y5ln63"),
-                Xs(T, "class", "label svelte-1y5ln63"),
-                Xs(x, "href", "/help"),
-                Xs(x, "class", "svelte-1y5ln63"),
-                Ts(x, "selected", "help" === t[0]),
-                Xs(C, "class", "yoopu3-icon icon svelte-1y5ln63"),
-                Xs(O, "class", "label svelte-1y5ln63"),
-                Xs(j, "href", "/chord"),
-                Xs(j, "class", "svelte-1y5ln63"),
-                Ts(j, "selected", "chord" === t[0]),
-                Xs(n, "id", "SideNavBar"),
-                Xs(n, "class", "no-print svelte-1y5ln63")
+                setAttributes(i, "class", "yoopu3-icon icon svelte-1y5ln63"),
+                setAttributes(o, "class", "label svelte-1y5ln63"),
+                setAttributes(e, "href", "/explore"),
+                setAttributes(e, "class", "svelte-1y5ln63"),
+                setChecked(e, "selected", "explore" === t[0]),
+                setAttributes(c, "class", "yoopu3-icon icon svelte-1y5ln63"),
+                setAttributes(l, "class", "label svelte-1y5ln63"),
+                setAttributes(u, "href", "/home"),
+                setAttributes(u, "class", "svelte-1y5ln63"),
+                setChecked(u, "selected", "home" === t[0]),
+                setAttributes(d, "class", "yoopu3-icon icon svelte-1y5ln63"),
+                setAttributes(p, "class", "label svelte-1y5ln63"),
+                setAttributes(h, "href", "/dory"),
+                setAttributes(h, "class", "svelte-1y5ln63"),
+                setChecked(h, "selected", "dory" === t[0]),
+                setAttributes(y, "class", "yoopu3-icon icon svelte-1y5ln63"),
+                setAttributes(w, "class", "label svelte-1y5ln63"),
+                setAttributes(g, "href", "/rank"),
+                setAttributes(g, "class", "svelte-1y5ln63"),
+                setChecked(g, "selected", "rank" === t[0]),
+                setAttributes(k, "class", "yoopu3-icon icon svelte-1y5ln63"),
+                setAttributes(T, "class", "label svelte-1y5ln63"),
+                setAttributes(x, "href", "/help"),
+                setAttributes(x, "class", "svelte-1y5ln63"),
+                setChecked(x, "selected", "help" === t[0]),
+                setAttributes(C, "class", "yoopu3-icon icon svelte-1y5ln63"),
+                setAttributes(O, "class", "label svelte-1y5ln63"),
+                setAttributes(j, "href", "/chord"),
+                setAttributes(j, "class", "svelte-1y5ln63"),
+                setChecked(j, "selected", "chord" === t[0]),
+                setAttributes(n, "id", "SideNavBar"),
+                setAttributes(n, "class", "no-print svelte-1y5ln63")
             },
             m(t, _) {
-                ds(t, n, _),
-                hs(n, e),
-                hs(e, i),
+                insertElement(t, n, _),
+                appendElement(n, e),
+                appendElement(e, i),
                 D.m(i, null),
-                hs(e, r),
-                hs(e, o),
-                hs(n, s),
-                hs(n, u),
-                hs(u, c),
+                appendElement(e, r),
+                appendElement(e, o),
+                appendElement(n, s),
+                appendElement(n, u),
+                appendElement(u, c),
                 M.m(c, null),
-                hs(u, a),
-                hs(u, l),
-                hs(n, f),
-                hs(n, h),
-                hs(h, d),
+                appendElement(u, a),
+                appendElement(u, l),
+                appendElement(n, f),
+                appendElement(n, h),
+                appendElement(h, d),
                 $.m(d, null),
-                hs(h, v),
-                hs(h, p),
-                hs(n, m),
-                hs(n, g),
-                hs(g, y),
+                appendElement(h, v),
+                appendElement(h, p),
+                appendElement(n, m),
+                appendElement(n, g),
+                appendElement(g, y),
                 P.m(y, null),
-                hs(g, b),
-                hs(g, w),
-                hs(n, X),
-                hs(n, x),
-                hs(x, k),
+                appendElement(g, b),
+                appendElement(g, w),
+                appendElement(n, X),
+                appendElement(n, x),
+                appendElement(x, k),
                 z.m(k, null),
-                hs(x, E),
-                hs(x, T),
-                hs(n, S),
-                hs(n, j),
-                hs(j, C),
+                appendElement(x, E),
+                appendElement(x, T),
+                appendElement(n, S),
+                appendElement(n, j),
+                appendElement(j, C),
                 J.m(C, null),
-                hs(j, A),
-                hs(j, O)
+                appendElement(j, A),
+                appendElement(j, O)
             },
             p(t, [n]) {
                 B !== (B = _(t)) && (D.d(1),
                 D = B(t),
                 D && (D.c(),
                 D.m(i, null))),
-                1 & n && Ts(e, "selected", "explore" === t[0]),
+                1 & n && setChecked(e, "selected", "explore" === t[0]),
                 I !== (I = q(t)) && (M.d(1),
                 M = I(t),
                 M && (M.c(),
                 M.m(c, null))),
-                1 & n && Ts(u, "selected", "home" === t[0]),
+                1 & n && setChecked(u, "selected", "home" === t[0]),
                 N !== (N = F(t)) && ($.d(1),
                 $ = N(t),
                 $ && ($.c(),
                 $.m(d, null))),
-                1 & n && Ts(h, "selected", "dory" === t[0]),
+                1 & n && setChecked(h, "selected", "dory" === t[0]),
                 G !== (G = R(t)) && (P.d(1),
                 P = G(t),
                 P && (P.c(),
                 P.m(y, null))),
-                1 & n && Ts(g, "selected", "rank" === t[0]),
+                1 & n && setChecked(g, "selected", "rank" === t[0]),
                 L !== (L = U(t)) && (z.d(1),
                 z = L(t),
                 z && (z.c(),
                 z.m(k, null))),
-                1 & n && Ts(x, "selected", "help" === t[0]),
+                1 & n && setChecked(x, "selected", "help" === t[0]),
                 H !== (H = W(t)) && (J.d(1),
                 J = H(t),
                 J && (J.c(),
                 J.m(C, null))),
-                1 & n && Ts(j, "selected", "chord" === t[0])
+                1 & n && setChecked(j, "selected", "chord" === t[0])
             },
             i: ns,
             o: ns,
@@ -12589,7 +12589,7 @@
         ,
         [i]
     }
-    class ff extends eu {
+    class ff extends Component {
         constructor(t) {
             super(),
             nu(this, t, lf, af, ss, {
@@ -12601,12 +12601,12 @@
         let n;
         return {
             c() {
-                n = ms("span"),
+                n = createElement("span"),
                 n.textContent = "下载App",
-                Xs(n, "slot", "anchor")
+                setAttributes(n, "slot", "anchor")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -12617,24 +12617,24 @@
         let n, e, i, r;
         return {
             c() {
-                n = ms("a"),
+                n = createElement("a"),
                 n.textContent = "浙ICP备20029865号\n        ",
-                e = ms("br"),
-                i = ys(),
-                r = ms("a"),
+                e = createElement("br"),
+                i = createSpacer(),
+                r = createElement("a"),
                 r.textContent = "浙公安网备33010502006797",
-                Xs(n, "target", "_blank"),
-                Xs(n, "href", "https://beian.miit.gov.cn/#/Integrated/index"),
-                Xs(n, "class", "svelte-1op6oe"),
-                Xs(r, "target", "_blank"),
-                Xs(r, "href", "http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010502006797"),
-                Xs(r, "class", "svelte-1op6oe")
+                setAttributes(n, "target", "_blank"),
+                setAttributes(n, "href", "https://beian.miit.gov.cn/#/Integrated/index"),
+                setAttributes(n, "class", "svelte-1op6oe"),
+                setAttributes(r, "target", "_blank"),
+                setAttributes(r, "href", "http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010502006797"),
+                setAttributes(r, "class", "svelte-1op6oe")
             },
             m(t, o) {
-                ds(t, n, o),
-                ds(t, e, o),
-                ds(t, i, o),
-                ds(t, r, o)
+                insertElement(t, n, o),
+                insertElement(t, e, o),
+                insertElement(t, i, o),
+                insertElement(t, r, o)
             },
             d(t) {
                 t && vs(n),
@@ -12648,24 +12648,24 @@
         let n, e, i, r;
         return {
             c() {
-                n = ms("a"),
+                n = createElement("a"),
                 n.textContent = "蜀ICP备14032187号\n        ",
-                e = ms("br"),
-                i = ys(),
-                r = ms("a"),
+                e = createElement("br"),
+                i = createSpacer(),
+                r = createElement("a"),
                 r.textContent = "浙公安网备33010302003166",
-                Xs(n, "target", "_blank"),
-                Xs(n, "href", "https://beian.miit.gov.cn/#/Integrated/index"),
-                Xs(n, "class", "svelte-1op6oe"),
-                Xs(r, "target", "_blank"),
-                Xs(r, "href", "http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010302003166"),
-                Xs(r, "class", "svelte-1op6oe")
+                setAttributes(n, "target", "_blank"),
+                setAttributes(n, "href", "https://beian.miit.gov.cn/#/Integrated/index"),
+                setAttributes(n, "class", "svelte-1op6oe"),
+                setAttributes(r, "target", "_blank"),
+                setAttributes(r, "href", "http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010302003166"),
+                setAttributes(r, "class", "svelte-1op6oe")
             },
             m(t, o) {
-                ds(t, n, o),
-                ds(t, e, o),
-                ds(t, i, o),
-                ds(t, r, o)
+                insertElement(t, n, o),
+                insertElement(t, e, o),
+                insertElement(t, i, o),
+                insertElement(t, r, o)
             },
             d(t) {
                 t && vs(n),
@@ -12704,75 +12704,75 @@
           , A = cs(C, t, t[3], null);
         return {
             c() {
-                Ys(n.$$.fragment),
-                e = ys(),
-                i = ms("div"),
-                r = ms("div"),
-                o = ms("div"),
-                Ys(s.$$.fragment),
-                u = ys(),
-                c = ms("div"),
-                a = ms("a"),
+                createComponentFragment(n.$$.fragment),
+                e = createSpacer(),
+                i = createElement("div"),
+                r = createElement("div"),
+                o = createElement("div"),
+                createComponentFragment(s.$$.fragment),
+                u = createSpacer(),
+                c = createElement("div"),
+                a = createElement("a"),
                 a.textContent = "使用协议",
-                l = ys(),
-                f = ms("a"),
+                l = createSpacer(),
+                f = createElement("a"),
                 f.textContent = "关于我们",
-                h = ys(),
-                d = ms("a"),
+                h = createSpacer(),
+                d = createElement("a"),
                 d.textContent = "隐私政策",
-                v = ys(),
-                p = ms("div"),
-                Ys(m.$$.fragment),
-                g = ys(),
-                y = ms("div"),
+                v = createSpacer(),
+                p = createElement("div"),
+                createComponentFragment(m.$$.fragment),
+                g = createSpacer(),
+                y = createElement("div"),
                 b = gs("杭州优璞科技有限公司 © "),
                 w = gs(S),
-                X = ms("br"),
-                x = ys(),
+                X = createElement("br"),
+                x = createSpacer(),
                 j.c(),
-                k = ys(),
-                E = ms("div"),
+                k = createSpacer(),
+                E = createElement("div"),
                 A && A.c(),
-                Xs(a, "href", "/help#terms"),
-                Xs(a, "class", "svelte-1op6oe"),
-                Xs(f, "href", "/help#about"),
-                Xs(f, "class", "svelte-1op6oe"),
-                Xs(d, "href", "/help#privacy"),
-                Xs(d, "class", "svelte-1op6oe"),
-                Xs(p, "class", "download svelte-1op6oe"),
-                Xs(c, "class", "bottom-nav svelte-1op6oe"),
-                Xs(o, "class", "nav-container svelte-1op6oe"),
-                Xs(y, "class", "copyright svelte-1op6oe"),
-                Xs(r, "class", "page-side svelte-1op6oe"),
-                Xs(E, "class", "page-main svelte-1op6oe"),
-                Xs(i, "class", "page-body svelte-1op6oe")
+                setAttributes(a, "href", "/help#terms"),
+                setAttributes(a, "class", "svelte-1op6oe"),
+                setAttributes(f, "href", "/help#about"),
+                setAttributes(f, "class", "svelte-1op6oe"),
+                setAttributes(d, "href", "/help#privacy"),
+                setAttributes(d, "class", "svelte-1op6oe"),
+                setAttributes(p, "class", "download svelte-1op6oe"),
+                setAttributes(c, "class", "bottom-nav svelte-1op6oe"),
+                setAttributes(o, "class", "nav-container svelte-1op6oe"),
+                setAttributes(y, "class", "copyright svelte-1op6oe"),
+                setAttributes(r, "class", "page-side svelte-1op6oe"),
+                setAttributes(E, "class", "page-main svelte-1op6oe"),
+                setAttributes(i, "class", "page-body svelte-1op6oe")
             },
             m(t, S) {
                 Zs(n, t, S),
-                ds(t, e, S),
-                ds(t, i, S),
-                hs(i, r),
-                hs(r, o),
+                insertElement(t, e, S),
+                insertElement(t, i, S),
+                appendElement(i, r),
+                appendElement(r, o),
                 Zs(s, o, null),
-                hs(o, u),
-                hs(o, c),
-                hs(c, a),
-                hs(c, l),
-                hs(c, f),
-                hs(c, h),
-                hs(c, d),
-                hs(c, v),
-                hs(c, p),
+                appendElement(o, u),
+                appendElement(o, c),
+                appendElement(c, a),
+                appendElement(c, l),
+                appendElement(c, f),
+                appendElement(c, h),
+                appendElement(c, d),
+                appendElement(c, v),
+                appendElement(c, p),
                 Zs(m, p, null),
-                hs(r, g),
-                hs(r, y),
-                hs(y, b),
-                hs(y, w),
-                hs(y, X),
-                hs(y, x),
+                appendElement(r, g),
+                appendElement(r, y),
+                appendElement(y, b),
+                appendElement(y, w),
+                appendElement(y, X),
+                appendElement(y, x),
                 j.m(y, null),
-                hs(i, k),
-                hs(i, E),
+                appendElement(i, k),
+                appendElement(i, E),
                 A && A.m(E, null),
                 T = !0
             },
@@ -12824,7 +12824,7 @@
         ,
         [o, s, i, r]
     }
-    class gf extends eu {
+    class gf extends Component {
         constructor(t) {
             super(),
             nu(this, t, mf, pf, ss, {
@@ -12843,20 +12843,20 @@
         let n, i, r, o, s, u = e(t[1], t[0].use, t[0].format) + "";
         return {
             c() {
-                n = ms("span"),
+                n = createElement("span"),
                 i = gs(u),
                 r = gs("谱"),
-                o = ys(),
-                s = ms("span"),
-                Xs(n, "class", "item"),
-                Xs(s, "class", "dot svelte-1ejpsfe")
+                o = createSpacer(),
+                s = createElement("span"),
+                setAttributes(n, "class", "item"),
+                setAttributes(s, "class", "dot svelte-1ejpsfe")
             },
             m(t, e) {
-                ds(t, n, e),
-                hs(n, i),
-                hs(n, r),
-                ds(t, o, e),
-                ds(t, s, e)
+                insertElement(t, n, e),
+                appendElement(n, i),
+                appendElement(n, r),
+                insertElement(t, o, e),
+                insertElement(t, s, e)
             },
             p(t, n) {
                 3 & n && u !== (u = e(t[1], t[0].use, t[0].format) + "") && ks(i, u)
@@ -12872,18 +12872,18 @@
         let n, e, i, r, o = t[0].subtitle + "";
         return {
             c() {
-                n = ms("span"),
-                e = ys(),
-                i = ms("span"),
+                n = createElement("span"),
+                e = createSpacer(),
+                i = createElement("span"),
                 r = gs(o),
-                Xs(n, "class", "dot svelte-1ejpsfe"),
-                Xs(i, "class", "item subtitle svelte-1ejpsfe")
+                setAttributes(n, "class", "dot svelte-1ejpsfe"),
+                setAttributes(i, "class", "item subtitle svelte-1ejpsfe")
             },
             m(t, o) {
-                ds(t, n, o),
-                ds(t, e, o),
-                ds(t, i, o),
-                hs(i, r)
+                insertElement(t, n, o),
+                insertElement(t, e, o),
+                insertElement(t, i, o),
+                appendElement(i, r)
             },
             p(t, n) {
                 1 & n && o !== (o = t[0].subtitle + "") && ks(r, o)
@@ -12899,25 +12899,25 @@
         let e, i, r, o, s, u, c = (n[2] || "C") + "", a = n[1] !== t.JIAN && bf(n), l = n[0].subtitle && wf(n);
         return {
             c() {
-                e = ms("div"),
+                e = createElement("div"),
                 a && a.c(),
-                i = ys(),
-                r = ms("span"),
+                i = createSpacer(),
+                r = createElement("span"),
                 o = gs(c),
                 s = gs("调"),
-                u = ys(),
+                u = createSpacer(),
                 l && l.c(),
-                Xs(r, "class", "item"),
-                Xs(e, "class", "one-line-info svelte-1ejpsfe")
+                setAttributes(r, "class", "item"),
+                setAttributes(e, "class", "one-line-info svelte-1ejpsfe")
             },
             m(t, n) {
-                ds(t, e, n),
+                insertElement(t, e, n),
                 a && a.m(e, null),
-                hs(e, i),
-                hs(e, r),
-                hs(r, o),
-                hs(r, s),
-                hs(e, u),
+                appendElement(e, i),
+                appendElement(e, r),
+                appendElement(r, o),
+                appendElement(r, s),
+                appendElement(e, u),
                 l && l.m(e, null)
             },
             p(n, [r]) {
@@ -12954,7 +12954,7 @@
         ,
         [s, r, o]
     }
-    class kf extends eu {
+    class kf extends Component {
         constructor(t) {
             super(),
             nu(this, t, xf, Xf, ss, {
@@ -12966,24 +12966,24 @@
         let n, e, i, r, o;
         return {
             c() {
-                n = ms("div"),
-                e = ms("img"),
-                r = ys(),
-                o = ms("div"),
+                n = createElement("div"),
+                e = createElement("img"),
+                r = createSpacer(),
+                o = createElement("div"),
                 o.textContent = "指弹",
-                e.src !== (i = t[0] ? M : I) && Xs(e, "src", i),
-                Xs(e, "class", "svelte-sneu4p"),
-                Xs(o, "class", "label svelte-sneu4p"),
-                Xs(n, "class", "finger-style svelte-sneu4p")
+                e.src !== (i = t[0] ? M : I) && setAttributes(e, "src", i),
+                setAttributes(e, "class", "svelte-sneu4p"),
+                setAttributes(o, "class", "label svelte-sneu4p"),
+                setAttributes(n, "class", "finger-style svelte-sneu4p")
             },
             m(t, i) {
-                ds(t, n, i),
-                hs(n, e),
-                hs(n, r),
-                hs(n, o)
+                insertElement(t, n, i),
+                appendElement(n, e),
+                appendElement(n, r),
+                appendElement(n, o)
             },
             p(t, [n]) {
-                1 & n && e.src !== (i = t[0] ? M : I) && Xs(e, "src", i)
+                1 & n && e.src !== (i = t[0] ? M : I) && setAttributes(e, "src", i)
             },
             i: ns,
             o: ns,
@@ -12997,7 +12997,7 @@
         return us(t, Xu, (t => e(0, i = t))),
         [i]
     }
-    class Sf extends eu {
+    class Sf extends Component {
         constructor(t) {
             super(),
             nu(this, t, Tf, Ef, ss, {})
@@ -13007,11 +13007,11 @@
         let n, e, i;
         return {
             c() {
-                n = ms("div"),
-                Xs(n, "class", "sheet svelte-1hwujz8")
+                n = createElement("div"),
+                setAttributes(n, "class", "sheet svelte-1hwujz8")
             },
             m(r, o) {
-                ds(r, n, o),
+                insertElement(r, n, o),
                 e || (i = fs(t[1].call(null, n)),
                 e = !0)
             },
@@ -13026,12 +13026,12 @@
         let n, e = t[0] && jf(t);
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 e && e.c(),
-                Xs(n, "class", "nier-sheet svelte-1hwujz8")
+                setAttributes(n, "class", "nier-sheet svelte-1hwujz8")
             },
             m(t, i) {
-                ds(t, n, i),
+                insertElement(t, n, i),
                 e && e.m(n, null)
             },
             p(t, [i]) {
@@ -13153,7 +13153,7 @@
         }
         , h, d, v, p, i]
     }
-    class Of extends eu {
+    class Of extends Component {
         constructor(t) {
             super(),
             nu(this, t, Af, Cf, ss, {
@@ -13181,15 +13181,15 @@
         {
             c() {
                 c && c.c(),
-                n = ys(),
+                n = createSpacer(),
                 i.c(),
                 o = bs()
             },
             m(t, i) {
                 c && c.m(t, i),
-                ds(t, n, i),
+                insertElement(t, n, i),
                 l[e].m(t, i),
-                ds(t, o, i),
+                insertElement(t, o, i),
                 s = !0
             },
             p(t, r) {
@@ -13238,13 +13238,13 @@
         }),
         {
             c() {
-                n = ms("div"),
-                Ys(e.$$.fragment),
-                Xs(n, "class", "nier-snippet svelte-mal8jy"),
-                Ts(n, "dark", t[1])
+                n = createElement("div"),
+                createComponentFragment(e.$$.fragment),
+                setAttributes(n, "class", "nier-snippet svelte-mal8jy"),
+                setChecked(n, "dark", t[1])
             },
             m(t, r) {
-                ds(t, n, r),
+                insertElement(t, n, r),
                 Zs(e, n, null),
                 i = !0
             },
@@ -13253,7 +13253,7 @@
                 1 & i && (r.sheet = t[0]),
                 5 & i && (r.staveProfile = An(t[2], t[0].type, t[0].use)),
                 e.$set(r),
-                2 & i && Ts(n, "dark", t[1])
+                2 & i && setChecked(n, "dark", t[1])
             },
             i(t) {
                 i || (Vs(e.$$.fragment, t),
@@ -13273,12 +13273,12 @@
         let n;
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 n.innerHTML = '<span class="yoopu3-icon svelte-mal8jy"></span>',
-                Xs(n, "class", "background-symbol svelte-mal8jy")
+                setAttributes(n, "class", "background-symbol svelte-mal8jy")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -13291,13 +13291,13 @@
             i[n] = $f(_f(t, e, n));
         return {
             c() {
-                n = ms("div");
+                n = createElement("div");
                 for (let t = 0; t < i.length; t += 1)
                     i[t].c();
-                Xs(n, "class", "chords svelte-mal8jy")
+                setAttributes(n, "class", "chords svelte-mal8jy")
             },
             m(t, e) {
-                ds(t, n, e);
+                insertElement(t, n, e);
                 for (let t = 0; t < i.length; t += 1)
                     i[t].m(n, null)
             },
@@ -13329,15 +13329,15 @@
         return n = new Sf({}),
         {
             c() {
-                Ys(n.$$.fragment),
-                e = ys(),
-                i = ms("div"),
-                Xs(i, "class", "spacing svelte-mal8jy")
+                createComponentFragment(n.$$.fragment),
+                e = createSpacer(),
+                i = createElement("div"),
+                setAttributes(i, "class", "spacing svelte-mal8jy")
             },
             m(t, o) {
                 Zs(n, t, o),
-                ds(t, e, o),
-                ds(t, i, o),
+                insertElement(t, e, o),
+                insertElement(t, i, o),
                 r = !0
             },
             p: ns,
@@ -13360,13 +13360,13 @@
         let n, e, i = t[3] + "";
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 e = gs(i),
-                Xs(n, "class", "chord svelte-mal8jy")
+                setAttributes(n, "class", "chord svelte-mal8jy")
             },
             m(t, i) {
-                ds(t, n, i),
-                hs(n, e)
+                insertElement(t, n, i),
+                appendElement(n, e)
             },
             p(t, n) {
                 1 & n && i !== (i = t[3] + "") && ks(e, i)
@@ -13380,14 +13380,14 @@
         let n, e, i, r;
         return {
             c() {
-                n = ms("hexi-chord"),
+                n = createElement("hexi-chord"),
                 xs(n, "name", e = t[3]),
                 xs(n, "size", "small"),
                 xs(n, "instrument", i = t[0].type),
                 xs(n, "dark", r = t[1] ? "" : null)
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p(t, o) {
                 1 & o && e !== (e = t[3]) && xs(n, "name", e),
@@ -13416,7 +13416,7 @@
             },
             m(t, n) {
                 s.m(t, n),
-                ds(t, i, n)
+                insertElement(t, i, n)
             },
             p(t, n) {
                 o === (o = r(t, n)) && s ? s.p(t, n) : (s.d(1),
@@ -13447,7 +13447,7 @@
             },
             m(t, n) {
                 ~r && a[r].m(t, n),
-                ds(t, s, n),
+                insertElement(t, s, n),
                 u = !0
             },
             p(t, [n]) {
@@ -13490,7 +13490,7 @@
         ,
         [o, i, r]
     }
-    class Pf extends eu {
+    class Pf extends Component {
         constructor(t) {
             super(),
             nu(this, t, Gf, Rf, ss, {
@@ -13502,12 +13502,12 @@
         let n;
         return {
             c() {
-                n = ms("i"),
+                n = createElement("i"),
                 n.textContent = "",
-                Xs(n, "class", "verified yoopu3-icon svelte-q8jtp9")
+                setAttributes(n, "class", "verified yoopu3-icon svelte-q8jtp9")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -13528,37 +13528,37 @@
         }),
         {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 m && m.c(),
-                e = ys(),
-                i = ms("span"),
+                e = createSpacer(),
+                i = createElement("span"),
                 r = gs(v),
-                o = ys(),
-                s = ms("span"),
+                o = createSpacer(),
+                s = createElement("span"),
                 u = gs(p),
-                c = ys(),
-                a = ms("div"),
-                Ys(l.$$.fragment),
-                f = ys(),
-                Ys(h.$$.fragment),
-                Xs(i, "class", "title svelte-q8jtp9"),
-                Xs(s, "class", "subtitle svelte-q8jtp9"),
-                Xs(n, "class", "title-line svelte-q8jtp9"),
-                Xs(a, "class", "sub-line svelte-q8jtp9")
+                c = createSpacer(),
+                a = createElement("div"),
+                createComponentFragment(l.$$.fragment),
+                f = createSpacer(),
+                createComponentFragment(h.$$.fragment),
+                setAttributes(i, "class", "title svelte-q8jtp9"),
+                setAttributes(s, "class", "subtitle svelte-q8jtp9"),
+                setAttributes(n, "class", "title-line svelte-q8jtp9"),
+                setAttributes(a, "class", "sub-line svelte-q8jtp9")
             },
             m(t, v) {
-                ds(t, n, v),
+                insertElement(t, n, v),
                 m && m.m(n, null),
-                hs(n, e),
-                hs(n, i),
-                hs(i, r),
-                hs(n, o),
-                hs(n, s),
-                hs(s, u),
-                ds(t, c, v),
-                ds(t, a, v),
+                appendElement(n, e),
+                appendElement(n, i),
+                appendElement(i, r),
+                appendElement(n, o),
+                appendElement(n, s),
+                appendElement(s, u),
+                insertElement(t, c, v),
+                insertElement(t, a, v),
                 Zs(l, a, null),
-                ds(t, f, v),
+                insertElement(t, f, v),
                 Zs(h, t, v),
                 d = !0
             },
@@ -13607,7 +13607,7 @@
         ,
         [r, i]
     }
-    class Wf extends eu {
+    class Wf extends Component {
         constructor(t) {
             super(),
             nu(this, t, zf, Lf, ss, {
@@ -13619,40 +13619,40 @@
         let e, i, r, o, s, u, c, a, l, f, h, d, v, p = St(n[0][n[1] ? n[1] + "UniqViews" : "uniqViews"]) + "", m = (n[0].type === n[1] || n[1] === t.JIAN ? n[0].favoritesDisplay : "-") + "";
         return {
             c() {
-                e = ms("div"),
-                i = ms("span"),
+                e = createElement("div"),
+                i = createElement("span"),
                 i.textContent = "",
-                r = ys(),
-                o = ms("span"),
+                r = createSpacer(),
+                o = createElement("span"),
                 s = gs("热度 "),
                 u = gs(p),
-                c = ys(),
-                a = ms("div"),
-                l = ms("span"),
+                c = createSpacer(),
+                a = createElement("div"),
+                l = createElement("span"),
                 l.textContent = "",
-                f = ys(),
-                h = ms("span"),
+                f = createSpacer(),
+                h = createElement("span"),
                 d = gs("收藏 "),
                 v = gs(m),
-                Xs(i, "class", "icon yoopu3-icon svelte-s9fgo0"),
-                Xs(e, "class", "row svelte-s9fgo0"),
-                Xs(l, "class", "icon yoopu3-icon svelte-s9fgo0"),
-                Xs(a, "class", "row svelte-s9fgo0")
+                setAttributes(i, "class", "icon yoopu3-icon svelte-s9fgo0"),
+                setAttributes(e, "class", "row svelte-s9fgo0"),
+                setAttributes(l, "class", "icon yoopu3-icon svelte-s9fgo0"),
+                setAttributes(a, "class", "row svelte-s9fgo0")
             },
             m(t, n) {
-                ds(t, e, n),
-                hs(e, i),
-                hs(e, r),
-                hs(e, o),
-                hs(o, s),
-                hs(o, u),
-                ds(t, c, n),
-                ds(t, a, n),
-                hs(a, l),
-                hs(a, f),
-                hs(a, h),
-                hs(h, d),
-                hs(h, v)
+                insertElement(t, e, n),
+                appendElement(e, i),
+                appendElement(e, r),
+                appendElement(e, o),
+                appendElement(o, s),
+                appendElement(o, u),
+                insertElement(t, c, n),
+                insertElement(t, a, n),
+                appendElement(a, l),
+                appendElement(a, f),
+                appendElement(a, h),
+                appendElement(h, d),
+                appendElement(h, v)
             },
             p(n, e) {
                 3 & e && p !== (p = St(n[0][n[1] ? n[1] + "UniqViews" : "uniqViews"]) + "") && ks(u, p),
@@ -13669,12 +13669,12 @@
         let n;
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 n.innerHTML = '<span class="copyright-note"><i class="yoopu3-icon"></i> 应版权方要求已下架</span>',
-                Xs(n, "class", "row svelte-s9fgo0")
+                setAttributes(n, "class", "row svelte-s9fgo0")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p: ns,
             d(t) {
@@ -13686,11 +13686,11 @@
         let n;
         return {
             c() {
-                n = ms("span"),
+                n = createElement("span"),
                 n.textContent = "未发表"
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             p: ns,
             d(t) {
@@ -13702,14 +13702,14 @@
         let n, e, i, r = yf(new Date(t[0].publishTime)) + "";
         return {
             c() {
-                n = ms("span"),
+                n = createElement("span"),
                 e = gs("发表于 "),
                 i = gs(r)
             },
             m(t, r) {
-                ds(t, n, r),
-                hs(n, e),
-                hs(n, i)
+                insertElement(t, n, r),
+                appendElement(n, e),
+                appendElement(n, i)
             },
             p(t, n) {
                 1 & n && r !== (r = yf(new Date(t[0].publishTime)) + "") && ks(i, r)
@@ -13745,51 +13745,51 @@
           , E = k(t);
         return {
             c() {
-                n = ms("div"),
-                e = ms("a"),
-                Ys(i.$$.fragment),
-                o = ys(),
-                s = ms("div"),
-                u = ms("div"),
-                Ys(c.$$.fragment),
-                a = ys(),
-                l = ms("span"),
+                n = createElement("div"),
+                e = createElement("a"),
+                createComponentFragment(i.$$.fragment),
+                o = createSpacer(),
+                s = createElement("div"),
+                u = createElement("div"),
+                createComponentFragment(c.$$.fragment),
+                a = createSpacer(),
+                l = createElement("span"),
                 f = gs(y),
-                h = ys(),
+                h = createSpacer(),
                 X.c(),
-                d = ys(),
-                v = ms("div"),
-                p = ms("span"),
+                d = createSpacer(),
+                v = createElement("div"),
+                p = createElement("span"),
                 p.textContent = "",
-                m = ys(),
+                m = createSpacer(),
                 E.c(),
-                Xs(e, "class", "post-main svelte-s9fgo0"),
-                Xs(e, "href", r = "/view/" + t[0].id),
-                Ts(e, "copyright", t[0].copyrightDisputedTime),
-                Xs(l, "class", "username svelte-s9fgo0"),
-                Xs(u, "class", "user-info svelte-s9fgo0"),
-                Xs(p, "class", "icon yoopu3-icon svelte-s9fgo0"),
-                Xs(v, "class", "row svelte-s9fgo0"),
-                Xs(s, "class", "post-info svelte-s9fgo0"),
-                Xs(n, "class", "sheet-preview svelte-s9fgo0")
+                setAttributes(e, "class", "post-main svelte-s9fgo0"),
+                setAttributes(e, "href", r = "/view/" + t[0].id),
+                setChecked(e, "copyright", t[0].copyrightDisputedTime),
+                setAttributes(l, "class", "username svelte-s9fgo0"),
+                setAttributes(u, "class", "user-info svelte-s9fgo0"),
+                setAttributes(p, "class", "icon yoopu3-icon svelte-s9fgo0"),
+                setAttributes(v, "class", "row svelte-s9fgo0"),
+                setAttributes(s, "class", "post-info svelte-s9fgo0"),
+                setAttributes(n, "class", "sheet-preview svelte-s9fgo0")
             },
             m(t, r) {
-                ds(t, n, r),
-                hs(n, e),
+                insertElement(t, n, r),
+                appendElement(n, e),
                 Zs(i, e, null),
-                hs(n, o),
-                hs(n, s),
-                hs(s, u),
+                appendElement(n, o),
+                appendElement(n, s),
+                appendElement(s, u),
                 Zs(c, u, null),
-                hs(u, a),
-                hs(u, l),
-                hs(l, f),
-                hs(s, h),
+                appendElement(u, a),
+                appendElement(u, l),
+                appendElement(l, f),
+                appendElement(s, h),
                 X.m(s, null),
-                hs(s, d),
-                hs(s, v),
-                hs(v, p),
-                hs(v, m),
+                appendElement(s, d),
+                appendElement(s, v),
+                appendElement(v, p),
+                appendElement(v, m),
                 E.m(v, null),
                 g = !0
             },
@@ -13797,8 +13797,8 @@
                 const o = {};
                 1 & n && (o.sheet = t[0]),
                 i.$set(o),
-                (!g || 1 & n && r !== (r = "/view/" + t[0].id)) && Xs(e, "href", r),
-                1 & n && Ts(e, "copyright", t[0].copyrightDisputedTime);
+                (!g || 1 & n && r !== (r = "/view/" + t[0].id)) && setAttributes(e, "href", r),
+                1 & n && setChecked(e, "copyright", t[0].copyrightDisputedTime);
                 const u = {};
                 1 & n && (u.user = t[0].owner),
                 c.$set(u),
@@ -13841,7 +13841,7 @@
         ,
         [r, i]
     }
-    class Zf extends eu {
+    class Zf extends Component {
         constructor(t) {
             super(),
             nu(this, t, Yf, Qf, ss, {
@@ -13888,19 +13888,19 @@
         }),
         {
             c() {
-                n = ms("div"),
-                Ys(e.$$.fragment),
-                i = ys(),
-                r = ms("div"),
+                n = createElement("div"),
+                createComponentFragment(e.$$.fragment),
+                i = createSpacer(),
+                r = createElement("div"),
                 r.textContent = "哎呀，没有...",
-                Xs(n, "class", "no-result svelte-rls1hv"),
-                Xs(r, "class", "desc svelte-rls1hv")
+                setAttributes(n, "class", "no-result svelte-rls1hv"),
+                setAttributes(r, "class", "desc svelte-rls1hv")
             },
             m(t, s) {
-                ds(t, n, s),
+                insertElement(t, n, s),
                 Zs(e, n, null),
-                ds(t, i, s),
-                ds(t, r, s),
+                insertElement(t, i, s),
+                insertElement(t, r, s),
                 o = !0
             },
             p(t, [n]) {
@@ -13929,7 +13929,7 @@
         return us(t, Xu, (t => e(0, i = t))),
         [i]
     }
-    class ih extends eu {
+    class ih extends Component {
         constructor(t) {
             super(),
             nu(this, t, eh, nh, ss, {})
@@ -13944,13 +13944,13 @@
         let n, e, i = t[0].title + "";
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 e = gs(i),
-                Xs(n, "class", "title svelte-1glblf1")
+                setAttributes(n, "class", "title svelte-1glblf1")
             },
             m(t, i) {
-                ds(t, n, i),
-                hs(n, e)
+                insertElement(t, n, i),
+                appendElement(n, e)
             },
             p(t, n) {
                 1 & n && i !== (i = t[0].title + "") && ks(e, i)
@@ -13964,25 +13964,25 @@
         let n, e, i, r, o, s, u = t[0].sheetNum + "", c = t[1] && uh();
         return {
             c() {
-                n = ms("div"),
-                e = ms("span"),
+                n = createElement("div"),
+                e = createElement("span"),
                 c && c.c(),
-                i = ys(),
+                i = createSpacer(),
                 r = gs(u),
                 o = gs(" 曲谱"),
-                s = ms("i"),
+                s = createElement("i"),
                 s.textContent = "",
-                Xs(s, "class", "yoopu3-icon svelte-1glblf1"),
-                Xs(n, "class", "num svelte-1glblf1")
+                setAttributes(s, "class", "yoopu3-icon svelte-1glblf1"),
+                setAttributes(n, "class", "num svelte-1glblf1")
             },
             m(t, u) {
-                ds(t, n, u),
-                hs(n, e),
+                insertElement(t, n, u),
+                appendElement(n, e),
                 c && c.m(e, null),
-                hs(e, i),
-                hs(e, r),
-                hs(e, o),
-                hs(n, s)
+                appendElement(e, i),
+                appendElement(e, r),
+                appendElement(e, o),
+                appendElement(n, s)
             },
             p(t, n) {
                 t[1] ? c || (c = uh(),
@@ -14004,7 +14004,7 @@
                 n = gs("本歌曲还有")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -14015,16 +14015,16 @@
         let n, e, i, r = t[0].artist + "";
         return {
             c() {
-                n = ms("div"),
-                e = ms("div"),
+                n = createElement("div"),
+                e = createElement("div"),
                 i = gs(r),
-                Xs(e, "class", "artist svelte-1glblf1"),
-                Xs(n, "class", "neckline")
+                setAttributes(e, "class", "artist svelte-1glblf1"),
+                setAttributes(n, "class", "neckline")
             },
             m(t, r) {
-                ds(t, n, r),
-                hs(n, e),
-                hs(e, i)
+                insertElement(t, n, r),
+                appendElement(n, e),
+                appendElement(e, i)
             },
             p(t, n) {
                 1 & n && r !== (r = t[0].artist + "") && ks(i, r)
@@ -14044,13 +14044,13 @@
         ));
         return {
             c() {
-                n = ms("div");
+                n = createElement("div");
                 for (let t = 0; t < r.length; t += 1)
                     r[t].c();
-                Xs(n, "class", "sheets svelte-1glblf1")
+                setAttributes(n, "class", "sheets svelte-1glblf1")
             },
             m(t, i) {
-                ds(t, n, i);
+                insertElement(t, n, i);
                 for (let t = 0; t < r.length; t += 1)
                     r[t].m(n, null);
                 e = !0
@@ -14096,18 +14096,18 @@
         let n, e, i, r, o;
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 n.textContent = "应版权方要求曲谱已下架",
-                e = ys(),
-                i = ms("div"),
-                Xs(n, "class", "copyright-note svelte-1glblf1"),
-                Xs(i, "class", "copyright svelte-1glblf1")
+                e = createSpacer(),
+                i = createElement("div"),
+                setAttributes(n, "class", "copyright-note svelte-1glblf1"),
+                setAttributes(i, "class", "copyright svelte-1glblf1")
             },
             m(s, u) {
-                ds(s, n, u),
-                ds(s, e, u),
-                ds(s, i, u),
-                r || (o = ws(i, "click", t[3]),
+                insertElement(s, n, u),
+                insertElement(s, e, u),
+                insertElement(s, i, u),
+                r || (o = addEventListener(i, "click", t[3]),
                 r = !0)
             },
             p: ns,
@@ -14137,7 +14137,7 @@
             },
             m(t, n) {
                 o && o.m(t, n),
-                ds(t, e, n)
+                insertElement(t, e, n)
             },
             p(t, n) {
                 r !== (r = i(t, n)) && (o && o.d(1),
@@ -14155,12 +14155,12 @@
         let n;
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 n.innerHTML = '<i class="yoopu3-icon svelte-1glblf1"></i>',
-                Xs(n, "class", "background-icon svelte-1glblf1")
+                setAttributes(n, "class", "background-icon svelte-1glblf1")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -14171,12 +14171,12 @@
         let n;
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 n.innerHTML = '<i class="yoopu3-icon svelte-1glblf1"></i>',
-                Xs(n, "class", "background-icon svelte-1glblf1")
+                setAttributes(n, "class", "background-icon svelte-1glblf1")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -14187,12 +14187,12 @@
         let n;
         return {
             c() {
-                n = ms("i"),
+                n = createElement("i"),
                 n.textContent = "",
-                Xs(n, "class", "verified yoopu3-icon svelte-1glblf1")
+                setAttributes(n, "class", "verified yoopu3-icon svelte-1glblf1")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             d(t) {
                 t && vs(n)
@@ -14203,20 +14203,20 @@
         let n, e, i, r, o = (t[4].rating || 0).toFixed(1) + "";
         return {
             c() {
-                n = ms("i"),
+                n = createElement("i"),
                 n.textContent = "",
-                e = ms("span"),
+                e = createElement("span"),
                 i = gs(o),
-                r = ms("span"),
-                Xs(n, "class", "yoopu3-icon svelte-1glblf1"),
-                Xs(e, "class", "number rating svelte-1glblf1"),
-                Xs(r, "class", "dot svelte-1glblf1")
+                r = createElement("span"),
+                setAttributes(n, "class", "yoopu3-icon svelte-1glblf1"),
+                setAttributes(e, "class", "number rating svelte-1glblf1"),
+                setAttributes(r, "class", "dot svelte-1glblf1")
             },
             m(t, o) {
-                ds(t, n, o),
-                ds(t, e, o),
-                hs(e, i),
-                ds(t, r, o)
+                insertElement(t, n, o),
+                insertElement(t, e, o),
+                appendElement(e, i),
+                insertElement(t, r, o)
             },
             p(t, n) {
                 1 & n && o !== (o = (t[4].rating || 0).toFixed(1) + "") && ks(i, o)
@@ -14245,57 +14245,57 @@
         }),
         {
             c() {
-                e = ms("a"),
+                e = createElement("a"),
                 k && k.c(),
-                i = ys(),
-                r = ms("div"),
-                Ys(o.$$.fragment),
-                s = ys(),
-                u = ms("div"),
+                i = createSpacer(),
+                r = createElement("div"),
+                createComponentFragment(o.$$.fragment),
+                s = createSpacer(),
+                u = createElement("div"),
                 E && E.c(),
-                c = ys(),
+                c = createSpacer(),
                 T && T.c(),
-                a = ms("i"),
+                a = createElement("i"),
                 a.textContent = "",
-                l = ms("span"),
+                l = createElement("span"),
                 f = gs(X),
-                h = ys(),
-                d = ms("div"),
-                Ys(v.$$.fragment),
-                p = ys(),
-                m = ms("div"),
+                h = createSpacer(),
+                d = createElement("div"),
+                createComponentFragment(v.$$.fragment),
+                p = createSpacer(),
+                m = createElement("div"),
                 g = gs(x),
-                y = ys(),
-                Xs(r, "class", "title svelte-1glblf1"),
-                Xs(a, "class", "yoopu3-icon svelte-1glblf1"),
-                Xs(l, "class", "number svelte-1glblf1"),
-                Xs(u, "class", "stats svelte-1glblf1"),
-                Xs(m, "class", "name svelte-1glblf1"),
-                Xs(d, "class", "author svelte-1glblf1"),
-                Xs(e, "class", "sheet svelte-1glblf1"),
-                Xs(e, "href", b = "/view/" + n[4].id)
+                y = createSpacer(),
+                setAttributes(r, "class", "title svelte-1glblf1"),
+                setAttributes(a, "class", "yoopu3-icon svelte-1glblf1"),
+                setAttributes(l, "class", "number svelte-1glblf1"),
+                setAttributes(u, "class", "stats svelte-1glblf1"),
+                setAttributes(m, "class", "name svelte-1glblf1"),
+                setAttributes(d, "class", "author svelte-1glblf1"),
+                setAttributes(e, "class", "sheet svelte-1glblf1"),
+                setAttributes(e, "href", b = "/view/" + n[4].id)
             },
             m(t, n) {
-                ds(t, e, n),
+                insertElement(t, e, n),
                 k && k.m(e, null),
-                hs(e, i),
-                hs(e, r),
+                appendElement(e, i),
+                appendElement(e, r),
                 Zs(o, r, null),
-                hs(e, s),
-                hs(e, u),
+                appendElement(e, s),
+                appendElement(e, u),
                 E && E.m(u, null),
-                hs(u, c),
+                appendElement(u, c),
                 T && T.m(u, null),
-                hs(u, a),
-                hs(u, l),
-                hs(l, f),
-                hs(e, h),
-                hs(e, d),
+                appendElement(u, a),
+                appendElement(u, l),
+                appendElement(l, f),
+                appendElement(e, h),
+                appendElement(e, d),
                 Zs(v, d, null),
-                hs(d, p),
-                hs(d, m),
-                hs(m, g),
-                hs(e, y),
+                appendElement(d, p),
+                appendElement(d, m),
+                appendElement(m, g),
+                appendElement(e, y),
                 w = !0
             },
             p(n, r) {
@@ -14319,7 +14319,7 @@
                 1 & r && (l.user = n[4].owner),
                 v.$set(l),
                 (!w || 1 & r) && x !== (x = n[4].owner.displayName + "") && ks(g, x),
-                (!w || 1 & r && b !== (b = "/view/" + n[4].id)) && Xs(e, "href", b)
+                (!w || 1 & r && b !== (b = "/view/" + n[4].id)) && setAttributes(e, "href", b)
             },
             i(t) {
                 w || (Vs(o.$$.fragment, t),
@@ -14352,32 +14352,32 @@
         a = p[c] = v[c](t),
         {
             c() {
-                n = ms("div"),
-                e = ms("a"),
-                i = ms("div"),
+                n = createElement("div"),
+                e = createElement("a"),
+                i = createElement("div"),
                 f && f.c(),
-                r = ys(),
+                r = createSpacer(),
                 h && h.c(),
-                o = ys(),
+                o = createSpacer(),
                 d && d.c(),
-                u = ys(),
+                u = createSpacer(),
                 a.c(),
-                Xs(i, "class", "headline svelte-1glblf1"),
-                Xs(e, "class", "info svelte-1glblf1"),
-                Xs(e, "href", s = `/song#title=${encodeURIComponent(t[0].title)}&artist=${encodeURIComponent(t[0].artist)}`),
-                Xs(n, "class", "song-preview svelte-1glblf1"),
-                Ts(n, "dark", t[1])
+                setAttributes(i, "class", "headline svelte-1glblf1"),
+                setAttributes(e, "class", "info svelte-1glblf1"),
+                setAttributes(e, "href", s = `/song#title=${encodeURIComponent(t[0].title)}&artist=${encodeURIComponent(t[0].artist)}`),
+                setAttributes(n, "class", "song-preview svelte-1glblf1"),
+                setChecked(n, "dark", t[1])
             },
             m(t, s) {
-                ds(t, n, s),
-                hs(n, e),
-                hs(e, i),
+                insertElement(t, n, s),
+                appendElement(n, e),
+                appendElement(e, i),
                 f && f.m(i, null),
-                hs(i, r),
+                appendElement(i, r),
                 h && h.m(i, null),
-                hs(e, o),
+                appendElement(e, o),
                 d && d.m(e, null),
-                hs(n, u),
+                appendElement(n, u),
                 p[c].m(n, null),
                 l = !0
             },
@@ -14394,7 +14394,7 @@
                 d = null) : d ? d.p(t, o) : (d = ch(t),
                 d.c(),
                 d.m(e, null)),
-                (!l || 1 & o && s !== (s = `/song#title=${encodeURIComponent(t[0].title)}&artist=${encodeURIComponent(t[0].artist)}`)) && Xs(e, "href", s);
+                (!l || 1 & o && s !== (s = `/song#title=${encodeURIComponent(t[0].title)}&artist=${encodeURIComponent(t[0].artist)}`)) && setAttributes(e, "href", s);
                 let u = c;
                 c = m(t),
                 c === u ? p[c].p(t, o) : (Hs(),
@@ -14408,7 +14408,7 @@
                 a.c()),
                 Vs(a, 1),
                 a.m(n, null)),
-                2 & o && Ts(n, "dark", t[1])
+                2 & o && setChecked(n, "dark", t[1])
             },
             i(t) {
                 l || (Vs(a),
@@ -14443,7 +14443,7 @@
         }
         ]
     }
-    class bh extends eu {
+    class bh extends Component {
         constructor(t) {
             super(),
             nu(this, t, yh, gh, ss, {
@@ -14461,13 +14461,13 @@
         let n, e, i = t[4].icon + "";
         return {
             c() {
-                n = ms("span"),
+                n = createElement("span"),
                 e = gs(i),
-                Xs(n, "class", "icon yoopu3-icon svelte-1l9tlvb")
+                setAttributes(n, "class", "icon yoopu3-icon svelte-1l9tlvb")
             },
             m(t, i) {
-                ds(t, n, i),
-                hs(n, e)
+                insertElement(t, n, i),
+                appendElement(n, e)
             },
             p(t, n) {
                 2 & n && i !== (i = t[4].icon + "") && ks(e, i)
@@ -14481,13 +14481,13 @@
         let n, e, i = t[4].title + "";
         return {
             c() {
-                n = ms("span"),
+                n = createElement("span"),
                 e = gs(i),
-                Xs(n, "class", "title svelte-1l9tlvb")
+                setAttributes(n, "class", "title svelte-1l9tlvb")
             },
             m(t, i) {
-                ds(t, n, i),
-                hs(n, e)
+                insertElement(t, n, i),
+                appendElement(n, e)
             },
             p(t, n) {
                 2 & n && i !== (i = t[4].title + "") && ks(e, i)
@@ -14504,22 +14504,22 @@
         }
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 s && s.c(),
-                e = ys(),
+                e = createSpacer(),
                 u && u.c(),
-                i = ys(),
-                Xs(n, "class", "option svelte-1l9tlvb"),
-                Ts(n, "selected", t[4].value === t[0]),
-                Ts(n, "dot", t[4].dot)
+                i = createSpacer(),
+                setAttributes(n, "class", "option svelte-1l9tlvb"),
+                setChecked(n, "selected", t[4].value === t[0]),
+                setChecked(n, "dot", t[4].dot)
             },
             m(t, a) {
-                ds(t, n, a),
+                insertElement(t, n, a),
                 s && s.m(n, null),
-                hs(n, e),
+                appendElement(n, e),
                 u && u.m(n, null),
-                hs(n, i),
-                r || (o = ws(n, "click", c),
+                appendElement(n, i),
+                r || (o = addEventListener(n, "click", c),
                 r = !0)
             },
             p(r, o) {
@@ -14531,8 +14531,8 @@
                 u.c(),
                 u.m(n, i)) : u && (u.d(1),
                 u = null),
-                3 & o && Ts(n, "selected", t[4].value === t[0]),
-                2 & o && Ts(n, "dot", t[4].dot)
+                3 & o && setChecked(n, "selected", t[4].value === t[0]),
+                2 & o && setChecked(n, "dot", t[4].dot)
             },
             d(t) {
                 t && vs(n),
@@ -14549,14 +14549,14 @@
             i[n] = kh(wh(t, e, n));
         return {
             c() {
-                n = ms("div");
+                n = createElement("div");
                 for (let t = 0; t < i.length; t += 1)
                     i[t].c();
-                Xs(n, "class", "tabs svelte-1l9tlvb"),
-                Ts(n, "secondary", t[2])
+                setAttributes(n, "class", "tabs svelte-1l9tlvb"),
+                setChecked(n, "secondary", t[2])
             },
             m(t, e) {
-                ds(t, n, e);
+                insertElement(t, n, e);
                 for (let t = 0; t < i.length; t += 1)
                     i[t].m(n, null)
             },
@@ -14574,7 +14574,7 @@
                         i[o].d(1);
                     i.length = e.length
                 }
-                4 & r && Ts(n, "secondary", t[2])
+                4 & r && setChecked(n, "secondary", t[2])
             },
             i: ns,
             o: ns,
@@ -14596,7 +14596,7 @@
         ,
         [r, i, o, t => e(0, r = t.value)]
     }
-    class Sh extends eu {
+    class Sh extends Component {
         constructor(t) {
             super(),
             nu(this, t, Th, Eh, ss, {
@@ -14610,47 +14610,47 @@
         let n, e, i, r, o, s, u, c, a, l, f, h, d, v, p, m = t[0].name + "", g = t[0].songNum + "", y = t[0].sheetNum + "";
         return {
             c() {
-                n = ms("a"),
-                e = ms("div"),
+                n = createElement("a"),
+                e = createElement("div"),
                 i = gs(m),
-                r = ys(),
-                o = ms("div"),
-                s = ms("span"),
+                r = createSpacer(),
+                o = createElement("div"),
+                s = createElement("span"),
                 u = gs(g),
                 c = gs("歌曲"),
-                a = ys(),
-                l = ms("span"),
-                f = ys(),
-                h = ms("span"),
+                a = createSpacer(),
+                l = createElement("span"),
+                f = createSpacer(),
+                h = createElement("span"),
                 d = gs(y),
                 v = gs("曲谱"),
-                Xs(e, "class", "name svelte-c9vvdw"),
-                Xs(l, "class", "dot svelte-c9vvdw"),
-                Xs(o, "class", "info svelte-c9vvdw"),
-                Xs(n, "class", "artist-preview svelte-c9vvdw"),
-                Xs(n, "href", p = "/" + (t[1] ? "explore" : "search") + "#q=" + encodeURIComponent(t[0].name))
+                setAttributes(e, "class", "name svelte-c9vvdw"),
+                setAttributes(l, "class", "dot svelte-c9vvdw"),
+                setAttributes(o, "class", "info svelte-c9vvdw"),
+                setAttributes(n, "class", "artist-preview svelte-c9vvdw"),
+                setAttributes(n, "href", p = "/" + (t[1] ? "explore" : "search") + "#q=" + encodeURIComponent(t[0].name))
             },
             m(t, p) {
-                ds(t, n, p),
-                hs(n, e),
-                hs(e, i),
-                hs(n, r),
-                hs(n, o),
-                hs(o, s),
-                hs(s, u),
-                hs(s, c),
-                hs(o, a),
-                hs(o, l),
-                hs(o, f),
-                hs(o, h),
-                hs(h, d),
-                hs(h, v)
+                insertElement(t, n, p),
+                appendElement(n, e),
+                appendElement(e, i),
+                appendElement(n, r),
+                appendElement(n, o),
+                appendElement(o, s),
+                appendElement(s, u),
+                appendElement(s, c),
+                appendElement(o, a),
+                appendElement(o, l),
+                appendElement(o, f),
+                appendElement(o, h),
+                appendElement(h, d),
+                appendElement(h, v)
             },
             p(t, [e]) {
                 1 & e && m !== (m = t[0].name + "") && ks(i, m),
                 1 & e && g !== (g = t[0].songNum + "") && ks(u, g),
                 1 & e && y !== (y = t[0].sheetNum + "") && ks(d, y),
-                3 & e && p !== (p = "/" + (t[1] ? "explore" : "search") + "#q=" + encodeURIComponent(t[0].name)) && Xs(n, "href", p)
+                3 & e && p !== (p = "/" + (t[1] ? "explore" : "search") + "#q=" + encodeURIComponent(t[0].name)) && setAttributes(n, "href", p)
             },
             i: ns,
             o: ns,
@@ -14669,7 +14669,7 @@
         ,
         [i, r]
     }
-    class Ah extends eu {
+    class Ah extends Component {
         constructor(t) {
             super(),
             nu(this, t, Ch, jh, ss, {
@@ -14682,28 +14682,28 @@
         let n, e, i, r, o, s, u;
         return {
             c() {
-                n = ms("div"),
-                e = ms("div"),
+                n = createElement("div"),
+                e = createElement("div"),
                 e.innerHTML = '<span class="icon yoopu3-icon svelte-ivnm0d"></span>',
-                i = ys(),
-                r = ms("div"),
+                i = createSpacer(),
+                r = createElement("div"),
                 r.textContent = " ",
-                o = ys(),
-                s = ms("span"),
+                o = createSpacer(),
+                s = createElement("span"),
                 u = gs(t[0]),
-                Xs(e, "class", "audio-player svelte-ivnm0d"),
-                Xs(r, "class", "spectrum yoopu3-icon svelte-ivnm0d"),
-                Xs(s, "class", "duration svelte-ivnm0d"),
-                Xs(n, "class", "demo-player svelte-ivnm0d")
+                setAttributes(e, "class", "audio-player svelte-ivnm0d"),
+                setAttributes(r, "class", "spectrum yoopu3-icon svelte-ivnm0d"),
+                setAttributes(s, "class", "duration svelte-ivnm0d"),
+                setAttributes(n, "class", "demo-player svelte-ivnm0d")
             },
             m(t, c) {
-                ds(t, n, c),
-                hs(n, e),
-                hs(n, i),
-                hs(n, r),
-                hs(n, o),
-                hs(n, s),
-                hs(s, u)
+                insertElement(t, n, c),
+                appendElement(n, e),
+                appendElement(n, i),
+                appendElement(n, r),
+                appendElement(n, o),
+                appendElement(n, s),
+                appendElement(s, u)
             },
             p(t, [n]) {
                 1 & n && ks(u, t[0])
@@ -14723,7 +14723,7 @@
         ,
         [i]
     }
-    class Bh extends eu {
+    class Bh extends Component {
         constructor(t) {
             super(),
             nu(this, t, _h, Oh, ss, {
@@ -14741,17 +14741,17 @@
         }),
         {
             c() {
-                Ys(n.$$.fragment),
-                e = ys(),
-                i = ms("span"),
+                createComponentFragment(n.$$.fragment),
+                e = createSpacer(),
+                i = createElement("span"),
                 r = gs(s),
-                Xs(i, "class", "username")
+                setAttributes(i, "class", "username")
             },
             m(t, s) {
                 Zs(n, t, s),
-                ds(t, e, s),
-                ds(t, i, s),
-                hs(i, r),
+                insertElement(t, e, s),
+                insertElement(t, i, s),
+                appendElement(i, r),
                 o = !0
             },
             p(t, e) {
@@ -14785,75 +14785,75 @@
         let _ = t[0].owner && Dh(t);
         return {
             c() {
-                n = ms("div"),
-                e = ms("a"),
-                i = ms("div"),
-                r = ms("span"),
+                n = createElement("div"),
+                e = createElement("a"),
+                i = createElement("div"),
+                r = createElement("span"),
                 o = gs(C),
-                s = ys(),
-                u = ms("div"),
-                Ys(c.$$.fragment),
-                l = ys(),
-                f = ms("div"),
-                h = ms("div"),
+                s = createSpacer(),
+                u = createElement("div"),
+                createComponentFragment(c.$$.fragment),
+                l = createSpacer(),
+                f = createElement("div"),
+                h = createElement("div"),
                 _ && _.c(),
-                d = ys(),
-                v = ms("div"),
-                p = ms("div"),
-                m = ms("span"),
+                d = createSpacer(),
+                v = createElement("div"),
+                p = createElement("div"),
+                m = createElement("span"),
                 m.textContent = "",
-                g = ys(),
-                y = ms("span"),
+                g = createSpacer(),
+                y = createElement("span"),
                 b = gs(A),
                 w = gs("次播放"),
-                X = ys(),
-                x = ms("div"),
-                k = ms("span"),
+                X = createSpacer(),
+                x = createElement("div"),
+                k = createElement("span"),
                 k.textContent = "",
-                E = ys(),
-                T = ms("span"),
+                E = createSpacer(),
+                T = createElement("span"),
                 S = gs(O),
-                Xs(r, "class", "title svelte-x69xlk"),
-                Xs(i, "class", "title-line svelte-x69xlk"),
-                Xs(u, "class", "audio svelte-x69xlk"),
-                Xs(e, "class", "post-main svelte-x69xlk"),
-                Xs(e, "href", a = "/view/" + t[0].sheetCode + "#audio=" + t[0].audioCode),
-                Xs(h, "class", "user-info svelte-x69xlk"),
-                Xs(m, "class", "icon yoopu3-icon"),
-                Xs(p, "class", "svelte-x69xlk"),
-                Xs(k, "class", "icon yoopu3-icon"),
-                Xs(x, "class", "svelte-x69xlk"),
-                Xs(v, "class", "stats svelte-x69xlk"),
-                Xs(f, "class", "post-info svelte-x69xlk"),
-                Xs(n, "class", "audio-preview")
+                setAttributes(r, "class", "title svelte-x69xlk"),
+                setAttributes(i, "class", "title-line svelte-x69xlk"),
+                setAttributes(u, "class", "audio svelte-x69xlk"),
+                setAttributes(e, "class", "post-main svelte-x69xlk"),
+                setAttributes(e, "href", a = "/view/" + t[0].sheetCode + "#audio=" + t[0].audioCode),
+                setAttributes(h, "class", "user-info svelte-x69xlk"),
+                setAttributes(m, "class", "icon yoopu3-icon"),
+                setAttributes(p, "class", "svelte-x69xlk"),
+                setAttributes(k, "class", "icon yoopu3-icon"),
+                setAttributes(x, "class", "svelte-x69xlk"),
+                setAttributes(v, "class", "stats svelte-x69xlk"),
+                setAttributes(f, "class", "post-info svelte-x69xlk"),
+                setAttributes(n, "class", "audio-preview")
             },
             m(t, a) {
-                ds(t, n, a),
-                hs(n, e),
-                hs(e, i),
-                hs(i, r),
-                hs(r, o),
-                hs(e, s),
-                hs(e, u),
+                insertElement(t, n, a),
+                appendElement(n, e),
+                appendElement(e, i),
+                appendElement(i, r),
+                appendElement(r, o),
+                appendElement(e, s),
+                appendElement(e, u),
                 Zs(c, u, null),
-                hs(n, l),
-                hs(n, f),
-                hs(f, h),
+                appendElement(n, l),
+                appendElement(n, f),
+                appendElement(f, h),
                 _ && _.m(h, null),
-                hs(f, d),
-                hs(f, v),
-                hs(v, p),
-                hs(p, m),
-                hs(p, g),
-                hs(p, y),
-                hs(y, b),
-                hs(p, w),
-                hs(v, X),
-                hs(v, x),
-                hs(x, k),
-                hs(x, E),
-                hs(x, T),
-                hs(T, S),
+                appendElement(f, d),
+                appendElement(f, v),
+                appendElement(v, p),
+                appendElement(p, m),
+                appendElement(p, g),
+                appendElement(p, y),
+                appendElement(y, b),
+                appendElement(p, w),
+                appendElement(v, X),
+                appendElement(v, x),
+                appendElement(x, k),
+                appendElement(x, E),
+                appendElement(x, T),
+                appendElement(T, S),
                 j = !0
             },
             p(t, [n]) {
@@ -14861,7 +14861,7 @@
                 const i = {};
                 1 & n && (i.durationDisplay = t[0].durationDisplay),
                 c.$set(i),
-                (!j || 1 & n && a !== (a = "/view/" + t[0].sheetCode + "#audio=" + t[0].audioCode)) && Xs(e, "href", a),
+                (!j || 1 & n && a !== (a = "/view/" + t[0].sheetCode + "#audio=" + t[0].audioCode)) && setAttributes(e, "href", a),
                 t[0].owner ? _ ? (_.p(t, n),
                 1 & n && Vs(_, 1)) : (_ = Dh(t),
                 _.c(),
@@ -14900,7 +14900,7 @@
         ,
         [i]
     }
-    class Mh extends eu {
+    class Mh extends Component {
         constructor(t) {
             super(),
             nu(this, t, Ih, qh, ss, {
@@ -14922,12 +14922,12 @@
         }),
         {
             c() {
-                n = ms("div"),
-                Ys(e.$$.fragment),
-                Xs(n, "class", "icon svelte-1fr7tr")
+                n = createElement("div"),
+                createComponentFragment(e.$$.fragment),
+                setAttributes(n, "class", "icon svelte-1fr7tr")
             },
             m(t, r) {
-                ds(t, n, r),
+                insertElement(t, n, r),
                 Zs(e, n, null),
                 i = !0
             },
@@ -14954,13 +14954,13 @@
         let n, e, i = t[3].title + "";
         return {
             c() {
-                n = ms("span"),
+                n = createElement("span"),
                 e = gs(i),
-                Xs(n, "class", "title svelte-1fr7tr")
+                setAttributes(n, "class", "title svelte-1fr7tr")
             },
             m(t, i) {
-                ds(t, n, i),
-                hs(n, e)
+                insertElement(t, n, i),
+                appendElement(n, e)
             },
             p(t, n) {
                 2 & n && i !== (i = t[3].title + "") && ks(e, i)
@@ -14977,22 +14977,22 @@
         }
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 u && u.c(),
-                e = ys(),
+                e = createSpacer(),
                 c && c.c(),
-                i = ys(),
-                Xs(n, "class", "option svelte-1fr7tr"),
-                Ts(n, "selected", t[3].value == t[0])
+                i = createSpacer(),
+                setAttributes(n, "class", "option svelte-1fr7tr"),
+                setChecked(n, "selected", t[3].value == t[0])
             },
             m(t, l) {
-                ds(t, n, l),
+                insertElement(t, n, l),
                 u && u.m(n, null),
-                hs(n, e),
+                appendElement(n, e),
                 c && c.m(n, null),
-                hs(n, i),
+                appendElement(n, i),
                 r = !0,
-                o || (s = ws(n, "click", a),
+                o || (s = addEventListener(n, "click", a),
                 o = !0)
             },
             p(r, o) {
@@ -15010,7 +15010,7 @@
                 c.c(),
                 c.m(n, i)) : c && (c.d(1),
                 c = null),
-                3 & o && Ts(n, "selected", t[3].value == t[0])
+                3 & o && setChecked(n, "selected", t[3].value == t[0])
             },
             i(t) {
                 r || (Vs(u),
@@ -15039,13 +15039,13 @@
         ));
         return {
             c() {
-                n = ms("div");
+                n = createElement("div");
                 for (let t = 0; t < r.length; t += 1)
                     r[t].c();
-                Xs(n, "class", "tabs svelte-1fr7tr")
+                setAttributes(n, "class", "tabs svelte-1fr7tr")
             },
             m(t, i) {
-                ds(t, n, i);
+                insertElement(t, n, i);
                 for (let t = 0; t < r.length; t += 1)
                     r[t].m(n, null);
                 e = !0
@@ -15097,7 +15097,7 @@
         ,
         [r, i, t => e(0, r = t.value)]
     }
-    class Uh extends eu {
+    class Uh extends Component {
         constructor(t) {
             super(),
             nu(this, t, Ph, Gh, ss, {
@@ -15127,12 +15127,12 @@
         Ds.push(( () => Qs(e, "selected", o))),
         {
             c() {
-                n = ms("div"),
-                Ys(e.$$.fragment),
-                Xs(n, "class", "tabs-container svelte-1fb8ish")
+                n = createElement("div"),
+                createComponentFragment(e.$$.fragment),
+                setAttributes(n, "class", "tabs-container svelte-1fb8ish")
             },
             m(t, i) {
-                ds(t, n, i),
+                insertElement(t, n, i),
                 Zs(e, n, null),
                 r = !0
             },
@@ -15174,12 +15174,12 @@
         Ds.push(( () => Qs(e, "selected", o))),
         {
             c() {
-                n = ms("div"),
-                Ys(e.$$.fragment),
-                Xs(n, "class", "sub-tabs-container svelte-1fb8ish")
+                n = createElement("div"),
+                createComponentFragment(e.$$.fragment),
+                setAttributes(n, "class", "sub-tabs-container svelte-1fb8ish")
             },
             m(t, i) {
-                ds(t, n, i),
+                insertElement(t, n, i),
                 Zs(e, n, null),
                 r = !0
             },
@@ -15209,12 +15209,12 @@
         let n, e = t[6] && Jh(t);
         return {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 e && e.c(),
-                Xs(n, "class", "search-result-tip svelte-1fb8ish")
+                setAttributes(n, "class", "search-result-tip svelte-1fb8ish")
             },
             m(t, i) {
-                ds(t, n, i),
+                insertElement(t, n, i),
                 e && e.m(n, null)
             },
             p(t, i) {
@@ -15234,16 +15234,16 @@
         return {
             c() {
                 n = gs("找到"),
-                e = ms("span"),
+                e = createElement("span"),
                 i = gs(t[6]),
                 r = gs("个匹配"),
-                Xs(e, "class", "svelte-1fb8ish")
+                setAttributes(e, "class", "svelte-1fb8ish")
             },
             m(t, o) {
-                ds(t, n, o),
-                ds(t, e, o),
-                hs(e, i),
-                ds(t, r, o)
+                insertElement(t, n, o),
+                insertElement(t, e, o),
+                appendElement(e, i),
+                insertElement(t, r, o)
             },
             p(t, n) {
                 64 & n[0] && ks(i, t[6])
@@ -15266,12 +15266,12 @@
         i = s[e] = o[e](t),
         {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 i.c(),
-                Xs(n, "class", "placeholder svelte-1fb8ish")
+                setAttributes(n, "class", "placeholder svelte-1fb8ish")
             },
             m(t, i) {
-                ds(t, n, i),
+                insertElement(t, n, i),
                 s[e].m(n, null),
                 r = !0
             },
@@ -15321,7 +15321,7 @@
             m(t, i) {
                 for (let n = 0; n < r.length; n += 1)
                     r[n].m(t, i);
-                ds(t, n, i),
+                insertElement(t, n, i),
                 e = !0
             },
             p(t, e) {
@@ -15366,7 +15366,7 @@
         return n = new ih({}),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, i) {
                 Zs(n, t, i),
@@ -15392,7 +15392,7 @@
                 n = gs("加载中...")
             },
             m(t, e) {
-                ds(t, n, e)
+                insertElement(t, n, e)
             },
             i: ns,
             o: ns,
@@ -15411,7 +15411,7 @@
         }),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, i) {
                 Zs(n, t, i),
@@ -15444,7 +15444,7 @@
         }),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, i) {
                 Zs(n, t, i),
@@ -15477,7 +15477,7 @@
         }),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, i) {
                 Zs(n, t, i),
@@ -15510,7 +15510,7 @@
         }),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, i) {
                 Zs(n, t, i),
@@ -15547,17 +15547,17 @@
         return ~(e = l(t)) && (i = a[e] = c[e](t)),
         {
             c() {
-                n = ms("div"),
+                n = createElement("div"),
                 i && i.c(),
-                r = ys(),
-                Xs(n, "class", "post-item svelte-1fb8ish")
+                r = createSpacer(),
+                setAttributes(n, "class", "post-item svelte-1fb8ish")
             },
             m(t, i) {
-                ds(t, n, i),
+                insertElement(t, n, i),
                 ~e && a[e].m(n, null),
-                hs(n, r),
+                appendElement(n, r),
                 o = !0,
-                s || (u = ws(n, "click", f),
+                s || (u = addEventListener(n, "click", f),
                 s = !0)
             },
             p(o, s) {
@@ -15603,23 +15603,23 @@
         {
             c() {
                 c && c.c(),
-                n = ys(),
+                n = createSpacer(),
                 a && a.c(),
-                e = ys(),
+                e = createSpacer(),
                 l && l.c(),
-                i = ys(),
-                r = ms("div"),
+                i = createSpacer(),
+                r = createElement("div"),
                 s.c(),
-                Xs(r, "class", "list-container svelte-1fb8ish")
+                setAttributes(r, "class", "list-container svelte-1fb8ish")
             },
             m(s, f) {
                 c && c.m(s, f),
-                ds(s, n, f),
+                insertElement(s, n, f),
                 a && a.m(s, f),
-                ds(s, e, f),
+                insertElement(s, e, f),
                 l && l.m(s, f),
-                ds(s, i, f),
-                ds(s, r, f),
+                insertElement(s, i, f),
+                insertElement(s, r, f),
                 h[o].m(r, null),
                 t[15](r),
                 u = !0
@@ -15703,7 +15703,7 @@
         }),
         {
             c() {
-                Ys(n.$$.fragment)
+                createComponentFragment(n.$$.fragment)
             },
             m(t, i) {
                 Zs(n, t, i),
@@ -15937,7 +15937,7 @@
         }
         ]
     }
-    class ud extends eu {
+    class ud extends Component {
         constructor(t) {
             super(),
             nu(this, t, sd, od, ss, {
