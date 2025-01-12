@@ -7610,25 +7610,62 @@
         }
         Zl(u)
     }
-    class Ff {
+    /**
+     * A class representing a component with lifecycle methods and state management.
+     */
+    class Component {
+        /**
+         * Destroys the component and cleans up resources.
+         */
         $destroy() {
-            Pf(this, 1),
-            this.$destroy = defaultStart
+            // Call the cleanup function with a flag to indicate destruction
+            cleanupComponent(this, 1);
+            // Reset the $destroy method to a no-op
+            this.$destroy = defaultStart;
         }
-        $on(t, n) {
-            const e = this.$$.callbacks[t] || (this.$$.callbacks[t] = []);
-            return e.push(n),
-            () => {
-                const t = e.indexOf(n);
-                -1 !== t && e.splice(t, 1)
+
+        /**
+         * Registers an event listener for the specified event type.
+         * @param {string} eventType - The type of event to listen for.
+         * @param {Function} callback - The function to call when the event is triggered.
+         * @returns {Function} A function to remove the event listener.
+         */
+        $on(eventType, callback) {
+            // Get the list of callbacks for the event type, or create a new list if it doesn't exist
+            const callbacks = this.$$.callbacks[eventType] || (this.$$.callbacks[eventType] = []);
+            // Add the callback to the list
+            callbacks.push(callback);
+            // Return a function to remove the event listener
+            return () => {
+                const index = callbacks.indexOf(callback);
+                if (index !== -1) {
+                    callbacks.splice(index, 1);
+                }
+            };
+        }
+
+        /**
+         * Sets the component's state with the provided values.
+         * @param {Object} newState - An object containing the new state values.
+         */
+        $set(newState) {
+            // Check if the component has a $$set method and the newState is not empty
+            if (this.$$set && !isEmptyObject(newState)) {
+                // Temporarily skip the bound check
+                this.$$.skip_bound = true;
+                // Call the $$set method with the new state
+                this.$$set(newState);
+                // Reset the skip bound flag
+                this.$$.skip_bound = false;
             }
         }
-        $set(t) {
-            this.$$set && !ll(t) && (this.$$.skip_bound = !0,
-            this.$$set(t),
-            this.$$.skip_bound = !1)
-        }
     }
+
+    // Utility function to check if an object is empty
+    function isEmptyObject(obj) {
+        return Object.keys(obj).length === 0;
+    }
+
     const subscriberQueue = [];
     function zf(t, n) {
         return {
@@ -8959,7 +8996,7 @@
         ]
     }
     Dd(Rd);
-    class qd extends Ff {
+    class qd extends Component {
         constructor(t) {
             super(),
             $f(this, t, Pd, Bd, areValuesDifferent, {
@@ -9274,7 +9311,7 @@
         }
         , h, d, v, i, () => b(!0), () => b(!1), r]
     }
-    class Hd extends Ff {
+    class Hd extends Component {
         constructor(t) {
             super(),
             $f(this, t, Ud, Gd, areValuesDifferent, {
@@ -9433,7 +9470,7 @@
         }
         ]
     }
-    class ov extends Ff {
+    class ov extends Component {
         constructor(t) {
             super(),
             $f(this, t, rv, Wd, areValuesDifferent, {})
@@ -9532,7 +9569,7 @@
         }
         ]
     }
-    class av extends Ff {
+    class av extends Component {
         constructor(t) {
             super(),
             $f(this, t, cv, uv, areValuesDifferent, {
@@ -10948,7 +10985,7 @@
         }
         ]
     }
-    class Xp extends Ff {
+    class Xp extends Component {
         constructor(t) {
             super(),
             $f(this, t, Ap, Cp, areValuesDifferent, {
@@ -11079,7 +11116,7 @@
         }
         ]
     }
-    class Rp extends Ff {
+    class Rp extends Component {
         constructor(t) {
             super(),
             $f(this, t, Mp, Ip, areValuesDifferent, {
@@ -11316,7 +11353,7 @@
         }
         ]
     }
-    class $p extends Ff {
+    class $p extends Component {
         constructor(t) {
             super(),
             $f(this, t, qp, Pp, areValuesDifferent, {
@@ -11472,7 +11509,7 @@
         ,
         [r, i, o, s, u, t => e(0, r = t.value)]
     }
-    class Up extends Ff {
+    class Up extends Component {
         constructor(t) {
             super(),
             $f(this, t, Gp, Lp, areValuesDifferent, {
@@ -11619,7 +11656,7 @@
         }
         ]
     }
-    class Jp extends Ff {
+    class Jp extends Component {
         constructor(t) {
             super(),
             $f(this, t, Wp, Vp, areValuesDifferent, {
@@ -11766,7 +11803,7 @@
         ,
         [i, !0, s, r, () => s(Z.PIANO), () => s(Z.GUITAR), () => s(Z.UKULELE), () => s(Z.JIAN)]
     }
-    class Zp extends Ff {
+    class Zp extends Component {
         constructor(t) {
             super(),
             $f(this, t, Qp, GuitarPu, areValuesDifferent, {
@@ -12098,7 +12135,7 @@
         ,
         [u, c, a, r, t => a(t)]
     }
-    class ym extends Ff {
+    class ym extends Component {
         constructor(t) {
             super(),
             $f(this, t, mm, pm, areValuesDifferent, {
@@ -12335,7 +12372,7 @@
         }
         , i, t => c(t), t => c(t)]
     }
-    class Om extends Ff {
+    class Om extends Component {
         constructor(t) {
             super(),
             $f(this, t, Tm, Em, areValuesDifferent, {})
@@ -12467,7 +12504,7 @@
         }
         ]
     }
-    class _m extends Ff {
+    class _m extends Component {
         constructor(t) {
             super(),
             $f(this, t, Im, Xm, areValuesDifferent, {
@@ -12605,7 +12642,7 @@
         }
         ]
     }
-    class jm extends Ff {
+    class jm extends Component {
         constructor(t) {
             super(),
             $f(this, t, Dm, Rm, areValuesDifferent, {
@@ -12714,7 +12751,7 @@
         }
         , () => s(i), t => s(t.detail.query)]
     }
-    class qm extends Ff {
+    class qm extends Component {
         constructor(t) {
             super(),
             $f(this, t, Pm, Bm, areValuesDifferent, {})
@@ -12785,7 +12822,7 @@
         }
         ]
     }
-    class zm extends Ff {
+    class zm extends Component {
         constructor(t) {
             super(),
             $f(this, t, Nm, $m, areValuesDifferent, {
@@ -12845,7 +12882,7 @@
             }
         }
     }
-    class Gm extends Ff {
+    class Gm extends Component {
         constructor(t) {
             super(),
             $f(this, t, null, Lm, areValuesDifferent, {})
@@ -12881,7 +12918,7 @@
         ,
         [i]
     }
-    class Vm extends Ff {
+    class Vm extends Component {
         constructor(t) {
             super(),
             $f(this, t, Hm, Um, areValuesDifferent, {
@@ -13131,7 +13168,7 @@
         }
         ]
     }
-    class oy extends Ff {
+    class oy extends Component {
         constructor(t) {
             super(),
             $f(this, t, ry, Qm, areValuesDifferent, {
@@ -13270,7 +13307,7 @@
         }
         ]
     }
-    class ly extends Ff {
+    class ly extends Component {
         constructor(t) {
             super(),
             $f(this, t, ay, cy, areValuesDifferent, {
@@ -13743,7 +13780,7 @@
         }
         ]
     }
-    class wy extends Ff {
+    class wy extends Component {
         constructor(t) {
             super(),
             $f(this, t, by, gy, areValuesDifferent, {
@@ -13824,7 +13861,7 @@
         ,
         [i]
     }
-    class Ty extends Ff {
+    class Ty extends Component {
         constructor(t) {
             super(),
             $f(this, t, Ey, Sy, areValuesDifferent, {
@@ -14008,7 +14045,7 @@
         }
         ]
     }
-    class jy extends Ff {
+    class jy extends Component {
         constructor(t) {
             super(),
             $f(this, t, Dy, Cy, areValuesDifferent, {
@@ -14221,7 +14258,7 @@
         }
         ]
     }
-    class Ly extends Ff {
+    class Ly extends Component {
         constructor(t) {
             super(),
             $f(this, t, zy, Ny, areValuesDifferent, {
@@ -18380,7 +18417,7 @@
         }
         ]
     }
-    class eg extends Ff {
+    class eg extends Component {
         constructor(t) {
             super(),
             $f(this, t, ng, tg, areValuesDifferent, {
@@ -18484,7 +18521,7 @@
         }
         ]
     }
-    class sg extends Ff {
+    class sg extends Component {
         constructor(t) {
             super(),
             $f(this, t, og, rg, areValuesDifferent, {
@@ -18603,7 +18640,7 @@
         }
         ]
     }
-    class lg extends Ff {
+    class lg extends Component {
         constructor(t) {
             super(),
             $f(this, t, ag, cg, areValuesDifferent, {
@@ -18968,7 +19005,7 @@
         }
         ]
     }
-    class gg extends Ff {
+    class gg extends Component {
         constructor(t) {
             super(),
             $f(this, t, yg, pg, areValuesDifferent, {
@@ -19261,7 +19298,7 @@
         }
         ]
     }
-    class Og extends Ff {
+    class Og extends Component {
         constructor(t) {
             super(),
             $f(this, t, Tg, Eg, areValuesDifferent, {
@@ -19348,7 +19385,7 @@
         }
         ]
     }
-    class Ig extends Ff {
+    class Ig extends Component {
         constructor(t) {
             super(),
             $f(this, t, Xg, Ag, areValuesDifferent, {
@@ -19926,7 +19963,7 @@
         }
         , r, () => c("print")]
     }
-    class Ug extends Ff {
+    class Ug extends Component {
         constructor(t) {
             super(),
             $f(this, t, Gg, Lg, areValuesDifferent, {
@@ -20076,7 +20113,7 @@
         }
         ]
     }
-    class Kg extends Ff {
+    class Kg extends Component {
         constructor(t) {
             super(),
             $f(this, t, Jg, Wg, areValuesDifferent, {
@@ -20221,7 +20258,7 @@
         }
         ]
     }
-    class eb extends Ff {
+    class eb extends Component {
         constructor(t) {
             super(),
             $f(this, t, nb, tb, areValuesDifferent, {
@@ -20415,7 +20452,7 @@
         ,
         [r, o, d, s, l, v, i, u, c, a, f, h]
     }
-    class ub extends Ff {
+    class ub extends Component {
         constructor(t) {
             super(),
             $f(this, t, sb, null, areValuesDifferent, {
@@ -20694,7 +20731,7 @@
         }
         , h, a, (t, n) => h(t, n)]
     }
-    class mb extends Ff {
+    class mb extends Component {
         constructor(t) {
             super(),
             $f(this, t, pb, db, areValuesDifferent, {
@@ -20791,7 +20828,7 @@
         }
         , s]
     }
-    class bb extends Ff {
+    class bb extends Component {
         constructor(t) {
             super(),
             $f(this, t, gb, yb, areValuesDifferent, {
@@ -21018,7 +21055,7 @@
         }
         , () => e(0, r = !r)]
     }
-    class Ab extends Ff {
+    class Ab extends Component {
         constructor(t) {
             super(),
             $f(this, t, Cb, Ob, areValuesDifferent, {
@@ -21988,7 +22025,7 @@
         }
         ]
     }
-    class Lb extends Ff {
+    class Lb extends Component {
         constructor(t) {
             super(),
             $f(this, t, zb, Nb, areValuesDifferent, {
@@ -22044,7 +22081,7 @@
         }
         ]
     }
-    class Hb extends Ff {
+    class Hb extends Component {
         constructor(t) {
             super(),
             $f(this, t, Ub, Gb, areValuesDifferent, {
@@ -22207,7 +22244,7 @@
         ,
         [r, i, o, s, u, c, t => e(0, r = t.value)]
     }
-    class Zb extends Ff {
+    class Zb extends Component {
         constructor(t) {
             super(),
             $f(this, t, Qb, Yb, areValuesDifferent, {
@@ -22556,7 +22593,7 @@
         }
         , i, r, o, a, l, f]
     }
-    class vw extends Ff {
+    class vw extends Component {
         constructor(t) {
             super(),
             $f(this, t, dw, hw, areValuesDifferent, {
@@ -23199,7 +23236,7 @@
         }
         , () => e(5, w = !w)]
     }
-    class Sw extends Ff {
+    class Sw extends Component {
         constructor(t) {
             super(),
             $f(this, t, kw, ww, areValuesDifferent, {
@@ -23276,7 +23313,7 @@
         }
         ]
     }
-    class Ow extends Ff {
+    class Ow extends Component {
         constructor(t) {
             super(),
             $f(this, t, Tw, Ew, areValuesDifferent, {
@@ -23421,7 +23458,7 @@
         }
         ]
     }
-    class Mw extends Ff {
+    class Mw extends Component {
         constructor(t) {
             super(),
             $f(this, t, _w, Iw, areValuesDifferent, {
@@ -24028,7 +24065,7 @@
         }
         ]
     }
-    class Hw extends Ff {
+    class Hw extends Component {
         constructor(t) {
             super(),
             $f(this, t, Uw, Gw, areValuesDifferent, {
@@ -24318,7 +24355,7 @@
         ,
         [s, u, c, a, i, r, o, t => a(t)]
     }
-    class ix extends Ff {
+    class ix extends Component {
         constructor(t) {
             super(),
             $f(this, t, ex, tx, areValuesDifferent, {
@@ -24760,7 +24797,7 @@
         }
         ]
     }
-    class fx extends Ff {
+    class fx extends Component {
         constructor(t) {
             super(),
             $f(this, t, lx, ux, areValuesDifferent, {
@@ -25215,7 +25252,7 @@
         }
         ]
     }
-    class Sx extends Ff {
+    class Sx extends Component {
         constructor(t) {
             super(),
             $f(this, t, kx, xx, areValuesDifferent, {
@@ -25564,7 +25601,7 @@
         }
         ]
     }
-    class Rx extends Ff {
+    class Rx extends Component {
         constructor(t) {
             super(),
             $f(this, t, Mx, Ix, areValuesDifferent, {
@@ -25681,7 +25718,7 @@
         ,
         [i, () => location.href = "/user#code=" + i.userCode]
     }
-    class Px extends Ff {
+    class Px extends Component {
         constructor(t) {
             super(),
             $f(this, t, Bx, jx, areValuesDifferent, {
@@ -25794,7 +25831,7 @@
         }
         , o, s, c, a, l, f, h, i]
     }
-    class Fx extends Ff {
+    class Fx extends Component {
         constructor(t) {
             super(),
             $f(this, t, $x, qx, areValuesDifferent, {
@@ -26169,7 +26206,7 @@
         }
         ]
     }
-    class Ux extends Ff {
+    class Ux extends Component {
         constructor(t) {
             super(),
             $f(this, t, Gx, Lx, areValuesDifferent, {
@@ -27510,7 +27547,7 @@
         }
         ]
     }
-    class mk extends Ff {
+    class mk extends Component {
         constructor(t) {
             super(),
             $f(this, t, LoadSong, vk, areValuesDifferent, {
