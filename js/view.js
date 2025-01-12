@@ -7787,34 +7787,35 @@
         };
     }
     const Hf = "#faf9f9"
-      , Vf = infoLogger("Fullscreen");
+      , fullscreenLog = infoLogger("Fullscreen");
     function Wf() {
         const t = document.body;
         return t.requestFullscreen || t.webkitRequestFullscreen
     }
-    async function Jf(t=document.documentElement) {
-        Vf("requestFullscreen"),
-        t.requestFullscreen ? await t.requestFullscreen().catch(( () => {}
-        )) : t.webkitRequestFullscreen && await t.webkitRequestFullscreen().catch(( () => {}
-        ))
+    async function requestFullscreen(element=document.documentElement) {
+        fullscreenLog("requestFullscreen");
+        if(element.requestFullscreen) 
+            await element.requestFullscreen().catch(( () => {})) 
+        else if (element.webkitRequestFullscreen)
+            await element.webkitRequestFullscreen().catch(( () => {}))
     }
-    async function Kf() {
-        Vf("exitFullscreen"),
+    async function exitFullscreen() {
+        fullscreenLog("exitFullscreen");
         (document.fullscreenElement || document.webkitFullscreenElement) && (document.exitFullscreen ? await document.exitFullscreen().catch(( () => {}
         )) : document.webkitExitFullscreen && await document.webkitExitFullscreen().catch(( () => {}
         )))
     }
-    function Yf(t, n, e) {
-        const i = () => {
-            document.fullscreenElement || document.webkitFullscreenElement ? (Vf("entered"),
-            n()) : (Vf("exited"),
-            e(),
-            t.removeEventListener("fullscreenchange", i),
-            t.removeEventListener("webkitfullscreenchange", i))
+    function handleFullscreenChange(element, onEnterFullscreen, onExitFullscreen) {
+        const fullscreenChangeHandler = () => {
+            document.fullscreenElement || document.webkitFullscreenElement ? (fullscreenLog("entered"),
+            onEnterFullscreen()) : (fullscreenLog("exited"),
+            onExitFullscreen(),
+            element.removeEventListener("fullscreenchange", fullscreenChangeHandler),
+            element.removeEventListener("webkitfullscreenchange", fullscreenChangeHandler))
         }
         ;
-        t.addEventListener("fullscreenchange", i),
-        t.addEventListener("webkitfullscreenchange", i)
+        element.addEventListener("fullscreenchange", fullscreenChangeHandler),
+        element.addEventListener("webkitfullscreenchange", fullscreenChangeHandler)
     }
     const WebView = "WebView"
       , webViewLog = infoLogger(WebView)
@@ -7916,7 +7917,7 @@
             webViewLog("lockScreenOrientation", t),
             this.J("lockScreenOrientation", t) || this.K("lockScreenOrientation", {
                 orientation: t
-            }) || ih && (t === ScreenOrientations.PORTRAIT ? await Kf() : t === ScreenOrientations.LANDSCAPE && await Jf(),
+            }) || ih && (t === ScreenOrientations.PORTRAIT ? await exitFullscreen() : t === ScreenOrientations.LANDSCAPE && await requestFullscreen(),
             screen.orientation.lock(t).catch(( () => {}
             )))
         }
@@ -27458,7 +27459,7 @@
             if (!Wf())
                 return void Cn.error("浏览器不支持全屏模式，推荐Chrome浏览器");
             const t = querySelector(s.format === nt.XHE ? ".xhe-sheet" : "hexi-sheet");
-            Yf(t, ( () => {
+            handleFullscreenChange(t, ( () => {
                 t.setAttribute("columns", "3");
                 waitForEvent(t, "rendercomplete").then(( () => {
                     const n = an(t, ".hexi-header").offsetHeight;
@@ -27470,7 +27471,7 @@
                 t.removeAttribute("columns")
             }
             )),
-            Jf(t),
+            requestFullscreen(t),
             na("play-fullscreen")
         }
         , async function() {
