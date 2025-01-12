@@ -27567,17 +27567,17 @@
             }, [-1, -1, -1])
         }
     }
-    function yk(t, n, e) {
+    function initializeAndMountMusicComponent(webViewInterface, targetElement, additionalProps) {
         installHandlers(self),
         polyfillSmoothScroll(),
         new MusicComponent({
-            target: n,
+            target: targetElement,
             props: {
-                webViewInterface: t,
-                ...e
+                webViewInterface: webViewInterface,
+                ...additionalProps
             }
         })
     }
-    Gh(yk)
+    Gh(initializeAndMountMusicComponent)
 }
 )();
