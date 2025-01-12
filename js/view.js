@@ -485,15 +485,30 @@
         }
     }
     function infoLogger(t) {
-        return Gt() ? console.log.bind(console, `[${t}]`) : () => {}
+        return isLoggingEnabled() ? console.log.bind(console, `[${t}]`) : () => {}
     }
     function errorLogger(t) {
-        return Gt() ? console.error.bind(console, `[${t}]`) : t => {
+        return isLoggingEnabled() ? console.error.bind(console, `[${t}]`) : t => {
             t instanceof Error && self.captureException && self.captureException(t)
         }
     }
-    function Gt() {
-        return self.location && ("localhost" === self.location.hostname || 0 === self.location.hostname.indexOf("192.168.") || "dev.yopu.co" === self.location.hostname || "18080" === self.location.port || self.location.search.indexOf("log=8") > 0)
+    /**
+     * Checks if logging is enabled based on the current environment.
+     * @returns {boolean} True if logging is enabled, false otherwise.
+     */
+    function isLoggingEnabled() {
+        const hostname = self.location.hostname;
+        const port = self.location.port;
+        const searchParams = self.location.search;
+
+        // Enable logging for localhost, local network, specific domains, and specific query parameters
+        return (
+            hostname === "localhost" ||
+            hostname.startsWith("192.168.") ||
+            hostname === "dev.yopu.co" ||
+            port === "18080" ||
+            searchParams.includes("log=8")
+        );
     }
     "undefined" == typeof self && "object" == typeof global && (global.self = global);
     const Ut = {
