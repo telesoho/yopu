@@ -313,14 +313,18 @@
         return o && (i += "#" + o),
         i
     }
-    const xt = {
+    const roleHierarchy = {
         [ht.USER]: 1,
         [ht.TESTER]: 2,
         [ht.EDITOR]: 3,
         [ht.ADMIN]: 4
     };
-    function checkUserRole(t, n) {
-        return (xt[t] || 1) >= (xt[n] || 4)
+    function checkUserRole(userRole, requiredRole) {
+        console.log("userRole: ", userRole, requiredRole);
+        const userRoleLevel = roleHierarchy[userRole] || 1;
+        const requiredRoleLevel = roleHierarchy[requiredRole] || 4;
+    
+        return userRoleLevel >= requiredRoleLevel;        
     }
     class St {
         constructor() {
@@ -7021,7 +7025,7 @@
     }
     const Ga = gt(Za);
     function getUserInfo() {
-        return Ka(Ut.USER_DATA_USER_INFO)
+        return getJsonFromLocalStorage(Ut.USER_DATA_USER_INFO)
     }
     async function Ha(t=!1) {
         if (!t && !LocalStorage.getBoolean(Ut.USER_DATA_PORTFOLIO_STALE)) {
@@ -7035,7 +7039,7 @@
         n
     }
     function Va() {
-        return Ka(Ut.USER_DATA_USER_PORTFOLIO)
+        return getJsonFromLocalStorage(Ut.USER_DATA_USER_PORTFOLIO)
     }
     function Wa(t) {
         return jt(`/api/media/audio?code=${t}`, {
@@ -7050,12 +7054,12 @@
         }
         ))
     }
-    function Ja() {
+    function clearUserData() {
         setUserInfo(null),
         setUserPortfolio(null)
     }
-    function Ka(t) {
-        const n = LocalStorage.getJson(t);
+    function getJsonFromLocalStorage(key) {
+        const n = LocalStorage.getJson(key);
         return n && 0 !== Object.keys(n).length ? n : null
     }
     function setUserInfo(userInfo) {
@@ -7074,7 +7078,7 @@
             return await {}
         } catch (t) {
             if (t instanceof Ot && t.statusCode === Y.INVALID_CREDENTIAL)
-                return Ja(),
+                return clearUserData(),
                 null;
             throw t
         }
@@ -7084,7 +7088,7 @@
     }
     async function nl() {
         const {success: t} = await Dt("/auth/logout");
-        return t && Ja(),
+        return t && clearUserData(),
         t
     }
     function defaultStart() {}
@@ -7187,7 +7191,7 @@
             }
         }
     }
-    function Tl(t, n) {
+    function appendChild(t, n) {
         t.appendChild(n)
     }
     function insertBefore(t, n, e) {
@@ -7558,7 +7562,7 @@
         void 0 !== i && (t.$$.bound[i] = e,
         e(t.$$.ctx[i]))
     }
-    function jf(t) {
+    function onCreate(t) {
         t && t.c()
     }
     function Bf(t, n, e, i) {
@@ -8367,8 +8371,8 @@
     }
     const applicationLog = infoLogger("Application")
       , isTrackingDisabled = getInstrumentFromQueryString()["no-tracking"];
-    function initializeApplication(t, {errorReporting: errorReporting=true, 
-        allowHorizontalScreen: allowHorizontalScreen=false}={}) {
+    function initializeApplication(config, {errorReporting=true, 
+        allowHorizontalScreen=false}={}) {
         if (isIE11(navigator.userAgent)) {
             applicationLog("Execuse me? IE11?");
             return terminateApplication();
@@ -8405,11 +8409,13 @@
                 setOrRemoveGlobalAttribute("instrument", instrument)
             }
             ));
-            const soneElement = querySelector("#song")
-              , parsedContent = parseElementContent(soneElement);
-            parsedContent && void 0 !== parsedContent.user && (null === parsedContent.user ? Ja() : setUserInfo(parsedContent.user)),
-            t(screenHandler, soneElement, parsedContent),
-            applicationLog("Ready!")
+            const soneElement = querySelector("#song");
+            const parsedContent = parseElementContent(soneElement);
+            console.log(parsedContent.user);
+
+            parsedContent && undefined !== parsedContent.user && (null === parsedContent.user ? clearUserData() : setUserInfo(parsedContent.user)),
+            config(screenHandler, soneElement, parsedContent);
+            applicationLog("Ready!");
         }
         ), 1)
     }
@@ -9086,12 +9092,12 @@
             },
             m(l, d) {
                 insertBefore(l, n, d),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(r, o),
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(r, o),
                 f && f.m(o, null),
-                Tl(r, s),
+                appendChild(r, s),
                 h && h.m(r, null),
                 u = !0,
                 c || (a = Rl(e, "click", t[11]),
@@ -9152,7 +9158,7 @@
         return {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 i = createSpacer(),
                 o && o.c(),
                 setOrRemoveAttribute(n, "class", "buttons svelte-4llsvh")
@@ -9160,7 +9166,7 @@
             m(t, s) {
                 insertBefore(t, n, s),
                 Bf(e, n, null),
-                Tl(n, i),
+                appendChild(n, i),
                 o && o.m(n, null),
                 r = !0
             },
@@ -9237,7 +9243,7 @@
         n.$on("click", t[17]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -9392,10 +9398,10 @@
             },
             m(t, s) {
                 insertBefore(t, n, s),
-                Tl(n, e),
+                appendChild(n, e),
                 insertBefore(t, i, s),
                 insertBefore(t, r, s),
-                Tl(r, o)
+                appendChild(r, o)
             },
             p(t, n) {
                 8 & n && ql(e, t[3]),
@@ -9439,7 +9445,7 @@
         af.push(( () => Df(n, "cancelButtonText", c))),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -9574,7 +9580,7 @@
         af.push(( () => Df(n, "open", r))),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -11069,7 +11075,7 @@
         {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 r = createSpacer(),
                 o = createElement("div"),
                 s = createElement("button"),
@@ -11082,10 +11088,10 @@
             m(i, f) {
                 insertBefore(i, n, f),
                 Bf(e, n, null),
-                Tl(n, r),
-                Tl(n, o),
-                Tl(o, s),
-                Tl(s, u),
+                appendChild(n, r),
+                appendChild(n, o),
+                appendChild(o, s),
+                appendChild(s, u),
                 c = !0,
                 a || (l = Rl(s, "click", t[3]),
                 a = !0)
@@ -11215,16 +11221,16 @@
                 o = createTextNode(t[1]),
                 s = createTextNode("的手机号发送验证码。"),
                 u = createSpacer(),
-                jf(c.$$.fragment),
+                onCreate(c.$$.fragment),
                 setOrRemoveAttribute(i, "class", "tip svelte-15ra0dz")
             },
             m(t, a) {
                 insertBefore(t, n, a),
                 insertBefore(t, e, a),
                 insertBefore(t, i, a),
-                Tl(i, r),
-                Tl(i, o),
-                Tl(i, s),
+                appendChild(i, r),
+                appendChild(i, o),
+                appendChild(i, s),
                 insertBefore(t, u, a),
                 Bf(c, t, a),
                 l = !0
@@ -11336,7 +11342,7 @@
         af.push(( () => Df(n, "open", r))),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -11429,7 +11435,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, o) {
                 2 & o && r !== (r = t[8].icon + "") && ql(e, r),
@@ -11468,14 +11474,14 @@
             },
             m(t, f) {
                 insertBefore(t, n, f),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
                 h && h.m(r, null),
-                Tl(r, o),
-                Tl(r, s),
-                Tl(s, u),
-                Tl(n, c),
+                appendChild(r, o),
+                appendChild(r, s),
+                appendChild(s, u),
+                appendChild(n, c),
                 a || (l = Rl(n, "click", d),
                 a = !0)
             },
@@ -11591,7 +11597,7 @@
                 n = createElement("div"),
                 n.textContent = "黑夜模式设置",
                 e = createSpacer(),
-                jf(i.$$.fragment),
+                onCreate(i.$$.fragment),
                 setOrRemoveAttribute(n, "title", "")
             },
             m(t, r) {
@@ -11644,7 +11650,7 @@
         af.push(( () => Df(n, "open", r))),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -11734,10 +11740,10 @@
             },
             m(r, a) {
                 insertBefore(r, n, a),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(e, o),
-                Tl(e, s),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(e, o),
+                appendChild(e, s),
                 u || (c = Rl(n, "click", t[4]),
                 u = !0)
             },
@@ -11802,24 +11808,24 @@
             m(s, d) {
                 insertBefore(s, n, d),
                 A && A.m(n, null),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(i, r),
-                Tl(r, o),
-                Tl(r, u),
-                Tl(r, c),
-                Tl(n, a),
-                Tl(n, l),
-                Tl(l, f),
-                Tl(f, h),
-                Tl(f, y),
-                Tl(f, g),
-                Tl(n, b),
-                Tl(n, w),
-                Tl(w, x),
-                Tl(x, k),
-                Tl(x, E),
-                Tl(x, T),
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(i, r),
+                appendChild(r, o),
+                appendChild(r, u),
+                appendChild(r, c),
+                appendChild(n, a),
+                appendChild(n, l),
+                appendChild(l, f),
+                appendChild(f, h),
+                appendChild(f, y),
+                appendChild(f, g),
+                appendChild(n, b),
+                appendChild(n, w),
+                appendChild(w, x),
+                appendChild(x, k),
+                appendChild(x, E),
+                appendChild(x, T),
                 O || (C = [Rl(i, "click", t[5]), Rl(l, "click", t[6]), Rl(w, "click", t[7])],
                 O = !0)
             },
@@ -12018,11 +12024,11 @@
             },
             m(t, a) {
                 insertBefore(t, n, a),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(r, o),
-                Tl(n, s),
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(r, o),
+                appendChild(n, s),
                 u || (c = Rl(n, "click", l),
                 u = !0)
             },
@@ -12101,13 +12107,13 @@
             },
             m(t, a) {
                 insertBefore(t, n, a),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(r, o),
-                Tl(r, s),
-                Tl(r, u),
-                Tl(n, c)
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(r, o),
+                appendChild(r, s),
+                appendChild(r, u),
+                appendChild(n, c)
             },
             p(t, e) {
                 2 & e && l !== (l = t[10].artist + "") && ql(o, l),
@@ -12137,10 +12143,10 @@
             },
             m(t, r) {
                 insertBefore(t, n, r),
-                Tl(n, e);
+                appendChild(n, e);
                 for (let t = 0; t < o.length; t += 1)
                     o[t].m(e, null);
-                Tl(n, i),
+                appendChild(n, i),
                 s && s.m(n, null)
             },
             p(t, [i]) {
@@ -12241,12 +12247,12 @@
             },
             m(l, h) {
                 insertBefore(l, n, h),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(e, r),
-                Tl(e, o),
-                Tl(n, s),
-                Tl(n, u);
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(e, r),
+                appendChild(e, o),
+                appendChild(n, s),
+                appendChild(n, u);
                 for (let t = 0; t < f.length; t += 1)
                     f[t].m(u, null);
                 c || (a = Rl(o, "click", t[3]),
@@ -12288,7 +12294,7 @@
             },
             m(t, o) {
                 insertBefore(t, n, o),
-                Tl(n, e),
+                appendChild(n, e),
                 i || (r = Rl(n, "click", s),
                 i = !0)
             },
@@ -12322,9 +12328,9 @@
             },
             m(t, o) {
                 insertBefore(t, n, o),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r);
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r);
                 for (let t = 0; t < s.length; t += 1)
                     s[t].m(r, null)
             },
@@ -12362,7 +12368,7 @@
             },
             m(t, o) {
                 insertBefore(t, n, o),
-                Tl(n, e),
+                appendChild(n, e),
                 i || (r = Rl(n, "click", s),
                 i = !0)
             },
@@ -12449,7 +12455,7 @@
         {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 setOrRemoveAttribute(n, "class", "query-container svelte-k55a1y")
             },
             m(t, r) {
@@ -12482,7 +12488,7 @@
         n.$on("search", t[1]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -12588,7 +12594,7 @@
             },
             m(o, s) {
                 insertBefore(o, n, s),
-                Tl(n, e),
+                appendChild(n, e),
                 i || (r = Rl(n, "click", t[6]),
                 i = !0)
             },
@@ -12624,12 +12630,12 @@
             },
             m(a, l) {
                 insertBefore(a, formElement, l),
-                Tl(formElement, iconElement),
-                Tl(formElement, i),
-                Tl(formElement, r),
+                appendChild(formElement, iconElement),
+                appendChild(formElement, i),
+                appendChild(formElement, r),
                 t[11](r),
                 $l(r, t[0]),
-                Tl(formElement, o),
+                appendChild(formElement, o),
                 searchResultsFragment && searchResultsFragment.m(formElement, null),
                 s || (u = [Rl(r, "input", t[12]), Rl(r, "focus", t[8]), Rl(r, "blur", t[9]), Rl(r, "input", t[10]), Rl(formElement, "submit", t[5])],
                 s = !0)
@@ -12746,10 +12752,10 @@
         {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 r = createSpacer(),
                 o = createElement("div"),
-                jf(s.$$.fragment),
+                onCreate(s.$$.fragment),
                 setOrRemoveAttribute(o, "class", "panel svelte-y4hgxl"),
                 Ll(o, "show", t[1]),
                 Ll(o, "unclickable", t[2]),
@@ -12758,8 +12764,8 @@
             m(t, i) {
                 insertBefore(t, n, i),
                 Bf(e, n, null),
-                Tl(n, r),
-                Tl(n, o),
+                appendChild(n, r),
+                appendChild(n, o),
                 Bf(s, o, null),
                 u = !0
             },
@@ -12955,7 +12961,7 @@
                 i.textContent = "",
                 r = createSpacer(),
                 s = createElement("div"),
-                jf(u.$$.fragment),
+                onCreate(u.$$.fragment),
                 c = createSpacer(),
                 a = createElement("span"),
                 a.textContent = "随身的曲谱书",
@@ -12968,13 +12974,13 @@
             },
             m(t, o) {
                 insertBefore(t, n, o),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(e, r),
-                Tl(e, s),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(e, r),
+                appendChild(e, s),
                 Bf(u, s, null),
-                Tl(n, c),
-                Tl(n, a),
+                appendChild(n, c),
+                appendChild(n, a),
                 l = !0
             },
             p: defaultStart,
@@ -13048,7 +13054,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, n) {
                 4 & n && ql(e, t[2])
@@ -13111,16 +13117,16 @@
             },
             m(c, h) {
                 insertBefore(c, n, h),
-                Tl(n, e),
+                appendChild(n, e),
                 d && d.m(e, null),
                 t[16](e),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(r, o),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(r, o),
                 v && v.m(o, null),
-                Tl(o, s),
+                appendChild(o, s),
                 m && m.m(o, null),
-                Tl(o, u),
+                appendChild(o, u),
                 y && y.m(o, null),
                 t[17](r),
                 a = !0,
@@ -13352,10 +13358,10 @@
             },
             m(i, s) {
                 insertBefore(i, n, s),
-                Tl(n, e),
-                Tl(n, r),
+                appendChild(n, e),
+                appendChild(n, r),
                 l && l.m(n, null),
-                Tl(n, o),
+                appendChild(n, o),
                 f && f.m(n, null),
                 c || (a = [Rl(e, "error", t[7]), Rl(n, "click", t[6])],
                 c = !0)
@@ -13443,10 +13449,10 @@
             },
             m(c, a) {
                 insertBefore(c, n, a),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(r, o),
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(r, o),
                 s || (u = Rl(n, "click", t[9]),
                 s = !0)
             },
@@ -13495,7 +13501,7 @@
         }),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -13536,14 +13542,14 @@
                 e = createElement("div"),
                 e.textContent = `${t[6].displayName}`,
                 i = createSpacer(),
-                jf(r.$$.fragment),
+                onCreate(r.$$.fragment),
                 setOrRemoveAttribute(e, "class", "display-name svelte-tg1f35"),
                 setOrRemoveAttribute(n, "class", "user-info svelte-tg1f35")
             },
             m(t, s) {
                 insertBefore(t, n, s),
-                Tl(n, e),
-                Tl(n, i),
+                appendChild(n, e),
+                appendChild(n, i),
                 Bf(r, n, null),
                 o = !0
             },
@@ -13609,15 +13615,15 @@
             },
             m(v, p) {
                 insertBefore(v, n, p),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(r, o),
-                Tl(r, s),
-                Tl(r, u),
-                Tl(n, c),
-                Tl(n, a),
-                Tl(n, l),
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(r, o),
+                appendChild(r, s),
+                appendChild(r, u),
+                appendChild(n, c),
+                appendChild(n, a),
+                appendChild(n, l),
                 d && d.m(n, null),
                 f || (h = Rl(a, "click", t[10]),
                 f = !0)
@@ -13648,7 +13654,7 @@
         n.$on("change", t[12]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -13731,25 +13737,25 @@
             c() {
                 n = createElement("header"),
                 e = createElement("div"),
-                jf(header.$$.fragment),
+                onCreate(header.$$.fragment),
                 r = createSpacer(),
                 o = createElement("div"),
-                jf(footer.$$.fragment),
+                onCreate(footer.$$.fragment),
                 u = createSpacer(),
                 selectInstrumentMenuFragment && selectInstrumentMenuFragment.c(),
                 c = createSpacer(),
                 a = createElement("div"),
                 selectInstrumentMenuComponent && selectInstrumentMenuComponent.c(),
                 h = createSpacer(),
-                jf(d.$$.fragment),
+                onCreate(d.$$.fragment),
                 v = createSpacer(),
-                jf(modalComponent.$$.fragment),
+                onCreate(modalComponent.$$.fragment),
                 y = createSpacer(),
-                jf(g.$$.fragment),
+                onCreate(g.$$.fragment),
                 w = createSpacer(),
-                jf(x.$$.fragment),
+                onCreate(x.$$.fragment),
                 k = createSpacer(),
-                jf(S.$$.fragment),
+                onCreate(S.$$.fragment),
                 setOrRemoveAttribute(o, "class", "search-container svelte-tg1f35"),
                 setOrRemoveAttribute(a, "class", "user-container svelte-tg1f35"),
                 setOrRemoveAttribute(e, "class", "dt-top-navigation svelte-tg1f35"),
@@ -13757,17 +13763,17 @@
             },
             m(f, m) {
                 insertBefore(f, n, m),
-                Tl(n, e),
+                appendChild(n, e),
                 Bf(header, e, null),
-                Tl(e, r),
-                Tl(e, o),
+                appendChild(e, r),
+                appendChild(e, o),
                 Bf(footer, o, null),
-                Tl(e, u),
+                appendChild(e, u),
                 selectInstrumentMenuFragment && selectInstrumentMenuFragment.m(e, null),
-                Tl(e, c),
-                Tl(e, a),
+                appendChild(e, c),
+                appendChild(e, a),
                 ~componentIndex && componentInstances[componentIndex].m(a, null),
-                Tl(n, h),
+                appendChild(n, h),
                 Bf(d, n, null),
                 insertBefore(f, v, m),
                 Bf(modalComponent, f, m),
@@ -13918,7 +13924,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, n) {
                 1 & n && i !== (i = t[1] + "") && ql(e, i)
@@ -13994,7 +14000,7 @@
             c() {
                 n = createElement("div"),
                 r = createElement("div"),
-                jf(o.$$.fragment),
+                onCreate(o.$$.fragment),
                 s = createSpacer(),
                 u = createElement("div"),
                 c = createTextNode(t[0]),
@@ -14010,16 +14016,16 @@
             },
             m(t, e) {
                 insertBefore(t, n, e),
-                Tl(n, r),
+                appendChild(n, r),
                 Bf(o, r, null),
                 insertBefore(t, s, e),
                 insertBefore(t, u, e),
-                Tl(u, c),
-                Tl(u, a),
+                appendChild(u, c),
+                appendChild(u, a),
                 insertBefore(t, l, e),
                 insertBefore(t, f, e),
-                Tl(f, h),
-                Tl(f, d),
+                appendChild(f, h),
+                appendChild(f, d),
                 v = !0
             },
             p(t, n) {
@@ -14070,7 +14076,7 @@
         af.push(( () => Df(n, "open", r))),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -14278,21 +14284,21 @@
             },
             m(i, r) {
                 insertBefore(i, n, r),
-                Tl(n, e),
-                Tl(n, o),
-                Tl(n, s),
-                Tl(s, u),
-                Tl(n, a),
-                Tl(n, l),
-                Tl(l, f);
+                appendChild(n, e),
+                appendChild(n, o),
+                appendChild(n, s),
+                appendChild(s, u),
+                appendChild(n, a),
+                appendChild(n, l),
+                appendChild(l, f);
                 for (let t = 0; t < 6; t += 1)
                     S[t].m(f, null);
-                Tl(l, h),
+                appendChild(l, h),
                 E && E.m(l, null),
                 t[15](l),
-                Tl(n, d),
-                Tl(n, v),
-                Tl(v, p),
+                appendChild(n, d),
+                appendChild(n, v),
+                appendChild(v, p),
                 m || (y = [Rl(e, "durationchange", t[9]), Rl(e, "timeupdate", x), Rl(e, "play", t[11]), Rl(e, "pause", t[11]), Rl(e, "progress", t[12]), Rl(e, "loadedmetadata", t[13]), Rl(s, "click", t[14]), Rl(l, "click", t[8])],
                 m = !0)
             },
@@ -18437,7 +18443,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, n) {
                 4 & n && ql(e, t[2])
@@ -18468,8 +18474,8 @@
             },
             m(u, c) {
                 insertBefore(u, n, c),
-                Tl(n, e),
-                Tl(n, i),
+                appendChild(n, e),
+                appendChild(n, i),
                 a && a.m(n, null),
                 r = !0,
                 o || (s = Rl(e, "change", t[11]),
@@ -18559,7 +18565,7 @@
             },
             m(t, o) {
                 insertBefore(t, n, o),
-                Tl(n, e),
+                appendChild(n, e),
                 insertBefore(t, i, o),
                 insertBefore(t, r, o)
             },
@@ -18592,7 +18598,7 @@
         n.$on("click", t[3]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -18659,7 +18665,7 @@
                 insertBefore(t, n, o),
                 insertBefore(t, e, o),
                 insertBefore(t, i, o),
-                Tl(i, r)
+                appendChild(i, r)
             },
             p(t, n) {
                 4 & n && ql(r, t[2])
@@ -18694,13 +18700,13 @@
             },
             m(f, h) {
                 insertBefore(f, n, h),
-                Tl(n, e),
+                appendChild(n, e),
                 $l(e, t[0]),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(r, o),
-                Tl(o, s),
-                Tl(r, u),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(r, o),
+                appendChild(o, s),
+                appendChild(r, u),
                 l && l.m(r, null),
                 c || (a = Rl(e, "input", t[9]),
                 c = !0)
@@ -18782,7 +18788,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, n) {
                 4 & n && Ll(e, "error", t[2])
@@ -18915,15 +18921,15 @@
             c() {
                 n = createElement("main"),
                 e = createElement("section"),
-                jf(i.$$.fragment),
+                onCreate(i.$$.fragment),
                 s = createSpacer(),
                 u = createElement("div"),
                 c = createElement("div"),
-                jf(a.$$.fragment),
+                onCreate(a.$$.fragment),
                 l = createSpacer(),
                 f = createElement("div"),
                 h = createElement("div"),
-                jf(d.$$.fragment),
+                onCreate(d.$$.fragment),
                 m = createSpacer(),
                 y = createElement("div"),
                 g = createElement("div"),
@@ -18937,7 +18943,7 @@
                 E = createSpacer(),
                 T = createElement("div"),
                 O = createElement("div"),
-                jf(C.$$.fragment),
+                onCreate(C.$$.fragment),
                 A = createSpacer(),
                 B && B.c(),
                 setOrRemoveAttribute(c, "class", "content svelte-1smze6b"),
@@ -18958,29 +18964,29 @@
             },
             m(t, r) {
                 insertBefore(t, n, r),
-                Tl(n, e),
+                appendChild(n, e),
                 Bf(i, e, null),
-                Tl(e, s),
-                Tl(e, u),
-                Tl(u, c),
+                appendChild(e, s),
+                appendChild(e, u),
+                appendChild(u, c),
                 Bf(a, c, null),
-                Tl(e, l),
-                Tl(e, f),
-                Tl(f, h),
+                appendChild(e, l),
+                appendChild(e, f),
+                appendChild(f, h),
                 Bf(d, h, null),
-                Tl(e, m),
-                Tl(e, y),
-                Tl(y, g),
-                Tl(y, b),
-                Tl(y, w),
-                Tl(w, x),
-                Tl(n, k),
-                Tl(n, S),
-                Tl(n, E),
-                Tl(n, T),
-                Tl(T, O),
+                appendChild(e, m),
+                appendChild(e, y),
+                appendChild(y, g),
+                appendChild(y, b),
+                appendChild(y, w),
+                appendChild(w, x),
+                appendChild(n, k),
+                appendChild(n, S),
+                appendChild(n, E),
+                appendChild(n, T),
+                appendChild(T, O),
                 Bf(C, O, null),
-                Tl(n, A),
+                appendChild(n, A),
                 B && B.m(n, null),
                 X = !0
             },
@@ -19145,7 +19151,7 @@
                 e.textContent = "示范音频",
                 i = createSpacer(),
                 r = createElement("div"),
-                jf(o.$$.fragment),
+                onCreate(o.$$.fragment),
                 s = createSpacer(),
                 u = createElement("div"),
                 c = createElement("span"),
@@ -19161,16 +19167,16 @@
             },
             m(t, d) {
                 insertBefore(t, n, d),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
                 Bf(o, r, null),
-                Tl(n, s),
-                Tl(n, u),
-                Tl(u, c),
-                Tl(c, a),
-                Tl(c, l),
-                Tl(n, f),
+                appendChild(n, s),
+                appendChild(n, u),
+                appendChild(u, c),
+                appendChild(c, a),
+                appendChild(c, l),
+                appendChild(n, f),
                 v && v.m(n, null),
                 h = !0
             },
@@ -19287,7 +19293,7 @@
         }),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -19337,7 +19343,7 @@
             c() {
                 o && o.c(),
                 n = createSpacer(),
-                jf(e.$$.fragment)
+                onCreate(e.$$.fragment)
             },
             m(t, i) {
                 o && o.m(t, i),
@@ -19499,7 +19505,7 @@
         }
         ]
     }
-    class Ig extends Component {
+    class ButtonComponent extends Component {
         constructor(t) {
             super(),
             initializeComponent(this, t, Xg, Ag, areValuesDifferent, {
@@ -19561,7 +19567,7 @@
     }
     function Mg(t) {
         let n, e;
-        return n = new Ig({
+        return n = new ButtonComponent({
             props: {
                 block: !0,
                 size: "big",
@@ -19577,7 +19583,7 @@
         n.$on("click", t[8]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -19606,7 +19612,7 @@
     }
     function Rg(t) {
         let n, e;
-        return n = new Ig({
+        return n = new ButtonComponent({
             props: {
                 block: !0,
                 size: "big",
@@ -19622,7 +19628,7 @@
         n.$on("click", t[9]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -19699,7 +19705,7 @@
             }
         }
     }
-    function Bg(t) {
+    function createPrintSongButton(t) {
         let n, e;
         return {
             c() {
@@ -19718,43 +19724,43 @@
             }
         }
     }
-    function Pg(t) {
-        let n, e, i, r, o, s, u;
-        i = new Ig({
+    function renderButtonGroup(ctx) {
+        let n, e, editScoreButtonComponent, r, o, dynamicComponent, u;
+        editScoreButtonComponent = new ButtonComponent({
             props: {
-                block: !0,
+                block: true,
                 size: "big",
                 theme: "white",
                 $$slots: {
-                    default: [qg]
+                    default: [renderEditScoreButton]
                 },
                 $$scope: {
-                    ctx: t
+                    ctx: ctx
                 }
             }
         }),
-        i.$on("click", t[7]);
+        editScoreButtonComponent.$on("click", ctx[7]);
         const c = [Fg, $g]
           , a = [];
         function l(t, n) {
             return t[0].sheetCode || t[0].draftId ? 0 : t[3] ? 1 : -1
         }
-        return ~(o = l(t)) && (s = a[o] = c[o](t)),
+        return ~(o = l(ctx)) && (dynamicComponent = a[o] = c[o](ctx)),
         {
             c() {
                 n = createElement("div"),
                 e = createElement("div"),
-                jf(i.$$.fragment),
+                onCreate(editScoreButtonComponent.$$.fragment),
                 r = createSpacer(),
-                s && s.c(),
+                dynamicComponent && dynamicComponent.c(),
                 setOrRemoveAttribute(e, "class", "button-container svelte-8xk2fn"),
                 setOrRemoveAttribute(n, "class", "button-group svelte-8xk2fn")
             },
             m(t, s) {
                 insertBefore(t, n, s),
-                Tl(n, e),
-                Bf(i, e, null),
-                Tl(n, r),
+                appendChild(n, e),
+                Bf(editScoreButtonComponent, e, null),
+                appendChild(n, r),
                 ~o && a[o].m(n, null),
                 u = !0
             },
@@ -19764,39 +19770,39 @@
                     dirty: e,
                     ctx: t
                 }),
-                i.$set(r);
+                editScoreButtonComponent.$set(r);
                 let u = o;
                 o = l(t),
-                o === u ? ~o && a[o].p(t, e) : (s && (Of(),
+                o === u ? ~o && a[o].p(t, e) : (dynamicComponent && (Of(),
                 Xf(a[u], 1, 1, ( () => {
                     a[u] = null
                 }
                 )),
                 Cf()),
-                ~o ? (s = a[o],
-                s ? s.p(t, e) : (s = a[o] = c[o](t),
-                s.c()),
-                Af(s, 1),
-                s.m(n, null)) : s = null)
+                ~o ? (dynamicComponent = a[o],
+                dynamicComponent ? dynamicComponent.p(t, e) : (dynamicComponent = a[o] = c[o](t),
+                dynamicComponent.c()),
+                Af(dynamicComponent, 1),
+                dynamicComponent.m(n, null)) : dynamicComponent = null)
             },
             i(t) {
-                u || (Af(i.$$.fragment, t),
-                Af(s),
+                u || (Af(editScoreButtonComponent.$$.fragment, t),
+                Af(dynamicComponent),
                 u = !0)
             },
             o(t) {
-                Xf(i.$$.fragment, t),
-                Xf(s),
+                Xf(editScoreButtonComponent.$$.fragment, t),
+                Xf(dynamicComponent),
                 u = !1
             },
             d(t) {
                 t && Cl(n),
-                Pf(i),
+                Pf(editScoreButtonComponent),
                 ~o && a[o].d()
             }
         }
     }
-    function qg(t) {
+    function renderEditScoreButton(t) {
         let n, e;
         return {
             c() {
@@ -19817,7 +19823,7 @@
     }
     function $g(t) {
         let n, e, i;
-        return e = new Ig({
+        return e = new ButtonComponent({
             props: {
                 block: !0,
                 size: "big",
@@ -19834,7 +19840,7 @@
         {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 setOrRemoveAttribute(n, "class", "button-container svelte-8xk2fn")
             },
             m(t, r) {
@@ -19866,7 +19872,7 @@
     }
     function Fg(t) {
         let n, e, i;
-        return e = new Ig({
+        return e = new ButtonComponent({
             props: {
                 block: !0,
                 size: "big",
@@ -19883,7 +19889,7 @@
         {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 setOrRemoveAttribute(n, "class", "button-container svelte-8xk2fn")
             },
             m(t, r) {
@@ -19951,15 +19957,16 @@
             }
         }
     }
-    function Lg(t) {
+    function renderEditScoreSection(t) {
+        console.log("renderEditScoreSection", t);
         let n, e, i, r, o, s, u = !t[3] && !t[0].draftId && _g(t);
-        r = new Ig({
+        r = new ButtonComponent({
             props: {
                 block: !0,
                 size: "big",
                 theme: "white",
                 $$slots: {
-                    default: [Bg]
+                    default: [createPrintSongButton]
                 },
                 $$scope: {
                     ctx: t
@@ -19967,14 +19974,14 @@
             }
         }),
         r.$on("click", t[11]);
-        let c = (t[3] || t[0].format === nt.XHE) && Pg(t);
+        let c = (t[3] || t[0].format === nt.XHE) && renderButtonGroup(t);
         return {
             c() {
                 n = createElement("section"),
                 u && u.c(),
                 e = createSpacer(),
                 i = createElement("div"),
-                jf(r.$$.fragment),
+                onCreate(r.$$.fragment),
                 o = createSpacer(),
                 c && c.c(),
                 setOrRemoveAttribute(i, "class", "button-container svelte-8xk2fn"),
@@ -19983,10 +19990,10 @@
             m(t, a) {
                 insertBefore(t, n, a),
                 u && u.m(n, null),
-                Tl(n, e),
-                Tl(n, i),
+                appendChild(n, e),
+                appendChild(n, i),
                 Bf(r, i, null),
-                Tl(n, o),
+                appendChild(n, o),
                 c && c.m(n, null),
                 s = !0
             },
@@ -20008,7 +20015,7 @@
                 }),
                 r.$set(o),
                 t[3] || t[0].format === nt.XHE ? c ? (c.p(t, i),
-                1 & i && Af(c, 1)) : (c = Pg(t),
+                1 & i && Af(c, 1)) : (c = renderButtonGroup(t),
                 c.c(),
                 Af(c, 1),
                 c.m(n, null)) : c && (Of(),
@@ -20080,7 +20087,7 @@
     class Ug extends Component {
         constructor(t) {
             super(),
-            initializeComponent(this, t, Gg, Lg, areValuesDifferent, {
+            initializeComponent(this, t, Gg, renderEditScoreSection, areValuesDifferent, {
                 sheet: 0,
                 user: 10
             })
@@ -20123,14 +20130,14 @@
             },
             m(f, h) {
                 insertBefore(f, n, h),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(e, r),
-                Tl(e, o),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(e, r),
+                appendChild(e, o),
                 t[14](e),
-                Tl(n, s),
-                Tl(n, u),
-                Tl(u, c),
+                appendChild(n, s),
+                appendChild(n, u),
+                appendChild(u, c),
                 a || (l = [Rl(e, "click", t[8]), Rl(u, "mousedown", t[5]), Rl(u, "mouseup", t[6]), Rl(u, "mouseleave", t[6]), Rl(u, "mousemove", t[7]), Rl(u, "touchstart", t[5]), Rl(u, "touchend", t[6]), Rl(u, "touchmove", t[7])],
                 a = !0)
             },
@@ -20250,7 +20257,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, n) {
                 4 & n && ql(e, t[2])
@@ -20270,7 +20277,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, n) {
                 2 & n && ql(e, t[1])
@@ -20290,7 +20297,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, n) {
                 8 & n && ql(e, t[3])
@@ -20322,7 +20329,7 @@
             m(o, s) {
                 insertBefore(o, n, s),
                 u.m(n, null),
-                Tl(n, e),
+                appendChild(n, e),
                 c && c.m(n, null),
                 i || (r = Rl(n, "click", t[6]),
                 i = !0)
@@ -20613,7 +20620,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, e) {
                 4 & e && i !== (i = Td({
@@ -20640,8 +20647,8 @@
             },
             m(t, r) {
                 insertBefore(t, n, r),
-                Tl(n, e),
-                Tl(n, i),
+                appendChild(n, e),
+                appendChild(n, i),
                 o || (s = Rl(n, "click", c),
                 o = !0)
             },
@@ -20691,19 +20698,19 @@
             },
             m(t, c) {
                 insertBefore(t, n, c),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(r, o),
-                Tl(r, s),
-                Tl(r, u),
-                Tl(n, a),
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(r, o),
+                appendChild(r, s),
+                appendChild(r, u),
+                appendChild(n, a),
                 d && d.m(n, null),
-                Tl(n, l),
-                Tl(n, f);
+                appendChild(n, l),
+                appendChild(n, f);
                 for (let t = 0; t < p.length; t += 1)
                     p[t].m(f, null);
-                Tl(n, h)
+                appendChild(n, h)
             },
             p(t, e) {
                 if (2 & e && c !== (c = Td({
@@ -20872,7 +20879,7 @@
         n.$on("change", t[5]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -21094,7 +21101,7 @@
                 i = createTextNode(t[2]),
                 r = createSpacer(),
                 o = createElement("div"),
-                jf(s.$$.fragment),
+                onCreate(s.$$.fragment),
                 c = createSpacer(),
                 a = createElement("div"),
                 l = createElement("span"),
@@ -21107,14 +21114,14 @@
             },
             m(u, f) {
                 insertBefore(u, n, f),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(n, r),
-                Tl(n, o),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(n, r),
+                appendChild(n, o),
                 Bf(s, o, null),
-                Tl(n, c),
-                Tl(n, a),
-                Tl(a, l),
+                appendChild(n, c),
+                appendChild(n, a),
+                appendChild(a, l),
                 b.m(l, null),
                 h = !0,
                 d || (v = Rl(l, "click", t[5]),
@@ -21221,7 +21228,7 @@
         af.push(( () => Df(n, "totalTime", l))),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -21304,19 +21311,19 @@
         {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 i = createSpacer(),
                 r = createElement("div"),
-                jf(o.$$.fragment),
+                onCreate(o.$$.fragment),
                 s = createSpacer(),
                 u = createElement("div"),
-                jf(c.$$.fragment),
+                onCreate(c.$$.fragment),
                 a = createSpacer(),
                 l = createElement("div"),
-                jf(f.$$.fragment),
+                onCreate(f.$$.fragment),
                 h = createSpacer(),
                 d = createElement("div"),
-                jf(v.$$.fragment),
+                onCreate(v.$$.fragment),
                 setOrRemoveAttribute(n, "class", "button-item svelte-uqhx9v"),
                 setOrRemoveAttribute(r, "class", "button-item svelte-uqhx9v"),
                 setOrRemoveAttribute(u, "class", "button-item svelte-uqhx9v"),
@@ -21397,10 +21404,10 @@
             },
             m(t, s) {
                 insertBefore(t, n, s),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(i, r),
-                Tl(n, o)
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(i, r),
+                appendChild(n, o)
             },
             p(t, n) {
                 524288 & n[0] && ql(r, t[19])
@@ -21427,7 +21434,7 @@
         {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 setOrRemoveAttribute(n, "class", "jian-button")
             },
             m(t, r) {
@@ -21553,7 +21560,7 @@
                 r = createElement("sub"),
                 r.textContent = "BPM",
                 o = createSpacer(),
-                jf(s.$$.fragment),
+                onCreate(s.$$.fragment),
                 c = createSpacer(),
                 a = createElement("div"),
                 l = createElement("span"),
@@ -21574,19 +21581,19 @@
             },
             m(u, x) {
                 insertBefore(u, n, x),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
                 insertBefore(u, o, x),
                 Bf(s, u, x),
                 insertBefore(u, c, x),
                 insertBefore(u, a, x),
-                Tl(a, l),
-                Tl(l, f),
-                Tl(l, h),
-                Tl(l, d),
-                Tl(a, v),
-                Tl(a, p),
+                appendChild(a, l),
+                appendChild(l, f),
+                appendChild(l, h),
+                appendChild(l, d),
+                appendChild(a, v),
+                appendChild(a, p),
                 insertBefore(u, m, x),
                 insertBefore(u, y, x),
                 g = !0,
@@ -21644,7 +21651,7 @@
         af.push(( () => Df(n, "volume", s))),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -21709,7 +21716,7 @@
                 for (let t = 0; t < h.length; t += 1)
                     h[t].c();
                 r = createSpacer(),
-                jf(o.$$.fragment),
+                onCreate(o.$$.fragment),
                 c = createSpacer(),
                 a = createElement("br"),
                 setOrRemoveAttribute(n, "title", ""),
@@ -21721,7 +21728,7 @@
                 insertBefore(t, i, s);
                 for (let t = 0; t < h.length; t += 1)
                     h[t].m(i, null);
-                Tl(i, r),
+                appendChild(i, r),
                 Bf(o, i, null),
                 insertBefore(t, c, s),
                 insertBefore(t, a, s),
@@ -21843,7 +21850,7 @@
                 n = createSpacer(),
                 e = createElement("div"),
                 i = createElement("div"),
-                jf(r.$$.fragment),
+                onCreate(r.$$.fragment),
                 o = createSpacer(),
                 s = createElement("div"),
                 u = createElement("div"),
@@ -21864,13 +21871,13 @@
                 b = createSpacer(),
                 j && j.c(),
                 w = createSpacer(),
-                jf(x.$$.fragment),
+                onCreate(x.$$.fragment),
                 k = createSpacer(),
                 B && B.c(),
                 S = createSpacer(),
-                jf(E.$$.fragment),
+                onCreate(E.$$.fragment),
                 O = createSpacer(),
-                jf(C.$$.fragment),
+                onCreate(C.$$.fragment),
                 setOrRemoveAttribute(i, "class", "slider svelte-uqhx9v"),
                 setOrRemoveAttribute(u, "class", "buttons svelte-uqhx9v"),
                 setOrRemoveAttribute(f, "class", "time svelte-uqhx9v"),
@@ -21882,29 +21889,29 @@
                 M && M.m(t, T),
                 insertBefore(t, n, T),
                 insertBefore(t, e, T),
-                Tl(e, i),
+                appendChild(e, i),
                 Bf(r, i, null),
-                Tl(e, o),
-                Tl(e, s),
-                Tl(s, u),
+                appendChild(e, o),
+                appendChild(e, s),
+                appendChild(s, u),
                 R && R.m(u, null),
-                Tl(s, c),
-                Tl(s, a),
+                appendChild(s, c),
+                appendChild(s, a),
                 D && D.m(a, null),
-                Tl(a, l),
-                Tl(a, f),
-                Tl(f, h),
-                Tl(h, d),
-                Tl(f, v),
-                Tl(f, p),
-                Tl(f, m),
-                Tl(f, y),
-                Tl(y, g),
-                Tl(a, b),
+                appendChild(a, l),
+                appendChild(a, f),
+                appendChild(f, h),
+                appendChild(h, d),
+                appendChild(f, v),
+                appendChild(f, p),
+                appendChild(f, m),
+                appendChild(f, y),
+                appendChild(y, g),
+                appendChild(a, b),
                 j && j.m(a, null),
-                Tl(a, w),
+                appendChild(a, w),
                 Bf(x, a, null),
-                Tl(e, k),
+                appendChild(e, k),
                 B && B.m(e, null),
                 insertBefore(t, S, T),
                 Bf(E, t, T),
@@ -22219,7 +22226,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, n) {
                 2 & n && i !== (i = t[7].icon + "") && ql(e, i)
@@ -22239,7 +22246,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, n) {
                 2 & n && i !== (i = t[7].title + "") && ql(e, i)
@@ -22268,9 +22275,9 @@
             m(t, a) {
                 insertBefore(t, n, a),
                 s && s.m(n, null),
-                Tl(n, e),
+                appendChild(n, e),
                 u && u.m(n, null),
-                Tl(n, i),
+                appendChild(n, i),
                 r || (o = Rl(n, "click", c),
                 r = !0)
             },
@@ -22582,7 +22589,7 @@
         n.$on("change", t[5]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -22729,7 +22736,7 @@
         }),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -22787,7 +22794,7 @@
                 r = createElement("div"),
                 r.textContent = "滚屏",
                 o = createSpacer(),
-                jf(s.$$.fragment),
+                onCreate(s.$$.fragment),
                 c = createSpacer(),
                 a = createElement("div"),
                 l = createElement("div"),
@@ -22801,7 +22808,7 @@
                 m.innerHTML = "<span>重置</span>",
                 y = createSpacer(),
                 g = createElement("div"),
-                jf(b.$$.fragment),
+                onCreate(b.$$.fragment),
                 setOrRemoveAttribute(r, "class", "title svelte-d7ea7e"),
                 setOrRemoveAttribute(i, "class", "title-line svelte-d7ea7e"),
                 setOrRemoveAttribute(e, "class", "row-title svelte-d7ea7e"),
@@ -22814,22 +22821,22 @@
             },
             m(u, w) {
                 insertBefore(u, n, w),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(i, r),
-                Tl(i, o),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(i, r),
+                appendChild(i, o),
                 Bf(s, i, null),
-                Tl(n, c),
-                Tl(n, a),
-                Tl(a, l),
-                Tl(l, f),
-                Tl(l, h),
-                Tl(l, d),
-                Tl(d, v),
-                Tl(a, p),
-                Tl(a, m),
-                Tl(n, y),
-                Tl(n, g),
+                appendChild(n, c),
+                appendChild(n, a),
+                appendChild(a, l),
+                appendChild(l, f),
+                appendChild(l, h),
+                appendChild(l, d),
+                appendChild(d, v),
+                appendChild(a, p),
+                appendChild(a, m),
+                appendChild(n, y),
+                appendChild(n, g),
                 Bf(b, g, null),
                 x = !0,
                 k || (S = Rl(m, "click", t[21]),
@@ -22878,7 +22885,7 @@
         }),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -22949,7 +22956,7 @@
                 r = createElement("div"),
                 r.textContent = "节奏音",
                 o = createSpacer(),
-                jf(s.$$.fragment),
+                onCreate(s.$$.fragment),
                 c = createSpacer(),
                 a = createElement("div"),
                 l = createElement("div"),
@@ -22966,13 +22973,13 @@
                 g.innerHTML = "<span>重置</span>",
                 b = createSpacer(),
                 w = createElement("div"),
-                jf(x.$$.fragment),
+                onCreate(x.$$.fragment),
                 S = createSpacer(),
                 E = createElement("div"),
                 T = createElement("div"),
                 T.textContent = "节奏",
                 O = createSpacer(),
-                jf(C.$$.fragment),
+                onCreate(C.$$.fragment),
                 setOrRemoveAttribute(r, "class", "title svelte-d7ea7e"),
                 setOrRemoveAttribute(i, "class", "title-line svelte-d7ea7e"),
                 setOrRemoveAttribute(e, "class", "row-title svelte-d7ea7e"),
@@ -22988,29 +22995,29 @@
             },
             m(u, k) {
                 insertBefore(u, n, k),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(i, r),
-                Tl(i, o),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(i, r),
+                appendChild(i, o),
                 Bf(s, i, null),
-                Tl(n, c),
-                Tl(n, a),
-                Tl(a, l),
-                Tl(l, f),
-                Tl(l, h),
-                Tl(l, d),
-                Tl(d, v),
-                Tl(d, p),
-                Tl(d, m),
-                Tl(a, y),
-                Tl(a, g),
-                Tl(n, b),
-                Tl(n, w),
+                appendChild(n, c),
+                appendChild(n, a),
+                appendChild(a, l),
+                appendChild(l, f),
+                appendChild(l, h),
+                appendChild(l, d),
+                appendChild(d, v),
+                appendChild(d, p),
+                appendChild(d, m),
+                appendChild(a, y),
+                appendChild(a, g),
+                appendChild(n, b),
+                appendChild(n, w),
                 Bf(x, w, null),
-                Tl(n, S),
-                Tl(n, E),
-                Tl(E, T),
-                Tl(E, O),
+                appendChild(n, S),
+                appendChild(n, E),
+                appendChild(E, T),
+                appendChild(E, O),
                 Bf(C, E, null),
                 X = !0,
                 I || (_ = Rl(g, "click", t[24]),
@@ -23072,10 +23079,10 @@
             },
             m(t, s) {
                 insertBefore(t, n, s),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(i, r),
-                Tl(n, o)
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(i, r),
+                appendChild(n, o)
             },
             p(t, n) {
                 1024 & n[0] && ql(r, t[10])
@@ -23137,23 +23144,23 @@
         {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 i = createSpacer(),
                 r = createElement("div"),
                 o = createElement("div"),
                 s = createElement("div"),
-                jf(u.$$.fragment),
+                onCreate(u.$$.fragment),
                 c = createSpacer(),
                 a = createElement("div"),
-                jf(l.$$.fragment),
+                onCreate(l.$$.fragment),
                 f = createSpacer(),
                 h = createElement("div"),
-                jf(d.$$.fragment),
+                onCreate(d.$$.fragment),
                 v = createSpacer(),
                 p = createElement("div"),
                 b && b.c(),
                 m = createSpacer(),
-                jf(y.$$.fragment),
+                onCreate(y.$$.fragment),
                 setOrRemoveAttribute(n, "class", "progress-bar svelte-d7ea7e"),
                 setOrRemoveAttribute(s, "class", "button-item svelte-d7ea7e"),
                 setOrRemoveAttribute(a, "class", "button-item svelte-d7ea7e"),
@@ -23167,19 +23174,19 @@
                 Bf(e, n, null),
                 insertBefore(t, i, w),
                 insertBefore(t, r, w),
-                Tl(r, o),
-                Tl(o, s),
+                appendChild(r, o),
+                appendChild(o, s),
                 Bf(u, s, null),
-                Tl(o, c),
-                Tl(o, a),
+                appendChild(o, c),
+                appendChild(o, a),
                 Bf(l, a, null),
-                Tl(o, f),
-                Tl(o, h),
+                appendChild(o, f),
+                appendChild(o, h),
                 Bf(d, h, null),
-                Tl(r, v),
-                Tl(r, p),
+                appendChild(r, v),
+                appendChild(r, p),
                 b && b.m(p, null),
-                Tl(p, m),
+                appendChild(p, m),
                 Bf(y, p, null),
                 g = !0
             },
@@ -23385,11 +23392,11 @@
             },
             m(r, c) {
                 insertBefore(r, n, c),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(n, o),
-                Tl(n, s),
-                Tl(s, u),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(n, o),
+                appendChild(n, s),
+                appendChild(s, u),
                 l || (f = [Rl(e, "click", t[4]), Rl(s, "click", t[5])],
                 l = !0)
             },
@@ -23453,7 +23460,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, n) {
                 4 & n && ql(e, t[2])
@@ -23474,7 +23481,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, o) {
                 2 & o && r !== (r = t[7].title + "") && ql(e, r),
@@ -23507,8 +23514,8 @@
             m(u, a) {
                 insertBefore(u, n, a),
                 s && s.m(n, null),
-                Tl(n, e),
-                Tl(n, i);
+                appendChild(n, e),
+                appendChild(n, i);
                 for (let t = 0; t < c.length; t += 1)
                     c[t].m(i, null);
                 Nl(i, t[0]),
@@ -23655,7 +23662,7 @@
                 i = createTextNode(y),
                 r = createSpacer(),
                 o = createElement("div"),
-                jf(s.$$.fragment),
+                onCreate(s.$$.fragment),
                 c = createSpacer(),
                 w && w.c(),
                 a = createSpacer(),
@@ -23664,7 +23671,7 @@
                 f.textContent = "变调夹",
                 h = createSpacer(),
                 d = createElement("div"),
-                jf(v.$$.fragment),
+                onCreate(v.$$.fragment),
                 setOrRemoveAttribute(e, "class", "label svelte-1oxe6vs"),
                 setOrRemoveAttribute(o, "class", "content svelte-1oxe6vs"),
                 setOrRemoveAttribute(n, "class", "row svelte-1oxe6vs"),
@@ -23674,18 +23681,18 @@
             },
             m(t, u) {
                 insertBefore(t, n, u),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(n, r),
-                Tl(n, o),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(n, r),
+                appendChild(n, o),
                 Bf(s, o, null),
                 insertBefore(t, c, u),
                 w && w.m(t, u),
                 insertBefore(t, a, u),
                 insertBefore(t, l, u),
-                Tl(l, f),
-                Tl(l, h),
-                Tl(l, d),
+                appendChild(l, f),
+                appendChild(l, h),
+                appendChild(l, d),
                 Bf(v, d, null),
                 m = !0
             },
@@ -23768,7 +23775,7 @@
                 i = createTextNode(b),
                 r = createSpacer(),
                 o = createElement("div"),
-                jf(s.$$.fragment),
+                onCreate(s.$$.fragment),
                 c = createSpacer(),
                 a = createElement("div"),
                 l = createElement("div"),
@@ -23778,7 +23785,7 @@
                 k && k.c(),
                 v = createSpacer(),
                 p = createElement("div"),
-                jf(m.$$.fragment),
+                onCreate(m.$$.fragment),
                 setOrRemoveAttribute(e, "class", "label svelte-1oxe6vs"),
                 setOrRemoveAttribute(o, "class", "content svelte-1oxe6vs"),
                 setOrRemoveAttribute(n, "class", "row svelte-1oxe6vs"),
@@ -23788,20 +23795,20 @@
             },
             m(t, u) {
                 insertBefore(t, n, u),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(n, r),
-                Tl(n, o),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(n, r),
+                appendChild(n, o),
                 Bf(s, o, null),
                 insertBefore(t, c, u),
                 insertBefore(t, a, u),
-                Tl(a, l),
-                Tl(l, f),
-                Tl(l, h),
-                Tl(l, d),
+                appendChild(a, l),
+                appendChild(l, f),
+                appendChild(l, h),
+                appendChild(l, d),
                 k && k.m(l, null),
-                Tl(a, v),
-                Tl(a, p),
+                appendChild(a, v),
+                appendChild(a, p),
                 Bf(m, p, null),
                 g = !0
             },
@@ -23864,17 +23871,17 @@
                 i = createTextNode(a),
                 r = createSpacer(),
                 o = createElement("div"),
-                jf(s.$$.fragment),
+                onCreate(s.$$.fragment),
                 setOrRemoveAttribute(e, "class", "label svelte-1oxe6vs"),
                 setOrRemoveAttribute(o, "class", "content svelte-1oxe6vs"),
                 setOrRemoveAttribute(n, "class", "row svelte-1oxe6vs")
             },
             m(t, u) {
                 insertBefore(t, n, u),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(n, r),
-                Tl(n, o),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(n, r),
+                appendChild(n, o),
                 Bf(s, o, null),
                 c = !0
             },
@@ -23939,16 +23946,16 @@
                 e.textContent = "黑键高亮显示",
                 i = createSpacer(),
                 r = createElement("div"),
-                jf(o.$$.fragment),
+                onCreate(o.$$.fragment),
                 setOrRemoveAttribute(e, "class", "label svelte-1oxe6vs"),
                 setOrRemoveAttribute(r, "class", "content svelte-1oxe6vs"),
                 setOrRemoveAttribute(n, "class", "row svelte-1oxe6vs")
             },
             m(t, s) {
                 insertBefore(t, n, s),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
                 Bf(o, r, null),
                 u = !0
             },
@@ -24015,7 +24022,7 @@
                 a = createTextNode(S),
                 l = createSpacer(),
                 f = createElement("div"),
-                jf(h.$$.fragment),
+                onCreate(h.$$.fragment),
                 v = createSpacer(),
                 X && X.c(),
                 p = createSpacer(),
@@ -24024,7 +24031,7 @@
                 y.textContent = "省略部分小节号",
                 g = createSpacer(),
                 b = createElement("div"),
-                jf(w.$$.fragment),
+                onCreate(w.$$.fragment),
                 setOrRemoveAttribute(u, "class", "label svelte-1oxe6vs"),
                 setOrRemoveAttribute(f, "class", "content svelte-1oxe6vs"),
                 setOrRemoveAttribute(s, "class", "row svelte-1oxe6vs"),
@@ -24037,21 +24044,21 @@
             m(t, e) {
                 insertBefore(t, n, e),
                 ~i && T[i].m(n, null),
-                Tl(n, o),
-                Tl(n, s),
-                Tl(s, u),
-                Tl(u, c),
-                Tl(u, a),
-                Tl(s, l),
-                Tl(s, f),
+                appendChild(n, o),
+                appendChild(n, s),
+                appendChild(s, u),
+                appendChild(u, c),
+                appendChild(u, a),
+                appendChild(s, l),
+                appendChild(s, f),
                 Bf(h, f, null),
-                Tl(n, v),
+                appendChild(n, v),
                 X && X.m(n, null),
-                Tl(n, p),
-                Tl(n, m),
-                Tl(m, y),
-                Tl(m, g),
-                Tl(m, b),
+                appendChild(n, p),
+                appendChild(n, m),
+                appendChild(m, y),
+                appendChild(m, g),
+                appendChild(m, b),
                 Bf(w, b, null),
                 k = !0
             },
@@ -24231,7 +24238,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, e) {
                 1 & e && i !== (i = t[13].docUrl) && setOrRemoveAttribute(n, "href", i)
@@ -24268,13 +24275,13 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e),
-                Tl(n, r),
-                Tl(n, o),
-                Tl(o, s),
-                Tl(n, u),
+                appendChild(n, e),
+                appendChild(n, r),
+                appendChild(n, o),
+                appendChild(o, s),
+                appendChild(n, u),
                 d && d.m(n, null),
-                Tl(n, c),
+                appendChild(n, c),
                 a || (l = Rl(o, "click", h),
                 a = !0)
             },
@@ -24350,9 +24357,9 @@
             },
             m(t, o) {
                 insertBefore(t, n, o),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(n, r)
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(n, r)
             },
             p(t, e) {
                 4 & e && s !== (s = t[10] + "") && ql(i, s),
@@ -24383,10 +24390,10 @@
             },
             m(t, r) {
                 insertBefore(t, n, r),
-                Tl(n, e);
+                appendChild(n, e);
                 for (let t = 0; t < o.length; t += 1)
                     o[t].m(e, null);
-                Tl(n, i),
+                appendChild(n, i),
                 s && s.m(n, null)
             },
             p(t, [i]) {
@@ -24540,7 +24547,7 @@
         }),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -24586,7 +24593,7 @@
             },
             m(f, h) {
                 insertBefore(f, n, h),
-                Tl(n, e),
+                appendChild(n, e),
                 t[23](e),
                 insertBefore(f, i, h),
                 c && c.m(f, h),
@@ -25022,44 +25029,44 @@
             },
             m(t, F) {
                 insertBefore(t, n, F),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(n, r),
-                Tl(n, o),
-                Tl(o, s),
-                Tl(s, u),
-                Tl(s, c),
-                Tl(c, a),
-                Tl(o, l),
-                Tl(o, f),
-                Tl(f, h),
-                Tl(f, d),
-                Tl(d, v),
-                Tl(n, p),
-                Tl(n, m),
-                Tl(m, y),
-                Tl(y, g),
-                Tl(y, b),
-                Tl(y, w),
-                Tl(w, x),
-                Tl(m, k),
-                Tl(m, S),
-                Tl(S, E),
-                Tl(S, T),
-                Tl(S, O),
-                Tl(O, C),
-                Tl(m, A),
-                Tl(m, X),
-                Tl(X, I),
-                Tl(X, _),
-                Tl(X, M),
-                Tl(M, R),
-                Tl(m, D),
-                Tl(m, j),
-                Tl(j, B),
-                Tl(j, P),
-                Tl(j, q),
-                Tl(q, $)
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(n, r),
+                appendChild(n, o),
+                appendChild(o, s),
+                appendChild(s, u),
+                appendChild(s, c),
+                appendChild(c, a),
+                appendChild(o, l),
+                appendChild(o, f),
+                appendChild(f, h),
+                appendChild(f, d),
+                appendChild(d, v),
+                appendChild(n, p),
+                appendChild(n, m),
+                appendChild(m, y),
+                appendChild(y, g),
+                appendChild(y, b),
+                appendChild(y, w),
+                appendChild(w, x),
+                appendChild(m, k),
+                appendChild(m, S),
+                appendChild(S, E),
+                appendChild(S, T),
+                appendChild(S, O),
+                appendChild(O, C),
+                appendChild(m, A),
+                appendChild(m, X),
+                appendChild(X, I),
+                appendChild(X, _),
+                appendChild(X, M),
+                appendChild(M, R),
+                appendChild(m, D),
+                appendChild(m, j),
+                appendChild(j, B),
+                appendChild(j, P),
+                appendChild(j, q),
+                appendChild(q, $)
             },
             p(t, n) {
                 4 & n && F !== (F = (t[2].title || "未命名") + "") && ql(i, F),
@@ -25163,16 +25170,16 @@
             },
             m(t, h) {
                 insertBefore(t, n, h),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(r, o),
-                Tl(r, s),
-                Tl(n, u),
-                Tl(n, c),
-                Tl(n, a),
-                Tl(n, l),
-                Tl(l, f)
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(r, o),
+                appendChild(r, s),
+                appendChild(n, u),
+                appendChild(n, c),
+                appendChild(n, a),
+                appendChild(n, l),
+                appendChild(l, f)
             },
             p(t, n) {
                 4 & n && h !== (h = (t[2].key || "?") + "") && ql(s, h),
@@ -25205,12 +25212,12 @@
             m(a, l) {
                 insertBefore(a, n, l),
                 s && s.m(n, null),
-                Tl(n, e),
+                appendChild(n, e),
                 u && u.m(n, null),
-                Tl(n, i),
+                appendChild(n, i),
                 c && c.m(n, null),
-                Tl(n, r),
-                Tl(n, o),
+                appendChild(n, r),
+                appendChild(n, o),
                 t[21](o),
                 t[22](n)
             },
@@ -25500,8 +25507,8 @@
             },
             m(t, r) {
                 insertBefore(t, n, r),
-                Tl(n, e),
-                Tl(n, i)
+                appendChild(n, e),
+                appendChild(n, i)
             },
             p(t, n) {
                 2 & n && r !== (r = (t[1].author || "") + "") && ql(e, r)
@@ -25529,7 +25536,7 @@
         n.$on("rendercomplete", t[7]),
         {
             c() {
-                jf(n.$$.fragment),
+                onCreate(n.$$.fragment),
                 e = createSpacer(),
                 i = createElement("footer"),
                 r = createElement("div"),
@@ -25546,11 +25553,11 @@
                 Bf(n, a, l),
                 insertBefore(a, e, l),
                 insertBefore(a, i, l),
-                Tl(i, r),
-                Tl(r, o),
+                appendChild(i, r),
+                appendChild(r, o),
                 o.innerHTML = t[3],
-                Tl(r, s),
-                Tl(r, u),
+                appendChild(r, s),
+                appendChild(r, u),
                 c = !0
             },
             p(t, e) {
@@ -25598,7 +25605,7 @@
         n.$on("rendercomplete", t[7]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -25736,7 +25743,7 @@
         }),
         {
             c() {
-                jf(n.$$.fragment),
+                onCreate(n.$$.fragment),
                 e = createSpacer(),
                 i = createElement("div"),
                 r = createElement("div"),
@@ -25752,11 +25759,11 @@
                 Bf(n, t, l),
                 insertBefore(t, e, l),
                 insertBefore(t, i, l),
-                Tl(i, r),
-                Tl(r, o),
-                Tl(i, s),
-                Tl(i, u),
-                Tl(u, c),
+                appendChild(i, r),
+                appendChild(r, o),
+                appendChild(i, s),
+                appendChild(i, u),
+                appendChild(u, c),
                 a = !0
             },
             p(t, e) {
@@ -25895,30 +25902,30 @@
             },
             m(t, O) {
                 insertBefore(t, n, O),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(e, r),
-                Tl(e, o),
-                Tl(n, s),
-                Tl(n, u),
-                Tl(u, c),
-                Tl(u, a),
-                Tl(u, l),
-                Tl(n, f),
-                Tl(n, h),
-                Tl(h, d),
-                Tl(h, v),
-                Tl(h, p),
-                Tl(n, m),
-                Tl(n, y),
-                Tl(y, g),
-                Tl(y, b),
-                Tl(y, w),
-                Tl(n, x),
-                Tl(n, k),
-                Tl(k, S),
-                Tl(k, E),
-                Tl(k, T)
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(e, r),
+                appendChild(e, o),
+                appendChild(n, s),
+                appendChild(n, u),
+                appendChild(u, c),
+                appendChild(u, a),
+                appendChild(u, l),
+                appendChild(n, f),
+                appendChild(n, h),
+                appendChild(h, d),
+                appendChild(h, v),
+                appendChild(h, p),
+                appendChild(n, m),
+                appendChild(n, y),
+                appendChild(y, g),
+                appendChild(y, b),
+                appendChild(y, w),
+                appendChild(n, x),
+                appendChild(n, k),
+                appendChild(k, S),
+                appendChild(k, E),
+                appendChild(k, T)
             },
             p: defaultStart,
             i: defaultStart,
@@ -26017,21 +26024,21 @@
                 i = createTextNode(F),
                 r = createSpacer(),
                 o = createElement("div"),
-                jf(s.$$.fragment),
+                onCreate(s.$$.fragment),
                 c = createSpacer(),
                 a = createElement("div"),
                 l = createElement("div"),
                 l.textContent = "简化和弦",
                 f = createSpacer(),
                 h = createElement("div"),
-                jf(d.$$.fragment),
+                onCreate(d.$$.fragment),
                 p = createSpacer(),
                 m = createElement("div"),
                 y = createElement("div"),
                 y.textContent = "并行显示",
                 g = createSpacer(),
                 b = createElement("div"),
-                jf(w.$$.fragment),
+                onCreate(w.$$.fragment),
                 k = createSpacer(),
                 S = createElement("div"),
                 E = createElement("div"),
@@ -26041,14 +26048,14 @@
                 V && V.c(),
                 A = createSpacer(),
                 X = createElement("div"),
-                jf(I.$$.fragment),
+                onCreate(I.$$.fragment),
                 M = createSpacer(),
                 R = createElement("div"),
                 D = createElement("div"),
                 D.textContent = "变调夹",
                 j = createSpacer(),
                 B = createElement("div"),
-                jf(P.$$.fragment),
+                onCreate(P.$$.fragment),
                 setOrRemoveAttribute(e, "class", "label svelte-u9cqo2"),
                 setOrRemoveAttribute(o, "class", "content svelte-u9cqo2"),
                 setOrRemoveAttribute(n, "class", "row svelte-u9cqo2"),
@@ -26067,38 +26074,38 @@
             },
             m(t, u) {
                 insertBefore(t, n, u),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(n, r),
-                Tl(n, o),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(n, r),
+                appendChild(n, o),
                 Bf(s, o, null),
                 insertBefore(t, c, u),
                 insertBefore(t, a, u),
-                Tl(a, l),
-                Tl(a, f),
-                Tl(a, h),
+                appendChild(a, l),
+                appendChild(a, f),
+                appendChild(a, h),
                 Bf(d, h, null),
                 insertBefore(t, p, u),
                 insertBefore(t, m, u),
-                Tl(m, y),
-                Tl(m, g),
-                Tl(m, b),
+                appendChild(m, y),
+                appendChild(m, g),
+                appendChild(m, b),
                 Bf(w, b, null),
                 insertBefore(t, k, u),
                 insertBefore(t, S, u),
-                Tl(S, E),
-                Tl(E, T),
-                Tl(E, O),
-                Tl(E, C),
+                appendChild(S, E),
+                appendChild(E, T),
+                appendChild(E, O),
+                appendChild(E, C),
                 V && V.m(E, null),
-                Tl(S, A),
-                Tl(S, X),
+                appendChild(S, A),
+                appendChild(S, X),
                 Bf(I, X, null),
                 insertBefore(t, M, u),
                 insertBefore(t, R, u),
-                Tl(R, D),
-                Tl(R, j),
-                Tl(R, B),
+                appendChild(R, D),
+                appendChild(R, j),
+                appendChild(R, B),
                 Bf(P, B, null),
                 $ = !0
             },
@@ -26216,7 +26223,7 @@
                 o = createTextNode(h),
                 s = createSpacer(),
                 u = createElement("div"),
-                jf(c.$$.fragment),
+                onCreate(c.$$.fragment),
                 l = createSpacer(),
                 p && p.c(),
                 setOrRemoveAttribute(i, "class", "label svelte-u9cqo2"),
@@ -26226,14 +26233,14 @@
             },
             m(t, a) {
                 insertBefore(t, n, a),
-                Tl(n, e),
-                Tl(e, i),
-                Tl(i, r),
-                Tl(i, o),
-                Tl(e, s),
-                Tl(e, u),
+                appendChild(n, e),
+                appendChild(e, i),
+                appendChild(i, r),
+                appendChild(i, o),
+                appendChild(e, s),
+                appendChild(e, u),
                 Bf(c, u, null),
-                Tl(n, l),
+                appendChild(n, l),
                 p && p.m(n, null),
                 f = !0
             },
@@ -26396,10 +26403,10 @@
             },
             m(t, o) {
                 insertBefore(t, n, o),
-                Tl(n, e),
-                Tl(n, i),
+                appendChild(n, e),
+                appendChild(n, i),
                 u.m(n, null),
-                Tl(n, r)
+                appendChild(n, r)
             },
             p(t, e) {
                 s !== (s = o(t)) && (u.d(1),
@@ -26432,8 +26439,8 @@
             },
             m(t, r) {
                 insertBefore(t, n, r),
-                Tl(n, e),
-                Tl(n, i),
+                appendChild(n, e),
+                appendChild(n, i),
                 s.m(n, null)
             },
             p(t, e) {
@@ -26518,8 +26525,8 @@
             },
             m(t, s) {
                 insertBefore(t, n, s),
-                Tl(n, e),
-                Tl(n, i),
+                appendChild(n, e),
+                appendChild(n, i),
                 r.m(o, n)
             },
             p(t, n) {
@@ -26636,9 +26643,9 @@
         {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 r = createSpacer(),
-                jf(o.$$.fragment),
+                onCreate(o.$$.fragment),
                 setOrRemoveAttribute(n, "class", "sheet-container svelte-15g1ex"),
                 setOrRemoveAttribute(n, "id", "nier-scroll-view")
             },
@@ -26716,7 +26723,7 @@
         n.$on("rendercomplete", t[41]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -26777,7 +26784,7 @@
         n.$on("fullScreen", t[34]),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -26822,7 +26829,7 @@
         }),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -26859,14 +26866,14 @@
                 e = createElement("div"),
                 e.textContent = "分类",
                 i = createSpacer(),
-                jf(r.$$.fragment),
+                onCreate(r.$$.fragment),
                 setOrRemoveAttribute(e, "class", "section-title svelte-15g1ex"),
                 setOrRemoveAttribute(n, "class", "section svelte-15g1ex")
             },
             m(t, s) {
                 insertBefore(t, n, s),
-                Tl(n, e),
-                Tl(n, i),
+                appendChild(n, e),
+                appendChild(n, i),
                 Bf(r, n, null),
                 o = !0
             },
@@ -26933,7 +26940,7 @@
             c() {
                 f && f.c(),
                 n = createSpacer(),
-                jf(e.$$.fragment)
+                onCreate(e.$$.fragment)
             },
             m(t, i) {
                 f && f.m(t, i),
@@ -27045,7 +27052,7 @@
         af.push(( () => Df(n, "capo", g))),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, e) {
                 Bf(n, t, e),
@@ -27104,7 +27111,7 @@
         }),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -27182,7 +27189,7 @@
         }),
         {
             c() {
-                jf(n.$$.fragment)
+                onCreate(n.$$.fragment)
             },
             m(t, i) {
                 Bf(n, t, i),
@@ -27218,10 +27225,10 @@
             },
             m(t, s) {
                 insertBefore(t, n, s),
-                Tl(n, e),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(n, o)
+                appendChild(n, e),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(n, o)
             },
             p(t, n) {
                 4 & n[0] && ql(i, t[2]),
@@ -27244,7 +27251,7 @@
             },
             m(t, i) {
                 insertBefore(t, n, i),
-                Tl(n, e)
+                appendChild(n, e)
             },
             p(t, e) {
                 1 & e[0] && i !== (i = wt(hi, {
@@ -27305,7 +27312,7 @@
         {
             c() {
                 n = createElement("div"),
-                jf(e.$$.fragment),
+                onCreate(e.$$.fragment),
                 i = createSpacer(),
                 r = createElement("div"),
                 o = createElement("div"),
@@ -27322,17 +27329,17 @@
                 d = createSpacer(),
                 p.c(),
                 m = createSpacer(),
-                jf(y.$$.fragment),
+                onCreate(y.$$.fragment),
                 g = createSpacer(),
                 P && P.c(),
                 b = createSpacer(),
                 q && q.c(),
                 w = createSpacer(),
-                jf(x.$$.fragment),
+                onCreate(x.$$.fragment),
                 k = createSpacer(),
-                jf(S.$$.fragment),
+                onCreate(S.$$.fragment),
                 E = createSpacer(),
-                jf(T.$$.fragment),
+                onCreate(T.$$.fragment),
                 setOrRemoveAttribute(o, "class", "main svelte-15g1ex"),
                 setOrRemoveAttribute(f, "class", "side svelte-15g1ex"),
                 setOrRemoveAttribute(r, "class", "layout svelte-15g1ex"),
@@ -27342,26 +27349,26 @@
             m(t, a) {
                 insertBefore(t, n, a),
                 Bf(e, n, null),
-                Tl(n, i),
-                Tl(n, r),
-                Tl(r, o),
+                appendChild(n, i),
+                appendChild(n, r),
+                appendChild(r, o),
                 X && X.m(o, null),
-                Tl(o, s),
+                appendChild(o, s),
                 I && I.m(o, null),
-                Tl(o, u),
+                appendChild(o, u),
                 M[c].m(o, null),
-                Tl(r, l),
-                Tl(r, f),
+                appendChild(r, l),
+                appendChild(r, f),
                 R && R.m(f, null),
-                Tl(f, h),
+                appendChild(f, h),
                 D && D.m(f, null),
-                Tl(f, d),
+                appendChild(f, d),
                 B[v].m(f, null),
-                Tl(f, m),
+                appendChild(f, m),
                 Bf(y, f, null),
-                Tl(f, g),
+                appendChild(f, g),
                 P && P.m(f, null),
-                Tl(f, b),
+                appendChild(f, b),
                 q && q.m(f, null),
                 insertBefore(t, w, a),
                 Bf(x, t, a),
