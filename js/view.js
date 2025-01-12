@@ -8771,7 +8771,7 @@
         return t(n, n.exports),
         n.exports
     }
-    var _d = Id((function(t, n) {
+    var smoothScrollPolyfill = Id((function(t, n) {
         t.exports = {
             polyfill: function() {
                 var t = window
@@ -8892,9 +8892,14 @@
         }
     }
     ));
-    function Md() {
-        self._smoothScrollPolyfilled || (self._smoothScrollPolyfilled = !0,
-        _d.polyfill())
+    function polyfillSmoothScroll() {
+        // Check if smooth scroll is already polyfilled
+        if (!self._smoothScrollPolyfilled) {
+            // Mark smooth scroll as polyfilled
+            self._smoothScrollPolyfilled = true;
+            // Apply the polyfill
+            smoothScrollPolyfill.polyfill();
+        }
     }
     const Rd = {
         dy: {
@@ -27564,7 +27569,7 @@
     }
     function yk(t, n, e) {
         installHandlers(self),
-        Md(),
+        polyfillSmoothScroll(),
         new MusicComponent({
             target: n,
             props: {
