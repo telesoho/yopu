@@ -22457,7 +22457,7 @@
         PAUSED: "paused",
         STOPPED: "stopped"
     };
-    class rw {
+    class DrumManager {
         constructor(t) {
             this.un = t.audioContextProvider,
             this.cn = new t.XiatMetronome,
@@ -23256,11 +23256,11 @@
           , {zoom: c} = n
           , {scrollSpeed: a=xw} = n
           , {sheet: l} = n
-          , {user: f} = n
+          , {user: user} = n
           , {xheElement: h} = n
           , {sheetRenderCompleteCount: d} = n;
-        const v = sf("webviewInterface")
-          , p = sf("synd")
+        const webviewInterface = sf("webviewInterface")
+          , syndService = sf("synd")
           , m = l.bpm || sw
           , y = [{
             value: lt.METRONOME,
@@ -23273,33 +23273,34 @@
             title: "蹦擦擦"
         }]
           , g = new tw;
-        let b, w = !1, x = !1, k = !0, S = !0, E = lt.METRONOME, T = window.scrollY;
-        const O = Sb(l, null, !!f);
+        let b, isPlaying = !1, hasUserdDrumBefore = !1, k = !0, enableSound = !0, E = lt.METRONOME, T = window.scrollY;
+        const O = Sb(l, null, !!user);
         function C() {
-            g && (w && k ? g.start(a, function({chordStyle: t, zoom: n}) {
+            g && (isPlaying && k ? g.start(a, function({chordStyle: t, zoom: n}) {
                 return t === rt.INLINE ? 1.2 + .3 * n : .8 + .2 * n
             }({
                 chordStyle: u,
                 zoom: c
             }), o) : g.stop())
         }
-        function A() {
-            w && S ? async function(t, n) {
-                const e = await async function() {
+        function toggleDrumPlayback() {
+            isPlaying && enableSound ? async function(drumType, tempo) {
+                const drumManager = await async function() {
                     if (!b) {
                         const t = await Da(_a);
-                        b = new rw(t)
+                        b = new DrumManager(t)
                     }
                     return b
                 }();
-                e.setDrumType(t),
+                drumManager.setDrumType(drumType),
                 na("play-drum", {
-                    label: t
+                    label: drumType
                 });
-                const i = f && f.isMember;
-                t === lt.METRONOME || i ? e.play(n) : (await e.play(n, x ? 10 * K.SECOND : 30 * K.SECOND),
-                x = !0,
-                await _y(v, p, "鼓机"))
+                const isPremiumUser = user && user.isMember;
+                drumType === lt.METRONOME || drumManager.play(tempo)
+                // drumType === lt.METRONOME || isPremiumUser ? drumManager.play(tempo) : (await drumManager.play(tempo, hasUserdDrumBefore ? 10 * K.SECOND : 30 * K.SECOND),
+                // hasUserdDrumBefore = !0,
+                // await _y(webviewInterface, syndService, "鼓机"))
             }(E, s) : b && b.stop()
         }
         addEventListener(t, O, (t => e(10, i = t))),
@@ -23314,18 +23315,18 @@
             "zoom"in t && e(18, c = t.zoom),
             "scrollSpeed"in t && e(1, a = t.scrollSpeed),
             "sheet"in t && e(19, l = t.sheet),
-            "user"in t && e(2, f = t.user),
+            "user"in t && e(2, user = t.user),
             "xheElement"in t && e(3, h = t.xheElement),
             "sheetRenderCompleteCount"in t && e(4, d = t.sheetRenderCompleteCount)
         }
         ,
         t.$$.update = () => {
-            417 & t.$$.dirty[0] && A(),
+            417 & t.$$.dirty[0] && toggleDrumPlayback(),
             98 & t.$$.dirty[0] && C(),
             65552 & t.$$.dirty[0] && d && e(9, T = o.scrollTop)
         }
         ,
-        [s, a, f, h, d, w, k, S, E, T, i, r, m, y, O, function(t) {
+        [s, a, user, h, d, isPlaying, k, enableSound, E, T, i, r, m, y, O, function(t) {
             g.pause(1.5 * K.SECOND),
             o.scrollTo({
                 top: t.detail.value,
@@ -23341,8 +23342,8 @@
             e(1, a)
         }
         , function(t) {
-            S = t,
-            e(7, S)
+            enableSound = t,
+            e(7, enableSound)
         }
         , () => e(0, s = m), function(t) {
             s = t,
@@ -23355,7 +23356,7 @@
         , () => {
             r("fullScreen")
         }
-        , () => e(5, w = !w)]
+        , () => e(5, isPlaying = !isPlaying)]
     }
     class Sw extends Component {
         constructor(t) {
