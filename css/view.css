@@ -3459,14 +3459,14 @@ section.svelte-eblaf6.svelte-eblaf6 {
 }
 
 .profile.svelte-eblaf6.svelte-eblaf6 {
-    display: flex;
+    display: none;
     align-items: center;
     padding: 20px 20px 15px;
     cursor: pointer
 }
 
 .profile.svelte-eblaf6 .info.svelte-eblaf6 {
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: left;
     margin-left: 10px
@@ -3622,4 +3622,12 @@ section.svelte-u9cqo2.svelte-u9cqo2 {
 
 .hexi-header {
     display: block !important
+}
+
+.control.svelte-8xk2fn {
+    display: none;
+}
+
+header.svelte-tg1f35 {
+    display: none;
 }
